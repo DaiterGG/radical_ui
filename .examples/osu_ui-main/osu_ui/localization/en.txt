@@ -1,0 +1,273 @@
+# You can use comments like in python
+-- Lua comments are also supported if you like them
+
+General_Cancel=Cancel
+General_Back=Back
+General_Apply=Apply
+General_Reset=Reset
+General_Yes=Yes
+General_No=No
+General_Volume=Volume: %s
+
+UserProfile_Guest=Guest
+
+Menu_GeneralInformation=You have %i beatmaps available!\ngucci!mania has been running for %s.\nIt is currently %s.
+
+Options_Options=Options
+Options_HeaderBlurb=Change the way gucci!mania behaves
+Options_TabGeneral=General
+Options_TabGameplay=Gameplay
+Options_TabGraphics=Graphics
+Options_TabAudio=Audio
+Options_TabSkin=Skin
+Options_TabInput=Input
+Options_TabOnline=Online
+Options_TabMaintenance=Maintenance
+
+Options_Graphics_Language=Language
+Options_Graphics_SelectLanguage=Select language:
+
+Options_Updates=Updates
+Options_Updates_AutoUpdate=Auto update
+Update_Git=Git version of the game. You won't receive new updates.
+Update_Complete=gucci!mania is up-to-date!\nYou are now running %s.
+Update_NotComplete=gucci!mania is not up-to-date. Enable automatic updates and restart the game to apply new updates.
+Options_OpenOsuFolder=Open gucci!mania folder
+
+Options_ReleaseStream=Release stream:
+Options_ReleaseStrategy_Stable=Stable
+Options_ReleaseStrategy_Beta=Beta
+Options_ReleaseStrategy_CuttingEdge=Cutting Edge (Experimental)
+
+Options_MainMenu=Main menu
+Options_Menu_DisableIntro=Disable intro
+Options_Menu_ShowTips=Menu tips
+
+Options_OtherGames=Other games
+Options_GamesInstalled=%i other rhythm games installed:
+Options_OtherGames_AddSongsFromOtherGames=Add songs from other games
+Options_OtherGames_AddSongsConfirm=It may take a long time to add all the songs. Are you sure?
+Options_OtherGames_CopyOsuSettings=Copy settings from osu!
+Options_OtherGames_CopySettingsConfirm=Are you sure you want to copy the settings?
+Options_OtherGames_OsuSkins=Display skins from osu!
+
+Options_SongSelect=Song select
+Options_DifficultyCalculator=Difficulty calculator:
+Options_SongSelect_Thumbnails=Show thumbnails (Only shifts text)
+Options_SongSelect_BeatmapPreview=Beatmap preview
+Options_SongSelect_PreciseRates=Precise rates (0.025x)
+Options_SongSelect_DisplayDifficultyTable=Display difficulty table
+
+Options_Result=Result screen
+Options_Result_DisplayDifficultyAndRate=Display difficulty and rate
+Options_Result_DisplayHitGraph=Display hit graph
+Options_Result_DisplayJudgmentName=Display judgment name
+Options_Result_AlwaysDisplayScores=Always display scores
+
+Options_Screen=Screen
+Options_Graphics_Renderer=Renderer
+Options_Graphics_Vsync=Vsync:
+Options_Graphics_VsyncInMenus=Vsync in menus
+Options_Graphics_Enabled=Enabled
+Options_Graphics_Disabled=Disabled
+Options_Graphics_Adaptive=Adaptive
+Options_Graphics_FrameLimiter=Frame limiter:
+Options_Graphics_FrameLimiter_Unlim=Unlimited FPS
+Options_Graphics_FpsCounter=Show FPS counter
+
+Options_Graphics_ScreenResolution=Layout
+Options_Graphics_SelectResolution=Resolution:
+Options_Graphics_Fullscreen=Fullscreen mode
+Options_Graphics_FullscreenType=Fullscreen type
+Options_Graphics_FullscreenDesktop=Desktop
+Options_Graphics_FullscreenExclusive=Exclusive
+
+Options_Graphics_SelectResolution=Resolution:
+Options_Graphics_Letterboxing=Gameplay letterboxing
+Options_Graphics_Letterboxing_Tooltip=Always use the full native resolution but display gameplay in a smaller centered portion of the screen.\nUseful to get the low latency of full screen with a smaller game resolution.
+Options_Graphics_LetterboxPositionX=Horizontal position:
+Options_Graphics_LetterboxPositionY=Vertical position:
+Options_Graphics_EnableBlur=Enable blur
+Options_Graphics_BlurQuality=Blur quality
+Options_Graphics_UISkin=UI Skin:
+Options_Graphics_CopyScreenshot=Copy screenshots to clipboard
+
+Options_Graphics_Details=Details
+Options_Graphics_Image=Background image
+Options_Graphics_Video=Background video
+
+FunSpoiler_BackgroundDim=Background dim:
+Options_Gameplay_ScrollSpeed=Scroll Speed
+Options_Gameplay_ScrollSpeedLol=Scroll Speed:
+Options_Gameplay_ScrollSpeedType=Scroll speed type:
+Options_Gameplay_TempoFactor=Tempo factor
+Options_Gameplay_Average=Average
+Options_Gameplay_Primary=Primary
+Options_Gameplay_Minimum=Minimum
+Options_Gameplay_Maximum=Maximum
+Options_Gameplay_PrimaryTempo=Primary tempo:
+Options_Gameplay_ConstantScrollSpeed=Constant scroll speed
+Options_Gameplay_ScaleScrollSpeedWithRate=Scale scroll speed with rate
+
+Options_Gameplay_Timings=Timings
+Options_Gameplay_PreparationTime=Preparation time
+Options_Gameplay_TimeBeforeRestart=Time before restart
+Options_Gameplay_TimeBeforePause=Time before pause
+Options_Gameplay_TimeFormat=%0.01f seconds
+
+Options_Gameplay_Scoring=Scoring
+Options_Gameplay_OverrideScoreSystem=Override score system
+Options_Gameplay_ScoreSystem=Score system:
+Options_Gameplay_Judgement=Judgement:
+Options_Gameplay_NearestInput=Nearest input
+
+Options_Gameplay_Health=Health
+Options_Gameplay_ActionOnFail=Action on fail:
+Options_Gameplay_ActionNone=None
+Options_Gameplay_ActionPause=Pause
+Options_Gameplay_ActionQuit=Quit
+Options_Gameplay_MaxHealth=Max health:
+Options_Gameplay_AutoShift=Auto shift
+
+Options_Audio_Volume=Volume
+Options_Audio_Effect=Effect:
+Options_Audio_Master=Master:
+Options_Audio_Music=Music:
+Options_Audio_UserInterface=User Interface:
+Options_Audio_RateChangesPitch=Rate chages pitch
+Options_Audio_RateChangesPitch_Tooltip=Changing the speed of the music will also change the pitch of the music.
+Options_Audio_AutoKeySound=Auto Key Sound
+Options_Audio_AutoKeySound_Tooltip=Hitsound will play in perfect sync with the music, no matter how early/late you press a note.
+Options_Audio_MidiConstantVolume=MIDI constant volume
+Options_Audio_MuteOnUnfocus=Mute game when game window is not focused
+
+Options_Audio_Device=Device
+Options_Audio_UpdatePeriod=Update period:
+Options_Audio_BufferLength=Buffer length:
+Options_Audio_AdjustRate=Adjust rate:
+
+Options_Audio_Offset=Offset Adjustment
+Options_Audio_ChartFormatOffsets=Offset adjustment for chart formats
+OptionsOffsetWizard_UniversalOffset=Universal offset:
+
+Options_SkinSelect=Current skin:
+Options_SkinPreview=Preview gameplay
+Options_SkinSettings=Change skin settings
+Options_OpenSkinFolder=Open current skin folder
+Options_LongNoteShortening=LN shortening:
+
+Options_Cursor=Cursor
+Options_CursorSize=Cursor size:
+Options_TrailDensity=Trail density:
+Options_TrailQuality=Trail quality:
+Options_TrailLifetime=Trail lifetime:
+Options_TrailStyle=Trail style:
+Options_ShowTrail=Show trail 
+Options_CameraInstructions=Controls:\nF9 - enter camera mode.\nF10 - reset\nWASD - forward/left/right/back.\nSHIFT/SPACE - up/down.\nLeft mouse button - rotate
+Options_Cursor_Vanishing=Vanishing
+Options_Cursor_Shrinking=Shrinking
+
+Options_Camera=3D Camera
+Options_EnableCamera=Enable 3D camera
+Options_CameraXRotation = Allow rotation of X coordinate
+Options_CameraYRotation = Allow rotation of Y coordinate
+
+Options_Input_InputOffset=Input offset:
+Options_Input_VisualOffset=Visual offset:
+Options_Input_MultiplyInputOffsetByRate=Multiply input offset by music speed
+Options_Input_MultiplyVisualOffsetByRate=Multiply visual offset by music speed
+Options_Input_Other=Other
+Options_Input_ThreadedInput=Threaded input
+Options_Input_TaikoNoteHandler=[DO NOT ENABLE] Taiko note handler
+Options_TabSkin_CustonKey=Press the key/button on your keyboard/joystick for the corresponding column. Hit ESC to go back.
+Options_Input_Keyboard=Keyboard
+Options_OsuManiaLayout=gucci!mania layout
+
+Options_Online_Leaderboard=Leaderboard:
+
+Options_Other=Other
+Options_OfflineNickname=Offline nickname
+
+Options_SwitchToLegacyUI=Switch to legacy UI
+Options_UISwitchConfirm=Are you sure you want to switch back to the old UI? Do you even know how to get back?
+
+SongSelection_BeatmapInfoCreator=Mapped by %s
+SongSelection_BeatmapInfoPack=Mapped by %s (From %s)
+SongSelection_BeatmapInfo=Length: %s BPM: %i Objects: %i
+SongSelection_BeatmapInfo2=Circles: %i Sliders: %i Spinners: %i
+SongSelection_BeatmapInfo3=Keys: %s OD:%s HP:%i Star rate: %s
+SongSelection_NoGrouping=No Grouping
+SongSelection_ByArtist=By Artist
+SongSelection_ByBPM=By BPM
+SongSelection_ByCreator=By Creator
+SongSelection_ByDateAdded=By Date Added
+SongSelection_ByDifficulty=By Difficulty
+SongSelection_ByLength=By Length
+SongSelection_ByTitle=By Title
+SongSelection_ByLevel=By Level
+SongSelection_ByObjectCount=By Object Count
+SongSelection_ByRecentlyPlayed=By Recently Played
+SongSelection_ByGames=By Games
+SongSelection_ByFolders=By Folders
+SongSelection_Collections=Collections
+SongSelection_RankedStatus=Ranked Status
+SongSelection_RecentlyPlayed=Recently Played
+SongSelection_Group=Group
+SongSelection_Sort=Sort
+SongSelection_Rank_Local=Normalscore
+SongSelection_Rank_Top=Global Ranking
+SongSelection_TypeToBegin=Type to search!
+SongSelection_Search=Search:
+SongSelection_Searching=Searching...
+
+SongSelection_ThisBeatmap=%s\nWhat do you want to do with this beatmap?
+SongSelection_Collection=Manage Collections
+SongSelection_ExportToOsu=Export to .osu
+SongSelection_Filters=Filters
+SongSelection_Edit=Edit
+SongSelection_OpenInFileManager=Open in file manager
+SongSelection_OsuExported=Exported to "userdata/export"
+
+RankingDialog_PlayedBy=Played by %s %s
+RankingDialog_ExportOsuReplay=Export osu! replay
+RankingDialog_ExportVideoGif=Export Video/GIF
+RankingDialog_SubmitReplay=Submit Replay
+
+ModSelection_Title=Mods provide different ways to enjoy gameplay. Some have an effect on the score you can achieve during ranked play. Others are just for fun.
+ModSelection_Reset=Reset All Mods
+ModSelection_NewPreset=New preset
+ModSelection_DeletePreset=Delete preset
+ModSelection_NewPreset_Title=Select a name for the new preset. The applied modifiers are copied to the new preset.
+ModSelection_NewPreset_Create=Create
+
+LocationsModal_Title=Add new songs from your hard drive by specifying the path. The game will read directly from these directories without copying anything.
+LocationsModal_UpdateAll=Update all locations
+LocationsModal_Update=Update
+LocationsModal_OpenFolder=Open folder
+LocationsModal_HoldShiftToRemove=Hold shift key before clicking on the remove button!
+LocationsModal_CantRemoveInternal=You can't delete internal locations.
+LocationsModal_DropFolderHere=Drop a folder with songs here!
+LocationsModal_ChangeName=Change name:
+LocationsModal_AddOtherGames=Add other games
+
+FiltersModal_Title=Use filters to display only the charts you want to play.
+FiltersModal_OriginalMode=Original Mode
+FiltersModal_ActualMode=Actual Mode
+FiltersModal_Format=Format
+FiltersModal_Scratch=Scratch
+FiltersModal_Played=Played
+FiltersModal_ResetFilters=Reset All Filters
+FiltersModal_DisplayMode=Display mode:
+FiltersModal_BeatmapsMode=Beatmaps
+FiltersModal_ModdedMode=Modded Beatmaps
+FiltersModal_PlayedMode=Played Beatmaps
+FiltersModal_Lamp=Lamp:
+
+ChartImport_Preparation=Status: Preparation for processing
+ChartImport_Processing=Status: Processing
+
+CommonUpdater_RestartRequired=A restart is required to complete an update.
+Update_ClickToUpdate2=Click here to restart now!
+Update_Downloading=Downloading an update...
+
+Player_WaitBeforePausing=Wait at least one second before pausing again.
