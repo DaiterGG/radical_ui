@@ -1,0 +1,10 @@
+{
+  "name": "my_ui_mod",
+  "display_name": "My UI Mod",
+  "desc": "ui",
+  "creator": "you",
+  "version": "1.0.0",
+  "types": {
+    "ui": "ui_init"
+  }
+}
