@@ -21,14 +21,13 @@ end
 function UserInterface:receive(event)
   if event.name == "framestarted" or event.name == "focus" then
     return
-  elseif event.name == "mousemoved" then
-    return
   end
-  self.ctx.action_pump:register(event.name)
+  --TODO: handle keboards events with a event_handler; elseif event.name == "mousemoved" then
+
+  -- self.ctx.action_queue:register(event.name)
 end
 
 function UserInterface:update(dt)
-  print("update")
   self.ctx.last_delta = dt
   view(self.ctx)
   ui_manager.align(self.ctx)
@@ -37,7 +36,6 @@ function UserInterface:update(dt)
 end
 
 function UserInterface:draw()
-  print("draw")
   ui_manager.draw(self.ctx)
 end
 

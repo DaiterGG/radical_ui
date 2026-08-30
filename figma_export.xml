@@ -1,0 +1,1947 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?figml version="1.0"?>
+<page id="66:729" name="Page_4" type="PAGE">
+  <children>
+    <Rectangle id="66:730" name="black-bg" visible="false" maskType="ALPHA" x="4.547473508864641e-13" y="0" width="1920" height="1080" constrainProportions="true" type="RECTANGLE">
+      <fills>
+        <fill type="IMAGE" scaleMode="FILL" imageHash="b47c041c20586a69be21172439fd8748f12b6795" scalingFactor="0.5" blendMode="NORMAL">
+          <imageTransform matrix="1,0,0,0,1,0" />
+          <filters exposure="0" contrast="0" saturation="0" temperature="0" tint="0" highlights="0" shadows="0" />
+        </fill>
+        <fill opacity="0" blendMode="NORMAL" color="#ffffff" />
+      </fills>
+      <constraints horizontal="MIN" vertical="MIN" />
+    </Rectangle>
+    <Rectangle id="66:731" name="white-bg" maskType="ALPHA" x="2.2737367544323206e-13" y="-1.1368683772161603e-13" width="1920.7784423828125" height="1080" constrainProportions="true" type="RECTANGLE">
+      <fills>
+        <fill type="IMAGE" scaleMode="FILL" imageHash="0403a4cd8d9fa4c5d707ecd3b558cd5eb1af78c6" scalingFactor="0.5" blendMode="NORMAL">
+          <imageTransform matrix="1,0,0,0,1,0" />
+          <filters exposure="0" contrast="0" saturation="0" temperature="0" tint="0" highlights="0" shadows="0" />
+        </fill>
+      </fills>
+      <constraints horizontal="MIN" vertical="MIN" />
+    </Rectangle>
+    <Rectangle id="66:732" name="orange-bg" visible="false" maskType="ALPHA" x="0" y="0" width="1920" height="1080" constrainProportions="true" type="RECTANGLE">
+      <fills>
+        <fill type="IMAGE" scaleMode="FILL" imageHash="db2e4a5b903005bfee15a1cdc529332b01b0cee0" scalingFactor="0.5" blendMode="NORMAL">
+          <imageTransform matrix="1,0,0,0,1,0" />
+          <filters exposure="0" contrast="0" saturation="0" temperature="0" tint="0" highlights="0" shadows="0" />
+        </fill>
+        <fill opacity="0" blendMode="NORMAL" color="#ffffff" />
+        <fill opacity="0" blendMode="NORMAL" color="#000000" />
+      </fills>
+      <constraints horizontal="MIN" vertical="MIN" />
+    </Rectangle>
+    <Rectangle id="66:733" name="orange-bg" visible="false" maskType="ALPHA" x="0" y="0" width="1920" height="1080" constrainProportions="true" type="RECTANGLE">
+      <effects>
+        <effect type="BACKGROUND_BLUR" radius="12.699999809265137" />
+      </effects>
+      <fills>
+        <fill opacity="0.009999999776482582" blendMode="NORMAL" color="#ffffff" />
+      </fills>
+      <constraints horizontal="MIN" vertical="MIN" />
+    </Rectangle>
+    <Frame id="66:734" name="Notes" maskType="ALPHA" x="681" y="71" width="524" height="974" type="FRAME">
+      <children>
+        <Group id="66:735" name="Group_9" maskType="ALPHA" x="0" y="0" width="524" height="974" type="GROUP">
+          <children>
+            <Frame id="66:736" name="Frame_2" maskType="ALPHA" x="0" y="0" width="524" height="974" type="FRAME">
+              <children>
+                <Rectangle id="66:737" name="Rectangle_19" maskType="ALPHA" x="0" y="171" width="131" height="52" cornerRadius="2" type="RECTANGLE">
+                  <strokes>
+                    <stroke blendMode="NORMAL" color="#000000" />
+                  </strokes>
+                  <fills>
+                    <fill blendMode="NORMAL" color="#ffffff" />
+                  </fills>
+                  <constraints horizontal="MIN" vertical="MIN" />
+                </Rectangle>
+                <Rectangle id="66:738" name="Rectangle_20" maskType="ALPHA" x="262" y="171" width="131" height="52" cornerRadius="2" type="RECTANGLE">
+                  <strokes>
+                    <stroke blendMode="NORMAL" color="#000000" />
+                  </strokes>
+                  <fills>
+                    <fill blendMode="NORMAL" color="#ffffff" />
+                  </fills>
+                  <constraints horizontal="MIN" vertical="MIN" />
+                </Rectangle>
+                <Rectangle id="66:739" name="Rectangle_21" maskType="ALPHA" x="393" y="342" width="131" height="52" cornerRadius="2" type="RECTANGLE">
+                  <strokes>
+                    <stroke blendMode="NORMAL" color="#000000" />
+                  </strokes>
+                  <fills>
+                    <fill blendMode="NORMAL" color="#ffffff" />
+                  </fills>
+                  <constraints horizontal="MIN" vertical="MIN" />
+                </Rectangle>
+                <Rectangle id="66:740" name="Rectangle_23" maskType="ALPHA" x="393" y="630" width="131" height="52" cornerRadius="2" type="RECTANGLE">
+                  <strokes>
+                    <stroke blendMode="NORMAL" color="#000000" />
+                  </strokes>
+                  <fills>
+                    <fill blendMode="NORMAL" color="#ffffff" />
+                  </fills>
+                  <constraints horizontal="MIN" vertical="MIN" />
+                </Rectangle>
+                <Rectangle id="66:741" name="Rectangle_24" maskType="ALPHA" x="131" y="774" width="131" height="52" cornerRadius="2" type="RECTANGLE">
+                  <strokes>
+                    <stroke blendMode="NORMAL" color="#000000" />
+                  </strokes>
+                  <fills>
+                    <fill blendMode="NORMAL" color="#ffffff" />
+                  </fills>
+                  <constraints horizontal="MIN" vertical="MIN" />
+                </Rectangle>
+                <Rectangle id="66:742" name="Rectangle_25" maskType="ALPHA" x="393" y="922" width="131" height="52" cornerRadius="2" type="RECTANGLE">
+                  <strokes>
+                    <stroke blendMode="NORMAL" color="#000000" />
+                  </strokes>
+                  <fills>
+                    <fill blendMode="NORMAL" color="#ffffff" />
+                  </fills>
+                  <constraints horizontal="MIN" vertical="MIN" />
+                </Rectangle>
+                <Rectangle id="66:743" name="Rectangle_26" maskType="ALPHA" x="131" y="0" width="131" height="52" cornerRadius="2" type="RECTANGLE">
+                  <strokes>
+                    <stroke blendMode="NORMAL" color="#000000" />
+                  </strokes>
+                  <fills>
+                    <fill blendMode="NORMAL" color="#ffffff" />
+                  </fills>
+                  <constraints horizontal="MIN" vertical="MIN" />
+                </Rectangle>
+                <Rectangle id="66:744" name="Rectangle_27" maskType="ALPHA" x="0" y="630" width="131" height="52" cornerRadius="2" type="RECTANGLE">
+                  <strokes>
+                    <stroke blendMode="NORMAL" color="#000000" />
+                  </strokes>
+                  <fills>
+                    <fill blendMode="NORMAL" color="#ffffff" />
+                  </fills>
+                  <constraints horizontal="MIN" vertical="MIN" />
+                </Rectangle>
+                <Rectangle id="66:745" name="Rectangle_22" maskType="ALPHA" x="131" y="486" width="131" height="52" cornerRadius="2" type="RECTANGLE">
+                  <strokes>
+                    <stroke blendMode="NORMAL" color="#000000" />
+                  </strokes>
+                  <fills>
+                    <fill blendMode="NORMAL" color="#ffffff" />
+                  </fills>
+                  <constraints horizontal="MIN" vertical="MIN" />
+                </Rectangle>
+              </children>
+              <constraints horizontal="MIN" vertical="MIN" />
+            </Frame>
+          </children>
+        </Group>
+      </children>
+      <constraints horizontal="MIN" vertical="MIN" />
+    </Frame>
+    <Vector id="66:746" name="main" maskType="ALPHA" strokeWeight="2" strokeAlign="CENTER" x="-0.5" y="676" width="572" height="276" type="VECTOR">
+      <effects>
+        <effect type="BACKGROUND_BLUR" radius="30" />
+        <effect type="INNER_SHADOW" radius="14.199999809265137" spread="0" visible="false" blendMode="NORMAL" color="#000000">
+          <offset x="0" y="0" />
+        </effect>
+      </effects>
+      <strokes>
+        <stroke opacity="0.46000000834465027" blendMode="NORMAL" color="#000000" />
+      </strokes>
+      <fills>
+        <fill opacity="0.5799999833106995" blendMode="NORMAL" color="#3e3e46" />
+      </fills>
+      <constraints horizontal="MIN" vertical="MIN" />
+      <vectorPaths>
+        <vectorPath windingRule="" data="M 535.911019606436 37 L 535.911019606436 101.5 L 572 139 L 572 276 L 0 276 L 0 0 L 496.81464963363953 0 L 535.911019606436 37 Z" />
+      </vectorPaths>
+    </Vector>
+    <Vector id="66:747" name="main-middle" maskType="ALPHA" strokeWeight="2" strokeAlign="CENTER" x="0" y="400" width="533.5" height="276" type="VECTOR">
+      <effects>
+        <effect type="BACKGROUND_BLUR" radius="30" />
+        <effect type="INNER_SHADOW" radius="14.199999809265137" spread="0" visible="false" blendMode="NORMAL" color="#000000">
+          <offset x="0" y="0" />
+        </effect>
+      </effects>
+      <strokes>
+        <stroke opacity="0.46000000834465027" blendMode="NORMAL" color="#000000" />
+      </strokes>
+      <fills>
+        <fill opacity="0.5799999833106995" blendMode="NORMAL" color="#3e3e46" />
+      </fills>
+      <constraints horizontal="MIN" vertical="MIN" />
+      <vectorPaths>
+        <vectorPath windingRule="" data="M 533.5 5.684341886080802e-14 L 533.5 154 L 494.4669189453125 196 L 494.4669189453125 276 L 0 276 L 0 0 L 533.5 5.684341886080802e-14 Z" />
+      </vectorPaths>
+    </Vector>
+    <Vector id="66:748" name="main-top" maskType="ALPHA" strokeWeight="2" strokeAlign="CENTER" x="0" y="44" width="631.5" height="356" type="VECTOR">
+      <effects>
+        <effect type="BACKGROUND_BLUR" radius="30" />
+        <effect type="INNER_SHADOW" radius="14.199999809265137" spread="0" visible="false" blendMode="NORMAL" color="#000000">
+          <offset x="0" y="0" />
+        </effect>
+      </effects>
+      <strokes>
+        <stroke opacity="0.46000000834465027" blendMode="NORMAL" color="#000000" />
+      </strokes>
+      <fills>
+        <fill opacity="0.5799999833106995" blendMode="NORMAL" color="#3e3e46" />
+      </fills>
+      <constraints horizontal="MIN" vertical="MIN" />
+      <vectorPaths>
+        <vectorPath windingRule="" data="M 631.5 5.684341886080802e-14 L 631.5 282.5 L 553.9436645507812 356 L 2.84423804224488e-14 356 L 0 0 L 631.5 5.684341886080802e-14 Z" />
+      </vectorPaths>
+    </Vector>
+    <Group id="66:749" name="dif-select" maskType="ALPHA" x="-1" y="669" width="557" height="282" type="GROUP">
+      <children>
+        <Rectangle id="66:750" name="bg" maskType="ALPHA" x="-1" y="675" width="495" height="276" type="RECTANGLE">
+          <fills>
+            <fill opacity="0.07999999821186066" blendMode="NORMAL" color="#000000" />
+          </fills>
+          <constraints horizontal="MIN" vertical="MIN" />
+        </Rectangle>
+        <Rectangle id="66:751" name="Rectangle_15" maskType="ALPHA" x="0" y="875" width="494" height="50" type="RECTANGLE">
+          <fills>
+            <fill opacity="0.05000000074505806" blendMode="NORMAL" color="#000000" />
+          </fills>
+          <constraints horizontal="MIN" vertical="MIN" />
+        </Rectangle>
+        <Rectangle id="66:752" name="Rectangle_16" maskType="ALPHA" x="0" y="826" width="494" height="49" type="RECTANGLE">
+          <fills>
+            <fill opacity="0" blendMode="NORMAL" color="#000000" />
+          </fills>
+          <constraints horizontal="MIN" vertical="MIN" />
+        </Rectangle>
+        <Rectangle id="66:753" name="Rectangle_13" maskType="ALPHA" x="0" y="776" width="494" height="50" type="RECTANGLE">
+          <fills>
+            <fill opacity="0.05000000074505806" blendMode="NORMAL" color="#000000" />
+          </fills>
+          <constraints horizontal="MIN" vertical="MIN" />
+        </Rectangle>
+        <Rectangle id="66:754" name="Rectangle_17" maskType="ALPHA" x="0" y="677" width="494" height="50" type="RECTANGLE">
+          <fills>
+            <fill opacity="0.05000000074505806" blendMode="NORMAL" color="#000000" />
+          </fills>
+          <constraints horizontal="MIN" vertical="MIN" />
+        </Rectangle>
+        <Rectangle id="66:755" name="Rectangle_14" maskType="ALPHA" x="0" y="727" width="494" height="49" type="RECTANGLE">
+          <fills>
+            <fill opacity="0" blendMode="NORMAL" color="#000000" />
+          </fills>
+          <constraints horizontal="MIN" vertical="MIN" />
+        </Rectangle>
+        <Group id="66:756" name="Group_6" visible="false" maskType="ALPHA" x="0.000015735626220703125" y="825.3333740234375" width="497.05303955078125" height="52.77492904663086" type="GROUP">
+          <children>
+            <Text id="66:757" name="CS__Adreal" maskType="ALPHA" strokeAlign="OUTSIDE" x="56.86625289916992" y="839.27392578125" width="207.4564666748047" height="26.885351181030273" fontSize="20" fontWeight="700" hyperlink="" characters="CS’ Adreal" type="TEXT">
+              <fills>
+                <fill blendMode="NORMAL" color="#e9e9e9" />
+              </fills>
+              <constraints horizontal="MIN" vertical="MIN" />
+              <fontName family="Afacad" style="Bold" />
+              <letterSpacing value="0" unit="PERCENT" />
+              <lineHeight value="133.38667154312134" unit="PERCENT" />
+            </Text>
+            <Text id="66:758" name="by_Aksha-" maskType="ALPHA" strokeAlign="OUTSIDE" x="361.2059020996094" y="839.27392578125" width="74.7685775756836" height="26.885351181030273" fontSize="" fontWeight="700" hyperlink="" characters="   by Aksha-   " type="TEXT">
+              <fills>
+                <fill blendMode="NORMAL" color="#e9e9e9" />
+              </fills>
+              <constraints horizontal="MIN" vertical="MIN" />
+              <fontName family="Afacad" style="Bold" />
+              <letterSpacing value="0" unit="PERCENT" />
+              <lineHeight value="133.38667154312134" unit="PERCENT" />
+            </Text>
+            <Text id="66:759" name="_.1" maskType="ALPHA" strokeAlign="OUTSIDE" x="0.000015735626220703125" y="825.3333740234375" width="56.866241455078125" height="49.78768539428711" fontSize="20" fontWeight="700" hyperlink="" characters="8.1" type="TEXT" textAlignHorizontal="CENTER">
+              <fills>
+                <fill blendMode="NORMAL" color="#e9e9e9" />
+              </fills>
+              <constraints horizontal="MIN" vertical="MIN" />
+              <fontName family="Afacad" style="Bold" />
+              <letterSpacing value="0" unit="PERCENT" />
+              <lineHeight value="133.38667154312134" unit="PERCENT" />
+            </Text>
+            <Text id="66:760" name="_K" maskType="ALPHA" strokeAlign="OUTSIDE" x="440.18682861328125" y="828.3206176757812" width="56.866241455078125" height="49.78768539428711" fontSize="20" fontWeight="700" hyperlink="" characters="7K" type="TEXT" textAlignHorizontal="CENTER">
+              <fills>
+                <fill blendMode="NORMAL" color="#e9e9e9" />
+              </fills>
+              <constraints horizontal="MIN" vertical="MIN" />
+              <fontName family="Afacad" style="Bold" />
+              <letterSpacing value="0" unit="PERCENT" />
+              <lineHeight value="133.38667154312134" unit="PERCENT" />
+            </Text>
+          </children>
+        </Group>
+        <Group id="66:761" name="Group_5" maskType="ALPHA" x="13" y="767" width="482.9999694824219" height="67.71127319335938" type="GROUP">
+          <children>
+            <Text id="84:8" name="CS__Normal" maskType="ALPHA" strokeAlign="OUTSIDE" x="40.214447021484375" y="780.9129638671875" width="402" height="27" fontSize="20" fontWeight="700" hyperlink="" characters="CS’ Normal" type="TEXT">
+              <fills>
+                <fill blendMode="NORMAL" color="#e9e9e9" />
+              </fills>
+              <constraints horizontal="MIN" vertical="MIN" />
+              <fontName family="Afacad" style="Bold" />
+              <letterSpacing value="0" unit="PERCENT" />
+              <lineHeight value="133.38667154312134" unit="PERCENT" />
+            </Text>
+            <Text id="84:10" name="_K" maskType="ALPHA" strokeAlign="OUTSIDE" x="439.13372802734375" y="767" width="56.866241455078125" height="49.78768539428711" fontSize="15" fontWeight="700" hyperlink="" characters="7K" type="TEXT" textAlignHorizontal="CENTER">
+              <fills>
+                <fill blendMode="NORMAL" color="#e9e9e9" />
+              </fills>
+              <constraints horizontal="MIN" vertical="MIN" />
+              <fontName family="Afacad" style="Bold" />
+              <letterSpacing value="0" unit="PERCENT" />
+              <lineHeight value="133.38667154312134" unit="PERCENT" />
+            </Text>
+            <Text id="84:11" name="_.1" maskType="ALPHA" strokeAlign="OUTSIDE" x="439.13372802734375" y="784.923583984375" width="56.866241455078125" height="49.78768539428711" fontSize="15" fontWeight="700" hyperlink="" characters="5.1" type="TEXT" textAlignHorizontal="CENTER">
+              <fills>
+                <fill blendMode="NORMAL" color="#e9e9e9" />
+              </fills>
+              <constraints horizontal="MIN" vertical="MIN" />
+              <fontName family="Afacad" style="Bold" />
+              <letterSpacing value="0" unit="PERCENT" />
+              <lineHeight value="133.38667154312134" unit="PERCENT" />
+            </Text>
+            <Text id="84:12" name="by_Aksha-" maskType="ALPHA" strokeAlign="OUTSIDE" x="32.214447021484375" y="805.9129638671875" width="61" height="16" fontSize="12" fontWeight="700" hyperlink="" characters="   by Aksha-   " type="TEXT">
+              <fills>
+                <fill blendMode="NORMAL" color="#e9e9e9" />
+              </fills>
+              <constraints horizontal="MIN" vertical="MIN" />
+              <fontName family="Afacad" style="Bold" />
+              <letterSpacing value="0" unit="PERCENT" />
+              <lineHeight value="133.38667154312134" unit="PERCENT" />
+            </Text>
+            <Vector id="2013:61" name="Ellipse_5" maskType="ALPHA" x="13" y="793" width="15" height="15" type="VECTOR">
+              <fills>
+                <fill blendMode="NORMAL" color="#e9e9e9" />
+              </fills>
+              <constraints horizontal="MIN" vertical="MIN" />
+              <vectorPaths>
+                <vectorPath windingRule="NONZERO" data="M 15 7.5 C 15 11.642135828733444 11.642135828733444 15 7.5 15 C 3.357864171266556 15 0 11.642135828733444 0 7.5 C 0 3.357864171266556 3.357864171266556 0 7.5 0 C 11.642135828733444 0 15 3.357864171266556 15 7.5 Z" />
+              </vectorPaths>
+            </Vector>
+          </children>
+        </Group>
+        <Group id="66:766" name="Group_7" maskType="ALPHA" x="32.214447021484375" y="719" width="461.7855224609375" height="67.71127319335938" type="GROUP">
+          <children>
+            <Text id="84:2" name="CS__Normal" maskType="ALPHA" strokeAlign="OUTSIDE" x="40.214447021484375" y="731.9129638671875" width="402" height="27" fontSize="20" fontWeight="700" hyperlink="" characters="CS’ Normal" type="TEXT">
+              <fills>
+                <fill blendMode="NORMAL" color="#e9e9e9" />
+              </fills>
+              <constraints horizontal="MIN" vertical="MIN" />
+              <fontName family="Afacad" style="Bold" />
+              <letterSpacing value="0" unit="PERCENT" />
+              <lineHeight value="133.38667154312134" unit="PERCENT" />
+            </Text>
+            <Text id="84:4" name="_K" maskType="ALPHA" strokeAlign="OUTSIDE" x="437.13372802734375" y="719" width="56.866241455078125" height="49.78768539428711" fontSize="15" fontWeight="700" hyperlink="" characters="7K" type="TEXT" textAlignHorizontal="CENTER">
+              <fills>
+                <fill blendMode="NORMAL" color="#e9e9e9" />
+              </fills>
+              <constraints horizontal="MIN" vertical="MIN" />
+              <fontName family="Afacad" style="Bold" />
+              <letterSpacing value="0" unit="PERCENT" />
+              <lineHeight value="133.38667154312134" unit="PERCENT" />
+            </Text>
+            <Text id="84:5" name="_.5" maskType="ALPHA" strokeAlign="OUTSIDE" x="437.13372802734375" y="736.923583984375" width="56.866241455078125" height="49.78768539428711" fontSize="15" fontWeight="700" hyperlink="" characters="4.5" type="TEXT" textAlignHorizontal="CENTER">
+              <fills>
+                <fill blendMode="NORMAL" color="#e9e9e9" />
+              </fills>
+              <constraints horizontal="MIN" vertical="MIN" />
+              <fontName family="Afacad" style="Bold" />
+              <letterSpacing value="0" unit="PERCENT" />
+              <lineHeight value="133.38667154312134" unit="PERCENT" />
+            </Text>
+            <Text id="84:6" name="by_Aksha-" maskType="ALPHA" strokeAlign="OUTSIDE" x="32.214447021484375" y="756.9129638671875" width="61" height="16" fontSize="12" fontWeight="700" hyperlink="" characters="   by Aksha-   " type="TEXT">
+              <fills>
+                <fill blendMode="NORMAL" color="#e9e9e9" />
+              </fills>
+              <constraints horizontal="MIN" vertical="MIN" />
+              <fontName family="Afacad" style="Bold" />
+              <letterSpacing value="0" unit="PERCENT" />
+              <lineHeight value="133.38667154312134" unit="PERCENT" />
+            </Text>
+          </children>
+        </Group>
+        <Group id="66:771" name="Group_8" maskType="ALPHA" x="32" y="669" width="463.9999694824219" height="67.71127319335938" type="GROUP">
+          <children>
+            <Text id="66:772" name="CS__Normal" maskType="ALPHA" strokeAlign="OUTSIDE" x="40" y="681" width="397" height="27" fontSize="20" fontWeight="700" hyperlink="" characters="CS’ Normal" type="TEXT">
+              <fills>
+                <fill blendMode="NORMAL" color="#e9e9e9" />
+              </fills>
+              <constraints horizontal="MIN" vertical="MIN" />
+              <fontName family="Afacad" style="Bold" />
+              <letterSpacing value="0" unit="PERCENT" />
+              <lineHeight value="133.38667154312134" unit="PERCENT" />
+            </Text>
+            <Text id="66:774" name="_K" maskType="ALPHA" strokeAlign="OUTSIDE" x="439.13372802734375" y="669" width="56.866241455078125" height="49.78768539428711" fontSize="15" fontWeight="700" hyperlink="" characters="7K" type="TEXT" textAlignHorizontal="CENTER">
+              <fills>
+                <fill blendMode="NORMAL" color="#e9e9e9" />
+              </fills>
+              <constraints horizontal="MIN" vertical="MIN" />
+              <fontName family="Afacad" style="Bold" />
+              <letterSpacing value="0" unit="PERCENT" />
+              <lineHeight value="133.38667154312134" unit="PERCENT" />
+            </Text>
+            <Text id="66:775" name="_.9" maskType="ALPHA" strokeAlign="OUTSIDE" x="439.13372802734375" y="686.923583984375" width="56.866241455078125" height="49.78768539428711" fontSize="15" fontWeight="700" hyperlink="" characters="2.9" type="TEXT" textAlignHorizontal="CENTER">
+              <fills>
+                <fill blendMode="NORMAL" color="#e9e9e9" />
+              </fills>
+              <constraints horizontal="MIN" vertical="MIN" />
+              <fontName family="Afacad" style="Bold" />
+              <letterSpacing value="0" unit="PERCENT" />
+              <lineHeight value="133.38667154312134" unit="PERCENT" />
+            </Text>
+            <Text id="66:776" name="by_Aksha-" maskType="ALPHA" strokeAlign="OUTSIDE" x="32" y="706" width="60" height="16" fontSize="12" fontWeight="700" hyperlink="" characters="   by Aksha-   " type="TEXT">
+              <fills>
+                <fill blendMode="NORMAL" color="#e9e9e9" />
+              </fills>
+              <constraints horizontal="MIN" vertical="MIN" />
+              <fontName family="Afacad" style="Bold" />
+              <letterSpacing value="0" unit="PERCENT" />
+              <lineHeight value="133.38667154312134" unit="PERCENT" />
+            </Text>
+          </children>
+        </Group>
+        <Group id="66:777" name="edit-button" visible="false" maskType="ALPHA" x="447.5584411621094" y="832.3035888671875" width="40.01698303222656" height="37.83864212036133" type="GROUP">
+          <children>
+            <Rectangle id="66:778" name="Rectangle_18" maskType="ALPHA" strokeWeight="2" x="447.5584411621094" y="832.3035888671875" width="40.01698303222656" height="37.83864212036133" cornerRadius="5" type="RECTANGLE">
+              <strokes>
+                <stroke blendMode="NORMAL" color="#e9e9e9" />
+              </strokes>
+              <fills>
+                <fill visible="false" blendMode="NORMAL" color="#ffffff" />
+              </fills>
+              <constraints horizontal="MIN" vertical="MIN" />
+            </Rectangle>
+            <Frame id="66:779" name="Frame" visible="false" maskType="ALPHA" x="454.5179138183594" y="838.8842163085938" width="26.098031997680664" height="24.6773738861084" clipsContent="true" type="FRAME">
+              <children>
+                <Vector id="66:780" name="Vector" maskType="ALPHA" strokeWeight="10" x="-10.41778564453125" y="1.45159912109375" width="22.424129486083984" height="21.774154663085938" type="VECTOR">
+                  <fills>
+                    <fill blendMode="NORMAL" color="#ffffff" />
+                  </fills>
+                  <constraints horizontal="SCALE" vertical="SCALE" />
+                  <vectorPaths>
+                    <vectorPath windingRule="NONZERO" data="M 19.645163592628535 8.468312193911855 L 22.061878195348164 6.049068318350271 C 22.29389658968479 5.82243059168189 22.424129486083984 5.515849795097101 22.424129486083984 5.196284944501643 C 22.424129486083984 4.876720093906184 22.29389658968479 4.5701395857177385 22.061878195348164 4.343501859049358 L 17.901140797930854 0.35174916155658414 C 17.667737765396172 0.12645593864232682 17.352005302440027 1.3429501264159335e-16 17.022901201737454 0 C 16.693797101034882 1.3429501264159335e-16 16.378064638078737 0.12645593864232682 16.144661605544055 0.35174916155658414 L 13.70303064338391 2.6984158621655285 L 19.645163592628535 8.468312193911855 Z M 0 16.028449305041804 L 0 21.774154663085938 L 5.91721777782487 21.774154663085938 L 18.324689207900587 9.726318963060463 L 12.407471430075717 3.9806150469980452 L 0 16.028449305041804 Z" />
+                  </vectorPaths>
+                </Vector>
+              </children>
+              <fills>
+                <fill visible="false" blendMode="NORMAL" color="#ffffff" />
+              </fills>
+              <constraints horizontal="MIN" vertical="MIN" />
+            </Frame>
+            <Frame id="66:781" name="Frame" maskType="ALPHA" x="449.2982482910156" y="833.94873046875" width="36.53724670410156" height="34.54832458496094" clipsContent="true" type="FRAME">
+              <children>
+                <Vector id="66:782" name="Vector" maskType="ALPHA" strokeWeight="2" strokeJoin="ROUND" strokeAlign="CENTER" strokeCap="ROUND" x="6.701751708984375" y="5.05126953125" width="23.71974754333496" height="23.032217025756836" type="VECTOR">
+                  <strokes>
+                    <stroke blendMode="NORMAL" color="#e9e9e9" />
+                  </strokes>
+                  <constraints horizontal="SCALE" vertical="SCALE" />
+                  <vectorPaths>
+                    <vectorPath windingRule="" data="M 18.26242105125968 11.21016680168235 L 6.087473683753226 23.032217025756836 L 0 23.032217025756836 L 0 17.121192266044122 L 12.174947367506451 5.299142394294169 L 16.541188529001726 1.059459859318211 L 16.542709561435373 1.05798221023494 C 17.14384760403388 0.47426849935870596 17.445177685812517 0.1816723349327234 17.79216368596787 0.07231837546874008 C 18.09780503022553 -0.02410612148619949 18.427037072293825 -0.02410612148619949 18.732678416551483 0.07231837546874008 C 19.079664416706837 0.1816723349327234 19.379472014685003 0.4742686314804052 19.98061005728351 1.0565045611516695 L 22.628660761388126 3.627800081476282 C 23.23132065281412 4.21299152951692 23.532652390058043 4.505587297577805 23.645270654658844 4.842515709057592 C 23.744573501718964 5.139297863257396 23.744573501718964 5.458986925330941 23.645270654658844 5.7557690795307455 C 23.532652390058043 6.092697491010532 23.23132065281412 6.385292202097824 22.628660761388126 6.970483650138462 L 18.26242105125968 11.211645155414683 L 12.174947367506451 5.3006207480265015" />
+                  </vectorPaths>
+                </Vector>
+              </children>
+              <strokes>
+                <stroke blendMode="NORMAL" color="#e9e9e9" />
+              </strokes>
+              <fills>
+                <fill visible="false" blendMode="NORMAL" color="#ffffff" />
+              </fills>
+              <constraints horizontal="MIN" vertical="MIN" />
+            </Frame>
+          </children>
+        </Group>
+        <Group id="66:783" name="folder-button" maskType="ALPHA" x="508" y="889" width="48" height="48" type="GROUP">
+          <children>
+            <Rectangle id="66:784" name="Rectangle_18" maskType="ALPHA" strokeWeight="2" x="508" y="889" width="48" height="48" cornerRadius="5" type="RECTANGLE">
+              <strokes>
+                <stroke opacity="0" blendMode="NORMAL" color="#e8e8e8" />
+              </strokes>
+              <fills>
+                <fill opacity="0.15000000596046448" blendMode="NORMAL" color="#000000" />
+              </fills>
+              <constraints horizontal="MIN" vertical="MIN" />
+            </Rectangle>
+            <Frame id="66:785" name="Frame" maskType="ALPHA" x="514" y="895" width="36" height="36" clipsContent="true" type="FRAME">
+              <children>
+                <Vector id="66:786" name="Vector" maskType="ALPHA" strokeWeight="2" strokeJoin="ROUND" strokeAlign="CENTER" strokeCap="ROUND" x="2" y="5" width="32" height="26" type="VECTOR">
+                  <strokes>
+                    <stroke blendMode="NORMAL" color="#c7c7c7" />
+                  </strokes>
+                  <constraints horizontal="SCALE" vertical="SCALE" />
+                  <vectorPaths>
+                    <vectorPath windingRule="" data="M 3.5555555555555554 0 L 10.666666666666666 0 L 16 5.2 L 28.444444444444443 5.2 C 29.387436442905 5.200000000000002 30.291805214352078 5.565236898263295 30.95860120985243 6.215362993876139 C 31.62539720535278 6.8654890894889835 32 7.747249468167624 32 8.666666666666668 L 32 22.533333333333335 C 32 23.45275053183238 31.62539720535278 24.334510083993276 30.95860120985243 24.98463617960612 C 30.291805214352078 25.634762275218964 29.387436442905 26 28.444444444444443 26 L 3.5555555555555554 26 C 2.6125635570949974 26 1.7081939379374185 25.634762275218964 1.0413979424370658 24.98463617960612 C 0.3746019469367132 24.334510083993276 7.894919286223335e-16 23.45275053183238 0 22.533333333333335 L 0 3.466666666666667 C 0 2.5472494681676228 0.3746019469367132 1.665489089488983 1.0413979424370658 1.0153629938761393 C 1.7081939379374185 0.3652368982632954 2.6125635570949974 1.5395092608135505e-15 3.5555555555555554 0 Z" />
+                  </vectorPaths>
+                </Vector>
+              </children>
+              <fills>
+                <fill visible="false" opacity="0" blendMode="NORMAL" color="#ffffff" />
+              </fills>
+              <constraints horizontal="MIN" vertical="MIN" />
+            </Frame>
+          </children>
+        </Group>
+        <Group id="66:787" name="refresh-button" maskType="ALPHA" x="508" y="829" width="48" height="48" type="GROUP">
+          <children>
+            <Rectangle id="66:788" name="Rectangle_18" maskType="ALPHA" strokeWeight="2" x="508" y="829" width="48" height="48" cornerRadius="5" type="RECTANGLE">
+              <strokes>
+                <stroke opacity="0" blendMode="NORMAL" color="#e8e8e8" />
+              </strokes>
+              <fills>
+                <fill opacity="0.15000000596046448" blendMode="NORMAL" color="#000000" />
+              </fills>
+              <constraints horizontal="MIN" vertical="MIN" />
+            </Rectangle>
+            <Frame id="66:789" name="Frame" maskType="ALPHA" x="511" y="832" width="42" height="43" clipsContent="true" type="FRAME">
+              <children>
+                <Vector id="66:790" name="Vector" maskType="ALPHA" strokeWeight="2" strokeJoin="ROUND" strokeAlign="CENTER" strokeCap="ROUND" x="7.000000476837158" y="7.163297176361084" width="27.891498565673828" height="28.666278839111328" type="VECTOR">
+                  <strokes>
+                    <stroke blendMode="NORMAL" color="#c7c7c7" />
+                  </strokes>
+                  <constraints horizontal="SCALE" vertical="SCALE" />
+                  <vectorPaths>
+                    <vectorPath windingRule="" data="M 0 2.83673095703125 L 0 8.961701393127441 L 1.0184996128082275 8.961701393127441 M 1.0184996128082275 8.961701393127441 C 2.1802356243133545 6.0200159549713135 4.262443542480469 3.556079626083374 6.938801288604736 1.956036925315857 C 9.615159034729004 0.35599422454833984 12.734405040740967 -0.28972330689430237 15.807696342468262 0.12007930874824524 C 18.880987644195557 0.5298819243907928 21.73462748527527 1.9720439910888672 23.921398162841797 4.22055196762085 C 26.108168840408325 6.469059944152832 27.504477709531784 9.396832704544067 27.891498565673828 12.545034408569336 M 1.0184996128082275 8.961701393127441 L 6.5 8.33673095703125 M 27.891498565673828 25.33673095703125 L 27.891498565673828 19.711700439453125 L 26.983251571655273 19.711700439453125 M 26.983251571655273 19.711700439453125 C 25.81984257698059 22.65165948867798 23.73705267906189 25.113658905029297 21.060958862304688 26.712265014648438 C 18.384865045547485 28.310871124267578 15.266541004180908 28.95583724975586 12.194173812866211 28.546184539794922 C 9.121806621551514 28.136531829833984 6.268845558166504 26.695388317108154 4.081933975219727 24.448375701904297 C 1.8950223922729492 22.20136308670044 0.49762091040611267 19.275331497192383 0.10849964618682861 16.128366470336914 M 26.983251571655273 19.711700439453125 L 22 20.33673095703125" />
+                  </vectorPaths>
+                </Vector>
+              </children>
+              <fills>
+                <fill visible="false" opacity="0" blendMode="NORMAL" color="#ffffff" />
+              </fills>
+              <constraints horizontal="SCALE" vertical="SCALE" />
+            </Frame>
+          </children>
+        </Group>
+      </children>
+    </Group>
+    <Group id="66:791" name="scores-list" maskType="ALPHA" x="2" y="46" width="615" height="354" type="GROUP">
+      <children>
+        <Rectangle id="66:792" name="bg" maskType="ALPHA" x="2" y="46" width="552" height="354" type="RECTANGLE">
+          <fills>
+            <fill opacity="0.03999999910593033" blendMode="NORMAL" color="#000000" />
+          </fills>
+          <constraints horizontal="MIN" vertical="MIN" />
+        </Rectangle>
+        <Rectangle id="66:793" name="Rectangle_15" maskType="ALPHA" x="2" y="223" width="552" height="33" type="RECTANGLE">
+          <fills>
+            <fill opacity="0.05000000074505806" blendMode="NORMAL" color="#000000" />
+          </fills>
+          <constraints horizontal="MIN" vertical="MIN" />
+        </Rectangle>
+        <Rectangle id="66:794" name="Rectangle_16" maskType="ALPHA" x="2" y="186" width="552" height="37" type="RECTANGLE">
+          <fills>
+            <fill opacity="0" blendMode="NORMAL" color="#000000" />
+          </fills>
+          <constraints horizontal="MIN" vertical="MIN" />
+        </Rectangle>
+        <Rectangle id="66:795" name="Rectangle_13" maskType="ALPHA" x="2" y="153" width="552" height="33" type="RECTANGLE">
+          <fills>
+            <fill opacity="0.05000000074505806" blendMode="NORMAL" color="#000000" />
+          </fills>
+          <constraints horizontal="MIN" vertical="MIN" />
+        </Rectangle>
+        <Rectangle id="66:796" name="Rectangle_14" maskType="ALPHA" x="2" y="116" width="552" height="37" type="RECTANGLE">
+          <fills>
+            <fill opacity="0" blendMode="NORMAL" color="#000000" />
+          </fills>
+          <constraints horizontal="MIN" vertical="MIN" />
+        </Rectangle>
+        <Rectangle id="66:797" name="Rectangle_17" maskType="ALPHA" x="2" y="83" width="552" height="33" type="RECTANGLE">
+          <fills>
+            <fill opacity="0.05000000074505806" blendMode="NORMAL" color="#000000" />
+          </fills>
+          <constraints horizontal="MIN" vertical="MIN" />
+        </Rectangle>
+        <Rectangle id="66:798" name="Rectangle_21" maskType="ALPHA" x="2" y="363" width="552" height="34" type="RECTANGLE">
+          <fills>
+            <fill opacity="0.05000000074505806" blendMode="NORMAL" color="#000000" />
+          </fills>
+          <constraints horizontal="MIN" vertical="MIN" />
+        </Rectangle>
+        <Rectangle id="66:799" name="Rectangle_22" maskType="ALPHA" x="2" y="327" width="552" height="36" type="RECTANGLE">
+          <fills>
+            <fill opacity="0" blendMode="NORMAL" color="#000000" />
+          </fills>
+          <constraints horizontal="MIN" vertical="MIN" />
+        </Rectangle>
+        <Rectangle id="66:800" name="Rectangle_23" maskType="ALPHA" x="2" y="293" width="552" height="34" type="RECTANGLE">
+          <fills>
+            <fill opacity="0.05000000074505806" blendMode="NORMAL" color="#000000" />
+          </fills>
+          <constraints horizontal="MIN" vertical="MIN" />
+        </Rectangle>
+        <Rectangle id="66:801" name="Rectangle_18" maskType="ALPHA" x="2" y="46" width="552" height="37" type="RECTANGLE">
+          <fills>
+            <fill opacity="0.15000000596046448" blendMode="NORMAL" color="#000000" />
+          </fills>
+          <constraints horizontal="MIN" vertical="MIN" />
+        </Rectangle>
+        <Text id="66:802" name="CS__Normal" maskType="ALPHA" strokeAlign="OUTSIDE" x="14" y="83" width="551" height="33" fontSize="15" fontWeight="700" hyperlink="" characters="1.      Daiter         1 day ago    10.2     1.00      8K       83.24%     8488       32            3.34" type="TEXT">
+          <fills>
+            <fill blendMode="NORMAL" color="#e9e9e9" />
+          </fills>
+          <constraints horizontal="MIN" vertical="MIN" />
+          <fontName family="Afacad" style="Bold" />
+          <letterSpacing value="0" unit="PERCENT" />
+          <lineHeight value="133.38667154312134" unit="PERCENT" />
+        </Text>
+        <Text id="66:803" name="CS__Normal" maskType="ALPHA" strokeAlign="OUTSIDE" x="14" y="46" width="551" height="37" fontSize="15" fontWeight="700" hyperlink="" characters="№     Player             Time         rating    rate   mode   accuracy   score     misses    difficulty" type="TEXT">
+          <fills>
+            <fill blendMode="NORMAL" color="#e9e9e9" />
+          </fills>
+          <constraints horizontal="MIN" vertical="MIN" />
+          <fontName family="Afacad" style="Bold" />
+          <letterSpacing value="0" unit="PERCENT" />
+          <lineHeight value="133.38667154312134" unit="PERCENT" />
+        </Text>
+        <Group id="66:804" name="refresh-button" maskType="ALPHA" x="569" y="181" width="48" height="48" type="GROUP">
+          <children>
+            <Rectangle id="66:805" name="Rectangle_18" maskType="ALPHA" strokeWeight="2" x="569" y="181" width="48" height="48" cornerRadius="5" type="RECTANGLE">
+              <strokes>
+                <stroke opacity="0" blendMode="NORMAL" color="#e8e8e8" />
+              </strokes>
+              <fills>
+                <fill opacity="0.15000000596046448" blendMode="NORMAL" color="#000000" />
+              </fills>
+              <constraints horizontal="MIN" vertical="MIN" />
+            </Rectangle>
+            <Vector id="66:806" name="Vector" maskType="ALPHA" strokeWeight="2" strokeJoin="ROUND" strokeAlign="CENTER" strokeCap="ROUND" x="607" y="190" width="28" height="29" rotation="-180" type="VECTOR">
+              <strokes>
+                <stroke blendMode="NORMAL" color="#c7c7c7" />
+              </strokes>
+              <constraints horizontal="SCALE" vertical="SCALE" />
+              <vectorPaths>
+                <vectorPath windingRule="NONZERO" data="M 28 23.676455621773453 L 28 13.83145093174429 C 28 12.88386037003554 27.999999061226845 12.41006638485497 27.88624906539917 11.96821234551994 C 27.785579367540777 11.577627986457912 27.619865845888853 11.207345355158395 27.39625120162964 10.873336037525835 C 27.142501208931208 10.495364507671818 26.792499274015427 10.181275196433267 26.087249279022217 9.558420682719323 L 17.68725061416626 2.1054608378188266 C 16.381750628352165 0.9467030515942891 15.727250657975674 0.3664371772140095 14.992250680923462 0.146397416458892 C 14.344750672578812 -0.04879914763373819 13.655250266194344 -0.04879914763373819 13.006000280380249 0.146397416458892 C 12.271000303328037 0.3664371772140095 11.620000079274178 0.9449287717503967 10.314500093460083 2.1019120665924618 L 1.9127498865127563 9.558420682719323 C 1.2092498689889908 10.183049687815739 0.8575003296136856 10.495365486037754 0.605500340461731 10.871562498066975 C 0.3811498023569584 11.206025380858437 0.21483744122087955 11.576917481250678 0.11375010013580322 11.96821234551994 C 1.043081283569336e-7 12.408291867030174 7.771561172376096e-16 12.88386037003554 7.771561172376096e-16 13.83145093174429 L 7.771561172376096e-16 23.676455621773453 C 7.771561172376096e-16 25.330302849865262 -7.82310962677002e-8 26.157225406218267 0.2659999132156372 26.80847215224429 C 0.4416962768882513 27.239195401666247 0.6993464417755604 27.630607326097486 1.024235725402832 27.960352184601227 C 1.3491250090301037 28.290097043104968 1.7348898723721504 28.551717713059762 2.1595003604888916 28.730273079092555 C 2.803500361740589 28.999999233172648 3.619000032544136 29 5.25 29 C 6.880999967455864 29 7.696499638259411 28.999999233172648 8.340499639511108 28.730273079092555 C 8.76511012762785 28.551717713059762 9.150874990969896 28.290097043104968 9.475764274597168 27.960352184601227 C 9.80065355822444 27.630607326097486 10.058302888646722 27.239195401666247 10.233999252319336 26.80847215224429 C 10.49999924376607 26.157225406218267 10.5 25.330302849865262 10.5 23.676455621773453 L 10.5 21.901941393134152 C 10.5 20.96068048883094 10.868749625980854 20.05797190909163 11.525126934051514 19.392399981933146 C 12.181504242122173 18.72682805477466 13.071742251515388 18.352912935855546 14 18.35291293585555 C 14.928257748484612 18.352912935855546 15.818495757877827 18.72682805477466 16.474873065948486 19.392399981933146 C 17.131250374019146 20.05797190909163 17.500000000000004 20.96068048883094 17.5 21.901941393134152 L 17.5 23.676455621773453 C 17.5 25.330302849865262 17.50000075623393 26.157225406218267 17.766000747680664 26.80847215224429 C 17.941697111353278 27.239195401666247 18.19934644177556 27.630607326097486 18.524235725402832 27.960352184601227 C 18.849125009030104 28.290097043104968 19.23488987237215 28.551717713059762 19.65950036048889 28.730273079092555 C 20.30350036174059 28.999999233172648 21.119000032544136 29 22.75 29 C 24.380999967455864 29 25.196501307189465 28.999999233172648 25.840501308441162 28.730273079092555 C 26.265111796557903 28.551717713059762 26.650874990969896 28.290097043104968 26.975764274597168 27.960352184601227 C 27.30065355822444 27.630607326097486 27.558302888646722 27.239195401666247 27.733999252319336 26.80847215224429 C 27.99999924376607 26.157225406218267 28 25.330302849865262 28 23.676455621773453 Z" />
+              </vectorPaths>
+            </Vector>
+          </children>
+        </Group>
+        <Group id="66:807" name="refresh-button" maskType="ALPHA" x="569" y="119" width="48" height="48" type="GROUP">
+          <children>
+            <Rectangle id="66:808" name="Rectangle_18" maskType="ALPHA" strokeWeight="2" x="569" y="119" width="48" height="48" cornerRadius="5" type="RECTANGLE">
+              <strokes>
+                <stroke opacity="0" blendMode="NORMAL" color="#e8e8e8" />
+              </strokes>
+              <fills>
+                <fill opacity="0.15000000596046448" blendMode="NORMAL" color="#000000" />
+              </fills>
+              <constraints horizontal="MIN" vertical="MIN" />
+            </Rectangle>
+            <Frame id="66:809" name="Frame" maskType="ALPHA" x="576" y="126" width="34" height="34" clipsContent="true" type="FRAME">
+              <children>
+                <Vector id="66:810" name="Vector" maskType="ALPHA" strokeWeight="2" strokeJoin="ROUND" strokeAlign="CENTER" strokeCap="ROUND" x="2.3720929622650146" y="3.953488349914551" width="29.255813598632812" height="26.0930233001709" type="VECTOR">
+                  <strokes>
+                    <stroke blendMode="NORMAL" color="#c7c7c7" />
+                  </strokes>
+                  <constraints horizontal="SCALE" vertical="SCALE" />
+                  <vectorPaths>
+                    <vectorPath windingRule="NONZERO" data="M 29.255813598632812 0 L 0 0 L 11.702325439453125 13.713333411943697 L 11.702325439453125 23.193798489040798 L 17.553488159179686 26.0930233001709 L 17.553488159179686 13.713333411943697 L 29.255813598632812 0 Z" />
+                  </vectorPaths>
+                </Vector>
+              </children>
+              <strokes>
+                <stroke visible="false" blendMode="NORMAL" color="#c7c7c7" />
+              </strokes>
+              <fills>
+                <fill visible="false" blendMode="NORMAL" color="#ffffff" />
+              </fills>
+              <constraints horizontal="MIN" vertical="MIN" />
+            </Frame>
+          </children>
+        </Group>
+        <Group id="66:811" name="refresh-button" maskType="ALPHA" x="569" y="58" width="48" height="48" type="GROUP">
+          <children>
+            <Rectangle id="66:812" name="Rectangle_18" maskType="ALPHA" strokeWeight="2" x="569" y="58" width="48" height="48" cornerRadius="5" type="RECTANGLE">
+              <strokes>
+                <stroke opacity="0" blendMode="NORMAL" color="#e8e8e8" />
+              </strokes>
+              <fills>
+                <fill opacity="0.15000000596046448" blendMode="NORMAL" color="#000000" />
+              </fills>
+              <constraints horizontal="MIN" vertical="MIN" />
+            </Rectangle>
+            <Vector id="66:813" name="Vector" maskType="ALPHA" strokeWeight="2" strokeAlign="CENTER" strokeCap="ROUND" x="574" y="74" width="37" height="15" type="VECTOR">
+              <strokes>
+                <stroke blendMode="NORMAL" color="#c7c7c7" />
+              </strokes>
+              <constraints horizontal="SCALE" vertical="SCALE" />
+              <vectorPaths>
+                <vectorPath windingRule="" data="M 0 15 L 6.648899745941162 6.914999485015869 C 9.283299791812897 3.7087494134902954 10.600500696897507 2.1075010299682617 12.332100677490235 2.1075010299682617 C 14.067400720715524 2.1075010299682617 15.38459953069687 3.7087494134902954 18.018999576568604 6.914999485015869 L 18.981000423431396 8.08500051498413 C 21.615400469303133 11.291250586509705 22.93259927928448 12.892498970031738 24.66789932250977 12.892498970031738 C 26.399499303102495 12.892498970031738 27.716700208187103 11.291250586509705 30.35110025405884 8.08500051498413 L 37 0" />
+              </vectorPaths>
+            </Vector>
+          </children>
+        </Group>
+      </children>
+    </Group>
+    <Group id="66:814" name="image-smaller" visible="false" maskType="ALPHA" x="0" y="44" width="631.5" height="356" type="GROUP">
+      <children>
+        <Vector id="66:815" name="main-top" isMask="true" maskType="ALPHA" strokeAlign="CENTER" x="0" y="44" width="631.5" height="356" type="VECTOR">
+          <effects>
+            <effect type="BACKGROUND_BLUR" radius="30" />
+            <effect type="INNER_SHADOW" radius="14.199999809265137" spread="0" blendMode="NORMAL" color="#000000">
+              <offset x="0" y="0" />
+            </effect>
+          </effects>
+          <strokes>
+            <stroke opacity="0.6899999976158142" blendMode="NORMAL" color="#000000" />
+          </strokes>
+          <fills>
+            <fill opacity="0.25" blendMode="NORMAL" color="#000000" />
+          </fills>
+          <constraints horizontal="MIN" vertical="MIN" />
+          <vectorPaths>
+            <vectorPath windingRule="" data="M 631.5 5.684341886080802e-14 L 631.5 282.5 L 553.9436645507812 356 L 2.84423804224488e-14 356 L 0 0 L 631.5 5.684341886080802e-14 Z" />
+          </vectorPaths>
+        </Vector>
+        <Rectangle id="66:816" name="black-bg" maskType="ALPHA" strokeWeight="0.3305555582046509" x="0" y="43" width="634.6666870117188" height="356.9999694824219" constrainProportions="true" type="RECTANGLE">
+          <fills>
+            <fill type="IMAGE" scaleMode="FILL" imageHash="b47c041c20586a69be21172439fd8748f12b6795" scalingFactor="0.5" blendMode="NORMAL">
+              <imageTransform matrix="1,0,0,0,1,0" />
+              <filters exposure="0" contrast="0" saturation="0" temperature="0" tint="0" highlights="0" shadows="0" />
+            </fill>
+          </fills>
+          <constraints horizontal="MIN" vertical="MIN" />
+        </Rectangle>
+        <Vector id="66:817" name="main-top" maskType="ALPHA" strokeWeight="2" strokeAlign="CENTER" x="0" y="44" width="631.5" height="356" type="VECTOR">
+          <effects>
+            <effect type="INNER_SHADOW" radius="14.199999809265137" spread="0" visible="false" blendMode="NORMAL" color="#000000">
+              <offset x="0" y="0" />
+            </effect>
+          </effects>
+          <strokes>
+            <stroke opacity="0.46000000834465027" blendMode="NORMAL" color="#000000" />
+          </strokes>
+          <constraints horizontal="MIN" vertical="MIN" />
+          <vectorPaths>
+            <vectorPath windingRule="" data="M 631.5 5.684341886080802e-14 L 631.5 282.5 L 553.9436645507812 356 L 2.84423804224488e-14 356 L 0 0 L 631.5 5.684341886080802e-14 Z" />
+          </vectorPaths>
+        </Vector>
+      </children>
+    </Group>
+    <Group id="66:818" name="image-smaller" visible="false" maskType="ALPHA" x="0" y="44" width="631.5" height="356" type="GROUP">
+      <children>
+        <Vector id="66:819" name="main-top" isMask="true" maskType="ALPHA" strokeAlign="CENTER" x="0" y="44" width="631.5" height="356" type="VECTOR">
+          <effects>
+            <effect type="BACKGROUND_BLUR" radius="30" />
+            <effect type="INNER_SHADOW" radius="14.199999809265137" spread="0" blendMode="NORMAL" color="#000000">
+              <offset x="0" y="0" />
+            </effect>
+          </effects>
+          <strokes>
+            <stroke opacity="0.6899999976158142" blendMode="NORMAL" color="#000000" />
+          </strokes>
+          <fills>
+            <fill opacity="0.25" blendMode="NORMAL" color="#000000" />
+          </fills>
+          <constraints horizontal="MIN" vertical="MIN" />
+          <vectorPaths>
+            <vectorPath windingRule="" data="M 631.5 5.684341886080802e-14 L 631.5 282.5 L 553.9436645507812 356 L 2.84423804224488e-14 356 L 0 0 L 631.5 5.684341886080802e-14 Z" />
+          </vectorPaths>
+        </Vector>
+        <Rectangle id="66:820" name="white-bg" maskType="ALPHA" x="632" y="44.00005340576172" width="631.9999389648438" height="356.00006103515625" constrainProportions="true" rotation="179.99999499104388" type="RECTANGLE">
+          <fills>
+            <fill type="IMAGE" scaleMode="FILL" imageHash="0403a4cd8d9fa4c5d707ecd3b558cd5eb1af78c6" scalingFactor="0.5" blendMode="NORMAL">
+              <imageTransform matrix="1,0,0,0,1,0" />
+              <filters exposure="0" contrast="0" saturation="0" temperature="0" tint="0" highlights="0" shadows="0" />
+            </fill>
+            <fill type="GRADIENT_RADIAL" blendMode="NORMAL">
+              <gradientTransform matrix="0.9999998807907104,4.1463575684019816e-8,9.86603776453876e-9,-1.306774919385134e-7,1.0000001192092896,1.5518907048317487e-7" />
+              <gradientStops>
+                <gradientStop position="0" color="#000000" />
+                <gradientStop position="1" color="#000000" />
+              </gradientStops>
+            </fill>
+          </fills>
+          <constraints horizontal="MIN" vertical="MIN" />
+        </Rectangle>
+        <Vector id="66:821" name="main-top" maskType="ALPHA" strokeWeight="2" strokeAlign="CENTER" x="0" y="44" width="631.5" height="356" type="VECTOR">
+          <effects>
+            <effect type="INNER_SHADOW" radius="14.199999809265137" spread="0" visible="false" blendMode="NORMAL" color="#000000">
+              <offset x="0" y="0" />
+            </effect>
+          </effects>
+          <strokes>
+            <stroke opacity="0.46000000834465027" blendMode="NORMAL" color="#000000" />
+          </strokes>
+          <constraints horizontal="MIN" vertical="MIN" />
+          <vectorPaths>
+            <vectorPath windingRule="" data="M 631.5 5.684341886080802e-14 L 631.5 282.5 L 553.9436645507812 356 L 2.84423804224488e-14 356 L 0 0 L 631.5 5.684341886080802e-14 Z" />
+          </vectorPaths>
+        </Vector>
+      </children>
+    </Group>
+    <Text id="72:982" name="chart_info" maskType="ALPHA" strokeAlign="OUTSIDE" x="13" y="419" width="299" height="238" fontSize="24" fontWeight="700" hyperlink="" characters="chart info" type="TEXT">
+      <fills>
+        <fill blendMode="NORMAL" color="#ffffff" />
+      </fills>
+      <constraints horizontal="MIN" vertical="MIN" />
+      <fontName family="Afacad" style="Bold" />
+      <letterSpacing value="0" unit="PERCENT" />
+      <lineHeight value="133.38667154312134" unit="PERCENT" />
+    </Text>
+    <Group id="66:822" name="top-info" visible="false" maskType="ALPHA" x="15" y="61" width="635" height="407" type="GROUP">
+      <children>
+        <Text id="66:823" name="Aksha-" maskType="ALPHA" strokeAlign="OUTSIDE" x="18" y="362" width="632" height="106" fontSize="16" fontWeight="700" hyperlink="" characters="Aksha-" type="TEXT" textAlignVertical="TOP">
+          <fills>
+            <fill blendMode="NORMAL" color="#ffffff" />
+          </fills>
+          <constraints horizontal="MIN" vertical="MIN" />
+          <fontName family="Afacad" style="Bold" />
+          <letterSpacing value="0" unit="PERCENT" />
+          <lineHeight value="133.38667154312134" unit="PERCENT" />
+        </Text>
+        <Text id="66:824" name="SC__Normal" maskType="ALPHA" strokeAlign="OUTSIDE" x="15" y="331" width="632" height="106" fontSize="24" fontWeight="700" hyperlink="" characters="SC’ Normal" type="TEXT" textAlignVertical="TOP">
+          <fills>
+            <fill blendMode="NORMAL" color="#ffffff" />
+          </fills>
+          <constraints horizontal="MIN" vertical="MIN" />
+          <fontName family="Afacad" style="Bold" />
+          <letterSpacing value="0" unit="PERCENT" />
+          <lineHeight value="133.38667154312134" unit="PERCENT" />
+        </Text>
+        <Text id="66:825" name="Deep_Thrills" maskType="ALPHA" strokeAlign="OUTSIDE" x="18" y="111" width="632" height="106" fontSize="16" fontWeight="700" hyperlink="" characters="Deep Thrills" type="TEXT" textAlignVertical="TOP">
+          <fills>
+            <fill blendMode="NORMAL" color="#ffffff" />
+          </fills>
+          <constraints horizontal="MIN" vertical="MIN" />
+          <fontName family="Afacad" style="Bold" />
+          <letterSpacing value="0" unit="PERCENT" />
+          <lineHeight value="133.38667154312134" unit="PERCENT" />
+        </Text>
+        <Text id="66:826" name="First_Date" maskType="ALPHA" strokeAlign="OUTSIDE" x="16" y="61" width="632" height="106" fontSize="40" fontWeight="700" hyperlink="" characters="First Date" type="TEXT" textAlignVertical="TOP">
+          <fills>
+            <fill blendMode="NORMAL" color="#ffffff" />
+          </fills>
+          <constraints horizontal="MIN" vertical="MIN" />
+          <fontName family="Afacad" style="Bold" />
+          <letterSpacing value="0" unit="PERCENT" />
+          <lineHeight value="133.38667154312134" unit="PERCENT" />
+        </Text>
+      </children>
+    </Group>
+    <Group id="2013:52" name="Group_14" maskType="ALPHA" x="1275.5" y="43" width="645.5" height="83.5" type="GROUP">
+      <children>
+        <Vector id="2007:28" name="select-top" maskType="ALPHA" strokeWeight="2" x="1275.5" y="43" width="645.5" height="83.5" type="VECTOR">
+          <effects>
+            <effect type="BACKGROUND_BLUR" radius="30" />
+          </effects>
+          <strokes>
+            <stroke blendMode="NORMAL" color="#14151a" />
+          </strokes>
+          <fills>
+            <fill blendMode="NORMAL" color="#292733" />
+            <fill type="GRADIENT_LINEAR" opacity="0.4399999976158142" blendMode="NORMAL">
+              <gradientTransform matrix="2.5101198275478964e-7,0.8876404762268066,0.112359419465065,-34.284481048583984,5.277911441226024e-8,17.616615295410156" />
+              <gradientStops>
+                <gradientStop position="0" color="#060608" />
+                <gradientStop position="1" color="#292733" />
+              </gradientStops>
+            </fill>
+          </fills>
+          <constraints horizontal="MIN" vertical="MIN" />
+          <vectorPaths>
+            <vectorPath windingRule="NONZERO" data="M 0 0 L 645.5 0 L 645.5 41.75 L 608 83.5 L 41.06996154785156 83.5 L 0 41.5 L 0 0 Z" />
+          </vectorPaths>
+        </Vector>
+        <Vector id="66:866" name="select-top-center" maskType="ALPHA" strokeWeight="2" x="1432.5" y="45" width="331" height="79.5" type="VECTOR">
+          <effects>
+            <effect type="BACKGROUND_BLUR" radius="30" />
+          </effects>
+          <fills>
+            <fill blendMode="NORMAL" color="#25232e" />
+            <fill type="GRADIENT_LINEAR" opacity="0.4399999976158142" blendMode="NORMAL">
+              <gradientTransform matrix="2.5101198275478964e-7,0.8876404762268066,0.112359419465065,-34.284481048583984,5.277911441226024e-8,17.616615295410156" />
+              <gradientStops>
+                <gradientStop position="0" color="#060608" />
+                <gradientStop position="1" color="#24222d" />
+              </gradientStops>
+            </fill>
+          </fills>
+          <constraints horizontal="MIN" vertical="MIN" />
+          <vectorPaths>
+            <vectorPath windingRule="NONZERO" data="M 102.209228515625 0.5 L 228.5 0 L 259.5 31.5 L 284.5 31.5 L 331 79.5 L 0 79.5 L 46.0943603515625 30.5 L 71.14563751220703 30.5 L 102.209228515625 0.5 Z" />
+          </vectorPaths>
+        </Vector>
+      </children>
+    </Group>
+    <Vector id="66:827" name="play" maskType="ALPHA" strokeWeight="2" strokeAlign="CENTER" x="2.9802318834981634e-8" y="952" width="795.5000610351562" height="128" type="VECTOR">
+      <effects>
+        <effect type="BACKGROUND_BLUR" radius="30" />
+      </effects>
+      <strokes>
+        <stroke blendMode="NORMAL" color="#14151a" />
+      </strokes>
+      <fills>
+        <fill blendMode="NORMAL" color="#292733" />
+        <fill type="GRADIENT_LINEAR" opacity="0.4399999976158142" blendMode="NORMAL">
+          <gradientTransform matrix="-4.2629781660252775e-7,-0.8951049447059631,1.000000238418579,34.572792053222656,-4.01095064717083e-7,-16.797260284423828" />
+          <gradientStops>
+            <gradientStop position="0" color="#060608" />
+            <gradientStop position="1" color="#292733" />
+          </gradientStops>
+        </fill>
+      </fills>
+      <constraints horizontal="MIN" vertical="MIN" />
+      <vectorPaths>
+        <vectorPath windingRule="" data="M 676.275390625 0 L 3.552713678800501e-15 0 L 3.552713678800501e-15 128 L 795.5000610351562 128 L 676.275390625 0 Z" />
+      </vectorPaths>
+    </Vector>
+    <Text id="66:833" name="Mods" maskType="ALPHA" strokeAlign="OUTSIDE" x="502" y="954" width="252" height="129" fontSize="40" fontWeight="700" hyperlink="" characters="Mods" type="TEXT" textAlignHorizontal="CENTER">
+      <fills>
+        <fill blendMode="NORMAL" color="#e9e9e9" />
+      </fills>
+      <constraints horizontal="MIN" vertical="MIN" />
+      <fontName family="Afacad" style="Bold" />
+      <letterSpacing value="0" unit="PERCENT" />
+      <lineHeight value="133.38667154312134" unit="PERCENT" />
+    </Text>
+    <Text id="66:834" name="Input" maskType="ALPHA" strokeAlign="OUTSIDE" x="0" y="952" width="240" height="129" fontSize="40" fontWeight="700" hyperlink="" characters="Input" type="TEXT" textAlignHorizontal="CENTER">
+      <fills>
+        <fill blendMode="NORMAL" color="#e9e9e9" />
+      </fills>
+      <constraints horizontal="MIN" vertical="MIN" />
+      <fontName family="Afacad" style="Bold" />
+      <letterSpacing value="0" unit="PERCENT" />
+      <lineHeight value="133.38667154312134" unit="PERCENT" />
+    </Text>
+    <Text id="4002:59" name="Mods" maskType="ALPHA" strokeAlign="OUTSIDE" x="502" y="954" width="252" height="129" fontSize="40" fontWeight="700" hyperlink="" characters="Mods" type="TEXT" textAlignHorizontal="CENTER">
+      <fills>
+        <fill blendMode="NORMAL" color="#e9e9e9" />
+      </fills>
+      <constraints horizontal="MIN" vertical="MIN" />
+      <fontName family="Afacad" style="Bold" />
+      <letterSpacing value="0" unit="PERCENT" />
+      <lineHeight value="133.38667154312134" unit="PERCENT" />
+    </Text>
+    <Group id="66:829" name="play-row" maskType="ALPHA" x="240" y="951" width="291.5" height="130" type="GROUP">
+      <children>
+        <Vector id="2003:2" name="play-center" maskType="ALPHA" strokeWeight="2" strokeAlign="CENTER" x="240" y="952" width="291.5" height="128" type="VECTOR">
+          <effects>
+            <effect type="BACKGROUND_BLUR" radius="30" />
+          </effects>
+          <strokes>
+            <stroke blendMode="NORMAL" color="#14151a" />
+          </strokes>
+          <fills>
+            <fill blendMode="NORMAL" color="#25232e" />
+            <fill type="GRADIENT_LINEAR" opacity="0.4399999976158142" blendMode="NORMAL">
+              <gradientTransform matrix="-4.2629781660252775e-7,-0.8951049447059631,1.000000238418579,34.572792053222656,-4.01095064717083e-7,-16.797260284423828" />
+              <gradientStops>
+                <gradientStop position="0" color="#060608" />
+                <gradientStop position="1" color="#272530" />
+              </gradientStops>
+            </fill>
+          </fills>
+          <constraints horizontal="MIN" vertical="MIN" />
+          <vectorPaths>
+            <vectorPath windingRule="" data="M 291.5 0 L 0 0 L 0 60 L 40.5 100.5 L 40.5 128 L 267 128 L 267 61.5 L 291.5 36 L 291.5 0 Z" />
+          </vectorPaths>
+        </Vector>
+        <Vector id="66:830" name="Vector_12" maskType="ALPHA" strokeWeight="2" strokeAlign="CENTER" x="507" y="952" width="24.5" height="129" type="VECTOR">
+          <effects>
+            <effect type="DROP_SHADOW" radius="12.199999809265137" spread="0" visible="false" blendMode="NORMAL" showShadowBehindNode="false" color="#000000">
+              <offset x="0" y="0" />
+            </effect>
+          </effects>
+          <strokes>
+            <stroke blendMode="NORMAL" color="#14151a" />
+          </strokes>
+          <constraints horizontal="MIN" vertical="MIN" />
+          <vectorPaths>
+            <vectorPath windingRule="" data="M 0 129 L 0 62 L 24.5 35.5 L 24.5 0" />
+          </vectorPaths>
+        </Vector>
+        <Vector id="66:831" name="Vector_13" maskType="ALPHA" strokeWeight="2" strokeAlign="CENTER" x="240" y="951" width="40.5" height="129" type="VECTOR">
+          <effects>
+            <effect type="DROP_SHADOW" radius="12.199999809265137" spread="0" visible="false" blendMode="NORMAL" showShadowBehindNode="false" color="#000000">
+              <offset x="0" y="0" />
+            </effect>
+          </effects>
+          <strokes>
+            <stroke blendMode="NORMAL" color="#14151a" />
+          </strokes>
+          <constraints horizontal="MIN" vertical="MIN" />
+          <vectorPaths>
+            <vectorPath windingRule="" data="M 40.5 129 L 40.5 101 L 0 61.5 L 0 0" />
+          </vectorPaths>
+        </Vector>
+        <Text id="66:832" name="Play" maskType="ALPHA" strokeAlign="OUTSIDE" x="274" y="951" width="231" height="129" fontSize="64" fontWeight="700" hyperlink="" characters="Play" type="TEXT" textAlignHorizontal="CENTER">
+          <fills>
+            <fill blendMode="NORMAL" color="#e9e9e9" />
+          </fills>
+          <constraints horizontal="MIN" vertical="MIN" />
+          <fontName family="Afacad" style="Bold" />
+          <letterSpacing value="0" unit="PERCENT" />
+          <lineHeight value="133.38667154312134" unit="PERCENT" />
+        </Text>
+      </children>
+    </Group>
+    <Group id="4005:176" name="Group_16" visible="false" maskType="ALPHA" x="274" y="951" width="537" height="200" type="GROUP">
+      <children>
+        <Text id="4005:177" name="PINK_PLAY" maskType="ALPHA" strokeAlign="OUTSIDE" x="274" y="951" width="231" height="129" fontSize="64" fontWeight="700" hyperlink="" characters="Play" type="TEXT" textAlignHorizontal="CENTER">
+          <fills>
+            <fill blendMode="NORMAL" color="#00f6ff" />
+          </fills>
+          <constraints horizontal="MIN" vertical="MIN" />
+          <fontName family="Afacad" style="Bold" />
+          <letterSpacing value="0" unit="PERCENT" />
+          <lineHeight value="133.38667154312134" unit="PERCENT" />
+        </Text>
+        <Text id="4005:172" name="CYAN_PLAY" maskType="ALPHA" strokeAlign="OUTSIDE" x="274" y="951" width="231" height="129" fontSize="64" fontWeight="700" hyperlink="" characters="Play" type="TEXT" textAlignHorizontal="CENTER">
+          <fills>
+            <fill blendMode="NORMAL" color="#ff00a6" />
+          </fills>
+          <constraints horizontal="MIN" vertical="MIN" />
+          <fontName family="Afacad" style="Bold" />
+          <letterSpacing value="0" unit="PERCENT" />
+          <lineHeight value="133.38667154312134" unit="PERCENT" />
+        </Text>
+        <Vector id="4005:174" name="CURSOR" maskType="ALPHA" x="796" y="1136" width="15" height="15" type="VECTOR">
+          <fills>
+            <fill blendMode="NORMAL" color="#e9e9e9" />
+          </fills>
+          <constraints horizontal="MIN" vertical="MIN" />
+          <vectorPaths>
+            <vectorPath windingRule="NONZERO" data="M 15 7.5 C 15 11.642135828733444 11.642135828733444 15 7.5 15 C 3.357864171266556 15 0 11.642135828733444 0 7.5 C 0 3.357864171266556 3.357864171266556 0 7.5 0 C 11.642135828733444 0 15 3.357864171266556 15 7.5 Z" />
+          </vectorPaths>
+        </Vector>
+      </children>
+    </Group>
+    <Group id="4001:2" name="play-row" visible="false" maskType="ALPHA" x="240" y="951" width="291.5" height="130" type="GROUP">
+      <children>
+        <Vector id="4001:3" name="play-center" visible="false" maskType="ALPHA" strokeWeight="2" strokeAlign="CENTER" x="240" y="952" width="291.5" height="128" type="VECTOR">
+          <effects>
+            <effect type="BACKGROUND_BLUR" radius="30" />
+          </effects>
+          <strokes>
+            <stroke blendMode="NORMAL" color="#14151a" />
+          </strokes>
+          <fills>
+            <fill blendMode="NORMAL" color="#ff00a6" />
+            <fill type="GRADIENT_LINEAR" visible="false" opacity="0.4399999976158142" blendMode="NORMAL">
+              <gradientTransform matrix="-4.2629781660252775e-7,-0.8951049447059631,1.000000238418579,34.572792053222656,-4.01095064717083e-7,-16.797260284423828" />
+              <gradientStops>
+                <gradientStop position="0" color="#060608" />
+                <gradientStop position="1" color="#272530" />
+              </gradientStops>
+            </fill>
+          </fills>
+          <constraints horizontal="MIN" vertical="MIN" />
+          <vectorPaths>
+            <vectorPath windingRule="" data="M 291.5 0 L 0 0 L 0 60 L 40.5 100.5 L 40.5 128 L 267 128 L 267 61.5 L 291.5 36 L 291.5 0 Z" />
+          </vectorPaths>
+        </Vector>
+        <Vector id="4001:4" name="Vector_12" maskType="ALPHA" strokeWeight="2" strokeAlign="CENTER" x="507" y="952" width="24.5" height="129" type="VECTOR">
+          <effects>
+            <effect type="DROP_SHADOW" radius="12.199999809265137" spread="0" visible="false" blendMode="NORMAL" showShadowBehindNode="false" color="#000000">
+              <offset x="0" y="0" />
+            </effect>
+          </effects>
+          <strokes>
+            <stroke blendMode="NORMAL" color="#14151a" />
+          </strokes>
+          <constraints horizontal="MIN" vertical="MIN" />
+          <vectorPaths>
+            <vectorPath windingRule="" data="M 0 129 L 0 62 L 24.5 35.5 L 24.5 0" />
+          </vectorPaths>
+        </Vector>
+        <Vector id="4001:5" name="Vector_13" maskType="ALPHA" strokeWeight="2" strokeAlign="CENTER" x="240" y="951" width="40.5" height="129" type="VECTOR">
+          <effects>
+            <effect type="DROP_SHADOW" radius="12.199999809265137" spread="0" visible="false" blendMode="NORMAL" showShadowBehindNode="false" color="#000000">
+              <offset x="0" y="0" />
+            </effect>
+          </effects>
+          <strokes>
+            <stroke blendMode="NORMAL" color="#14151a" />
+          </strokes>
+          <constraints horizontal="MIN" vertical="MIN" />
+          <vectorPaths>
+            <vectorPath windingRule="" data="M 40.5 129 L 40.5 101 L 0 61.5 L 0 0" />
+          </vectorPaths>
+        </Vector>
+        <Text id="4001:6" name="Play" maskType="ALPHA" strokeAlign="OUTSIDE" x="274" y="951" width="231" height="129" fontSize="64" fontWeight="700" hyperlink="" characters="Play" type="TEXT" textAlignHorizontal="CENTER">
+          <fills>
+            <fill blendMode="NORMAL" color="#00f6ff" />
+          </fills>
+          <constraints horizontal="MIN" vertical="MIN" />
+          <fontName family="Afacad" style="Bold" />
+          <letterSpacing value="0" unit="PERCENT" />
+          <lineHeight value="133.38667154312134" unit="PERCENT" />
+        </Text>
+      </children>
+    </Group>
+    <Group id="4001:10" name="play-row" visible="false" maskType="ALPHA" x="240" y="951" width="291.5" height="130" type="GROUP">
+      <children>
+        <Vector id="4001:11" name="play-center" visible="false" maskType="ALPHA" strokeWeight="2" strokeAlign="CENTER" x="240" y="952" width="291.5" height="128" type="VECTOR">
+          <effects>
+            <effect type="BACKGROUND_BLUR" radius="30" />
+          </effects>
+          <strokes>
+            <stroke blendMode="NORMAL" color="#14151a" />
+          </strokes>
+          <fills>
+            <fill blendMode="NORMAL" color="#25232e" />
+            <fill type="GRADIENT_LINEAR" opacity="0.4399999976158142" blendMode="NORMAL">
+              <gradientTransform matrix="-4.2629781660252775e-7,-0.8951049447059631,1.000000238418579,34.572792053222656,-4.01095064717083e-7,-16.797260284423828" />
+              <gradientStops>
+                <gradientStop position="0" color="#060608" />
+                <gradientStop position="1" color="#272530" />
+              </gradientStops>
+            </fill>
+          </fills>
+          <constraints horizontal="MIN" vertical="MIN" />
+          <vectorPaths>
+            <vectorPath windingRule="" data="M 291.5 0 L 0 0 L 0 60 L 40.5 100.5 L 40.5 128 L 267 128 L 267 61.5 L 291.5 36 L 291.5 0 Z" />
+          </vectorPaths>
+        </Vector>
+        <Vector id="4001:12" name="Vector_12" maskType="ALPHA" strokeWeight="2" strokeAlign="CENTER" x="507" y="952" width="24.5" height="129" type="VECTOR">
+          <effects>
+            <effect type="DROP_SHADOW" radius="12.199999809265137" spread="0" visible="false" blendMode="NORMAL" showShadowBehindNode="false" color="#000000">
+              <offset x="0" y="0" />
+            </effect>
+          </effects>
+          <strokes>
+            <stroke blendMode="NORMAL" color="#14151a" />
+          </strokes>
+          <constraints horizontal="MIN" vertical="MIN" />
+          <vectorPaths>
+            <vectorPath windingRule="" data="M 0 129 L 0 62 L 24.5 35.5 L 24.5 0" />
+          </vectorPaths>
+        </Vector>
+        <Vector id="4001:13" name="Vector_13" maskType="ALPHA" strokeWeight="2" strokeAlign="CENTER" x="240" y="951" width="40.5" height="129" type="VECTOR">
+          <effects>
+            <effect type="DROP_SHADOW" radius="12.199999809265137" spread="0" visible="false" blendMode="NORMAL" showShadowBehindNode="false" color="#000000">
+              <offset x="0" y="0" />
+            </effect>
+          </effects>
+          <strokes>
+            <stroke blendMode="NORMAL" color="#14151a" />
+          </strokes>
+          <constraints horizontal="MIN" vertical="MIN" />
+          <vectorPaths>
+            <vectorPath windingRule="" data="M 40.5 129 L 40.5 101 L 0 61.5 L 0 0" />
+          </vectorPaths>
+        </Vector>
+        <Text id="4001:14" name="Play" maskType="ALPHA" strokeAlign="OUTSIDE" x="274" y="951" width="231" height="129" fontSize="64" fontWeight="700" hyperlink="" characters="Play" type="TEXT" textAlignHorizontal="CENTER">
+          <fills>
+            <fill blendMode="NORMAL" color="#ff00a6" />
+          </fills>
+          <constraints horizontal="MIN" vertical="MIN" />
+          <fontName family="Afacad" style="Bold" />
+          <letterSpacing value="0" unit="PERCENT" />
+          <lineHeight value="133.38667154312134" unit="PERCENT" />
+        </Text>
+      </children>
+    </Group>
+    <Rectangle id="66:828" name="header" maskType="ALPHA" strokeWeight="2" strokeAlign="CENTER" x="0" y="0" width="1920" height="44" type="RECTANGLE">
+      <effects>
+        <effect type="BACKGROUND_BLUR" radius="30" />
+      </effects>
+      <strokes>
+        <stroke blendMode="NORMAL" color="#0e0e12" />
+      </strokes>
+      <fills>
+        <fill blendMode="NORMAL" color="#25232e" />
+        <fill opacity="0.15000000596046448" blendMode="NORMAL" color="#000000" />
+        <fill type="GRADIENT_LINEAR" opacity="0.4399999976158142" blendMode="NORMAL">
+          <gradientTransform matrix="0.0000010012863640440628,1,-5.006431820220314e-7,-38.62428665161133,7.566522697288747e-8,19.812143325805664" />
+          <gradientStops>
+            <gradientStop position="0" color="#060608" />
+            <gradientStop position="0.2211538404226303" color="#24222d" />
+            <gradientStop position="1" color="#060608" />
+          </gradientStops>
+        </fill>
+      </fills>
+      <constraints horizontal="MIN" vertical="MIN" />
+    </Rectangle>
+    <Group id="66:835" name="top-row" maskType="ALPHA" x="28" y="-1" width="797.5" height="45" type="GROUP">
+      <children>
+        <Vector id="66:836" name="Vector_5" maskType="ALPHA" strokeWeight="2" strokeAlign="CENTER" x="807" y="0" width="18.5" height="44" type="VECTOR">
+          <strokes>
+            <stroke blendMode="NORMAL" color="#0e0e12" />
+          </strokes>
+          <constraints horizontal="MIN" vertical="MIN" />
+          <vectorPaths>
+            <vectorPath windingRule="" data="M 18.5 0 L 18.5 25.5 L 0 44" />
+          </vectorPaths>
+        </Vector>
+        <Vector id="66:837" name="Vector_9" maskType="ALPHA" strokeWeight="2" strokeAlign="CENTER" x="435" y="0" width="18" height="44" type="VECTOR">
+          <strokes>
+            <stroke blendMode="NORMAL" color="#0e0e12" />
+          </strokes>
+          <constraints horizontal="MIN" vertical="MIN" />
+          <vectorPaths>
+            <vectorPath windingRule="" data="M 0 0 L 0 26 L 18 44" />
+          </vectorPaths>
+        </Vector>
+        <Vector id="66:838" name="Vector_10" maskType="ALPHA" strokeWeight="2" strokeAlign="CENTER" x="318" y="-1" width="18" height="44" type="VECTOR">
+          <strokes>
+            <stroke blendMode="NORMAL" color="#0e0e12" />
+          </strokes>
+          <constraints horizontal="MIN" vertical="MIN" />
+          <vectorPaths>
+            <vectorPath windingRule="" data="M 0 0 L 0 26 L 18 44" />
+          </vectorPaths>
+        </Vector>
+        <Vector id="66:839" name="Vector_11" maskType="ALPHA" strokeWeight="2" strokeAlign="CENTER" x="201" y="0" width="18" height="44" type="VECTOR">
+          <strokes>
+            <stroke blendMode="NORMAL" color="#0e0e12" />
+          </strokes>
+          <constraints horizontal="MIN" vertical="MIN" />
+          <vectorPaths>
+            <vectorPath windingRule="" data="M 0 0 L 0 26 L 18 44" />
+          </vectorPaths>
+        </Vector>
+        <Vector id="66:840" name="Vector_12" maskType="ALPHA" strokeWeight="2" strokeAlign="CENTER" x="84" y="0" width="18" height="44" type="VECTOR">
+          <strokes>
+            <stroke blendMode="NORMAL" color="#0e0e12" />
+          </strokes>
+          <constraints horizontal="MIN" vertical="MIN" />
+          <vectorPaths>
+            <vectorPath windingRule="" data="M 0 0 L 0 26 L 18 44" />
+          </vectorPaths>
+        </Vector>
+        <Group id="66:841" name="Group_3" visible="false" maskType="ALPHA" x="198.37887573242188" y="16.938568115234375" width="27.299415588378906" height="27.280065536499023" rotation="29.773446748768333" type="GROUP">
+          <children>
+            <Ellipse id="66:842" name="Ellipse_2" maskType="ALPHA" x="203.4634552001953" y="18.315465927124023" width="19.84004783630371" height="19.84004783630371" rotation="29.773446748768333" type="ELLIPSE">
+              <fills>
+                <fill blendMode="NORMAL" color="#ffffff" />
+              </fills>
+              <constraints horizontal="MIN" vertical="MIN" />
+              <arcData startingAngle="0" endingAngle="6.2831854820251465" innerRadius="0" />
+            </Ellipse>
+            <Vector id="66:843" name="Vector_15" maskType="ALPHA" strokeAlign="CENTER" x="206.99781799316406" y="12.007759094238281" width="7.4400177001953125" height="8.680020332336426" rotation="29.773446748768333" type="VECTOR">
+              <fills>
+                <fill blendMode="NORMAL" color="#ffffff" />
+              </fills>
+              <constraints horizontal="MIN" vertical="MIN" />
+              <vectorPaths>
+                <vectorPath windingRule="" data="M 0 8.680020332336426 L 1.240002950032552 0 L 6.20001475016276 0 L 7.4400177001953125 8.680020332336426 L 0 8.680020332336426 Z" />
+              </vectorPaths>
+            </Vector>
+            <Vector id="66:844" name="Vector_16" maskType="ALPHA" strokeAlign="CENTER" x="227.00222778320312" y="31.99223518371582" width="7.4400177001953125" height="8.680020332336426" rotation="-150.22655939350213" type="VECTOR">
+              <fills>
+                <fill blendMode="NORMAL" color="#ffffff" />
+              </fills>
+              <constraints horizontal="MIN" vertical="MIN" />
+              <vectorPaths>
+                <vectorPath windingRule="" data="M 0 8.680020332336426 L 1.240002950032552 0 L 6.20001475016276 0 L 7.4400177001953125 8.680020332336426 L 0 8.680020332336426 Z" />
+              </vectorPaths>
+            </Vector>
+            <Vector id="66:845" name="Vector_17" maskType="ALPHA" strokeAlign="CENTER" x="220.56643676757812" y="8.319008827209473" width="7.4400177001953125" height="8.680020332336426" rotation="-29.866107858958085" type="VECTOR">
+              <fills>
+                <fill blendMode="NORMAL" color="#ffffff" />
+              </fills>
+              <constraints horizontal="MIN" vertical="MIN" />
+              <vectorPaths>
+                <vectorPath windingRule="" data="M 0 8.680020332336426 L 1.240002950032552 0 L 6.20001475016276 0 L 7.4400177001953125 8.680020332336426 L 0 8.680020332336426 Z" />
+              </vectorPaths>
+            </Vector>
+            <Vector id="66:846" name="Vector_18" maskType="ALPHA" strokeAlign="CENTER" x="213.43359375" y="35.68098449707031" width="7.4400177001953125" height="8.680020332336426" rotation="150.1338859980995" type="VECTOR">
+              <fills>
+                <fill blendMode="NORMAL" color="#ffffff" />
+              </fills>
+              <constraints horizontal="MIN" vertical="MIN" />
+              <vectorPaths>
+                <vectorPath windingRule="" data="M 0 8.680020332336426 L 1.240002950032552 0 L 6.20001475016276 0 L 7.4400177001953125 8.680020332336426 L 0 8.680020332336426 Z" />
+              </vectorPaths>
+            </Vector>
+            <Vector id="66:847" name="Vector_19" maskType="ALPHA" strokeAlign="CENTER" x="230.78433227539062" y="18.856430053710938" width="7.4400177001953125" height="8.680020332336426" rotation="-92.4082947873899" type="VECTOR">
+              <fills>
+                <fill blendMode="NORMAL" color="#ffffff" />
+              </fills>
+              <constraints horizontal="MIN" vertical="MIN" />
+              <vectorPaths>
+                <vectorPath windingRule="" data="M 0 8.680020332336426 L 1.240002950032552 0 L 6.20001475016276 0 L 7.4400177001953125 8.680020332336426 L 0 8.680020332336426 Z" />
+              </vectorPaths>
+            </Vector>
+            <Vector id="66:848" name="Vector_20" maskType="ALPHA" strokeAlign="CENTER" x="203.21571350097656" y="25.143564224243164" width="7.440018177032471" height="8.680021286010742" rotation="87.59170052100265" type="VECTOR">
+              <fills>
+                <fill blendMode="NORMAL" color="#ffffff" />
+              </fills>
+              <constraints horizontal="MIN" vertical="MIN" />
+              <vectorPaths>
+                <vectorPath windingRule="" data="M 0 8.680021286010742 L 1.2400030295054119 0 L 6.2000151475270595 0 L 7.440018177032471 8.680021286010742 L 0 8.680021286010742 Z" />
+              </vectorPaths>
+            </Vector>
+            <Ellipse id="66:849" name="Ellipse_1" maskType="ALPHA" x="208.5396728515625" y="19.697168350219727" width="12.400029182434082" height="12.400029182434082" rotation="29.773446748768333" type="ELLIPSE">
+              <fills>
+                <fill blendMode="NORMAL" color="#818181" />
+              </fills>
+              <constraints horizontal="MIN" vertical="MIN" />
+              <arcData startingAngle="0" endingAngle="6.2831854820251465" innerRadius="0" />
+            </Ellipse>
+          </children>
+        </Group>
+        <Vector id="66:850" name="Vector_14" visible="false" maskType="ALPHA" strokeWeight="4" strokeAlign="CENTER" x="49" y="11" width="30.5" height="21" type="VECTOR">
+          <strokes>
+            <stroke blendMode="NORMAL" color="#ffffff" />
+          </strokes>
+          <constraints horizontal="MIN" vertical="MIN" />
+          <vectorPaths>
+            <vectorPath windingRule="" data="M 0 10.5 L 30.5 10.5 M 0 10.5 L 10.5 0 M 0 10.5 L 10.5 21" />
+          </vectorPaths>
+        </Vector>
+        <Frame id="66:851" name="Frame" maskType="ALPHA" x="52" y="10" width="24" height="24" rotation="-180" clipsContent="true" type="FRAME">
+          <children>
+            <Vector id="66:852" name="Vector" maskType="ALPHA" strokeWeight="13.333333015441895" x="0.8000003099441528" y="3.2003421783447266" width="22.399658203125" height="17.579998016357422" type="VECTOR">
+              <fills>
+                <fill blendMode="NORMAL" color="#e9e9e9" />
+              </fills>
+              <constraints horizontal="SCALE" vertical="SCALE" />
+              <vectorPaths>
+                <vectorPath windingRule="NONZERO" data="M 12.468800354003907 0.4684581959894004 C 12.768844652175904 0.1685044838600247 13.17573733329773 7.105427665963443e-16 13.600000000000001 0 C 14.024262666702272 0 14.431155347824097 0.1685044838600247 14.731199645996094 0.4684581959894004 L 21.931199645996095 7.668458889925862 C 22.231153345108034 7.968503201119228 22.399658203125 8.375395899899447 22.399658203125 8.799658585013935 C 22.399658203125 9.223921270128423 22.231153345108034 9.63081396890864 21.931199645996095 9.930858280102006 L 14.731199645996094 17.130858592568725 C 14.429436182975769 17.422311513733174 14.025273513793945 17.58358245209514 13.605758666992188 17.57993698119852 C 13.18624382019043 17.576291510301903 12.784943389892579 17.408021537946695 12.488290405273439 17.111368540453363 C 12.191637420654299 16.81471554296003 12.023367455601692 16.413415095246478 12.019721984863281 15.99390023023855 C 12.01607651412487 15.574385365230622 12.177347445487976 15.170222678508884 12.468800354003907 14.86845920239258 L 16.8 10.399658654450983 L 1.6 10.399658654450983 C 1.1756536006927492 10.399658654450983 0.76868736743927 10.231087389544053 0.4686291694641114 9.931029178546922 C 0.16857097148895267 9.630970967549791 1.7763568394002506e-16 9.224005002737037 0 8.799658585013935 C 0 8.375312167290833 0.16857097148895267 7.9683462024780765 0.4686291694641114 7.668287991480946 C 0.76868736743927 7.368229780483815 1.1756536006927492 7.199658515576884 1.6 7.1996585155768855 L 16.8 7.1996585155768855 L 12.468800354003907 2.7308583491050302 C 12.168846654891968 2.430814037911664 12.000341796875 2.0239209576617028 12.000341796875 1.5996582725472153 C 12.000341796875 1.1753955874327275 12.168846654891968 0.7685025071827666 12.468800354003907 0.4684581959894004 Z" />
+              </vectorPaths>
+            </Vector>
+          </children>
+          <constraints horizontal="MIN" vertical="MIN" />
+        </Frame>
+        <Vector id="66:854" name="Vector" maskType="ALPHA" x="137" y="12" width="20" height="21" type="VECTOR">
+          <fills>
+            <fill blendMode="NORMAL" color="#e9e9e9" />
+          </fills>
+          <constraints horizontal="SCALE" vertical="SCALE" />
+          <vectorPaths>
+            <vectorPath windingRule="NONZERO" data="M 17.94889677605435 11.697796179533341 C 17.574528361998862 11.423213663084155 17.350852454813484 10.98220201296594 17.350852454813484 10.517564300628118 C 17.350852454813484 10.052926588290296 17.574528643663474 9.611914656532424 17.948372003589284 9.337857147693766 L 19.677921901038328 8.069946963765965 C 19.953578855575408 7.867291413111502 20.067518426185845 7.510806661094355 19.959880944750672 7.185822756875155 C 19.514629315602566 5.8480860913475246 18.810520899263718 4.627953008176169 17.866461431226767 3.558498767771373 C 17.63911006689347 3.3022917523904263 17.272619233010992 3.221439485103581 16.95915788039995 3.358993247133439 L 15.011704228624536 4.215291456093588 C 14.587455015032129 4.402196575025753 14.093373351823885 4.375421077362223 13.690651639212922 4.142839717388047 C 13.288455012027704 3.910783365024401 13.01857427883845 3.497071938540589 12.967643371042174 3.0355843031592378 L 12.73346566145366 0.8977257123975237 C 12.696186337069417 0.5575163997132032 12.443107003509166 0.28030872786151373 12.108118149916677 0.2115318468465848 C 10.7445350806387 -0.06725079307342643 9.31164386476894 -0.07197576768830555 7.923907992565056 0.20628183332788136 C 7.586818891157784 0.2740086834751041 7.3332149416128045 0.5512163083868511 7.295935617228561 0.8930006751960546 L 7.0638590004486606 3.0172088803242354 C 7.012928092652384 3.4792215233161157 6.743045951140078 3.8929326681602734 6.339799184399436 4.12498902052392 C 5.93760255721422 4.357045372887566 5.445095743434336 4.384871386464874 5.019271367452891 4.19744125992218 L 3.061319512322138 3.336417513067842 C 2.750483461655557 3.198863751037984 2.3829411424867404 3.2786658622839426 2.1555897781534417 3.5343478544077125 C 1.2083799227462824 4.599602033928274 0.5011226329845032 5.818160313321107 0.05114545407715157 7.154846901041089 C -0.05806721321910853 7.479305766356464 0.05534584408248944 7.837890454935844 0.3320529381749936 8.041071013200837 L 2.050577074453596 9.301105300638321 C 2.4254705426387644 9.576212824698036 2.6491467940808873 10.01722519456204 2.6491467940808873 10.481862906899861 C 2.6491467940808873 10.946500619237684 2.4254709807837136 11.387512550995554 2.0516276208579027 11.661570059834212 L 0.3220767532307557 12.929480243762013 C 0.04641979869367713 13.132135794416476 -0.06751825796948108 13.488620546433625 0.040119223465691495 13.813604450652823 C 0.48537085261379753 15.151341116180454 1.1894773481564864 16.37147369865909 2.1335368161934367 17.440927939063886 C 2.3608881805267354 17.69765996205536 2.728431125616908 17.7790377532921 3.0408423699685936 17.64043396039454 L 4.988292766952955 16.784136252127112 C 5.412541980545363 16.59723113319495 5.906099591098097 16.624006130165753 6.309346357838739 16.85658749013993 C 6.711542985023955 17.088643842503576 6.981423718213209 17.50235376690923 7.032354626009486 17.96384140229058 L 7.266532335598001 20.101701182197505 C 7.3038116599822445 20.441910494881824 7.556890993542495 20.719117666040795 7.891879847134983 20.787894547055725 C 8.5818098616163 20.928598401688703 9.290641762173921 21 9.99999899852583 21 C 10.692029229525863 21 11.390359797121363 20.930172845594328 12.075564230547366 20.79261908356447 C 12.412653331954637 20.724892233417247 12.666258282973788 20.447685359544582 12.703537607358031 20.10590099273538 L 12.936138996602999 17.981692099154706 C 12.987069904399275 17.519679456162827 13.256952045911582 17.10596781062595 13.660198812652224 16.873911458262302 C 14.062395439837442 16.642380113509187 14.555427307747005 16.615079123189055 14.98072662959877 16.801459218864043 L 16.938679736572233 17.662484467796542 C 17.250565895498173 17.800563253083578 17.617057605670546 17.720759639759457 17.844408970003844 17.46455262437851 C 18.791618825411003 16.399298444857948 19.498877535231863 15.180742168235998 19.948854714139213 13.844055580516017 C 20.05806738143547 13.519596715200642 19.94465230944951 13.161011025235819 19.667945215357005 12.957830466970828 L 17.94889677605435 11.697796179533341 Z M 9.99999899852583 14.174814192931498 C 7.970113632266697 14.174814192931498 6.3245727711190876 12.529419124678498 6.3245727711190876 10.49971360376399 C 6.3245727711190876 8.470008082849482 7.970113632266697 6.824613014596481 9.99999899852583 6.824613014596481 C 12.029884364784964 6.824613014596481 13.675425225932573 8.470008082849482 13.675425225932573 10.49971360376399 C 13.675425225932573 12.529419124678498 12.029884364784964 14.174814192931498 9.99999899852583 14.174814192931498 Z" />
+          </vectorPaths>
+        </Vector>
+        <Frame id="66:855" name="Frame" maskType="ALPHA" x="253" y="10" width="24" height="24" clipsContent="true" type="FRAME">
+          <children>
+            <Vector id="66:856" name="Vector" maskType="ALPHA" strokeWeight="0.3472222089767456" x="4.5776371848660347e-7" y="1.3333336114883423" width="24" height="21.333332061767578" type="VECTOR">
+              <fills>
+                <fill blendMode="NORMAL" color="#e9e9e9" />
+              </fills>
+              <constraints horizontal="SCALE" vertical="SCALE" />
+              <vectorPaths>
+                <vectorPath windingRule="NONZERO" data="M 20.020833333333332 0.42916664903362545 L 10.795833587646484 6.583332940936089 C 9.583333571751913 7.39166621019443 8.8125 8.704166211436188 8.6875 10.137499522914482 C 11.28333330154419 10.670832832405956 13.329166173934935 12.71666609942912 13.866666158040363 15.316666008035327 C 15.304166158040363 15.191666015485907 16.612500270207722 14.420832489679256 17.420833587646484 13.208332546055317 L 23.570833841959633 3.979166429489851 C 23.850000500679013 3.558333105345568 24 3.066666539510088 24 2.5583332444230678 C 24 1.1458332650363445 22.85416571299235 0 21.441665649414062 0 C 20.937498966852825 0 20.441666682561237 0.15000000695387428 20.020833333333332 0.42916664903362545 Z M 12 16.66666567325592 C 12 14.087499096741283 9.912500063578287 11.999999284744263 7.333333333333333 11.999999284744263 C 4.754166603088379 11.999999284744263 2.6666666666666665 14.087499096741283 2.6666666666666665 16.66666567325592 C 2.6666666666666665 16.82916566754381 2.6749999361733594 16.991665910184366 2.691666603088379 17.149999232093478 C 2.7666666011015573 17.879165855298425 2.2666666507720947 18.66666555404663 1.5333333015441895 18.66666555404663 L 1.3333333333333333 18.66666555404663 C 0.5958333015441895 18.66666555404663 0 19.262498820076388 0 19.999998807907104 C 0 20.73749879573782 0.5958333015441895 21.333332061767578 1.3333333333333333 21.333332061767578 L 7.333333333333333 21.333332061767578 C 9.912500063578287 21.333332061767578 12 19.245832249770558 12 16.66666567325592 Z" />
+              </vectorPaths>
+            </Vector>
+          </children>
+          <fills>
+            <fill visible="false" blendMode="NORMAL" color="#ffffff" />
+          </fills>
+          <constraints horizontal="MIN" vertical="MIN" />
+        </Frame>
+        <Frame id="66:857" name="Frame" maskType="ALPHA" x="373" y="10" width="24" height="24" clipsContent="true" type="FRAME">
+          <children>
+            <Group id="66:858" name="Mask_group" maskType="ALPHA" x="2.500000238418579" y="2.000000238418579" width="19" height="19.999998092651367" type="GROUP">
+              <children>
+                <Group id="66:859" name="Group" isMask="true" maskType="ALPHA" x="2.500000238418579" y="2.000000238418579" width="19" height="19.999998092651367" type="GROUP">
+                  <children>
+                    <Group id="66:860" name="Group" maskType="ALPHA" x="2.500000238418579" y="2.000000238418579" width="19" height="19.999998092651367" type="GROUP">
+                      <children>
+                        <Vector id="66:861" name="Vector" maskType="ALPHA" strokeWeight="2" strokeJoin="ROUND" strokeAlign="CENTER" strokeCap="ROUND" x="2.5000003051757815" y="11.999999284744263" width="19" height="0" type="VECTOR">
+                          <strokes>
+                            <stroke blendMode="NORMAL" color="#e9e9e9" />
+                          </strokes>
+                          <fills>
+                            <fill blendMode="NORMAL" color="#000000" />
+                          </fills>
+                          <constraints horizontal="SCALE" vertical="SCALE" />
+                          <vectorPaths>
+                            <vectorPath windingRule="" data="M 0 0 L 19 0" />
+                          </vectorPaths>
+                        </Vector>
+                        <Vector id="66:862" name="Vector" maskType="ALPHA" strokeWeight="2" strokeJoin="ROUND" strokeAlign="CENTER" x="3.000000476837158" y="2.0000003814697322" width="18" height="19.999998092651367" type="VECTOR">
+                          <strokes>
+                            <stroke blendMode="NORMAL" color="#e9e9e9" />
+                          </strokes>
+                          <fills>
+                            <fill blendMode="NORMAL" color="#000000" />
+                          </fills>
+                          <constraints horizontal="SCALE" vertical="SCALE" />
+                          <vectorPaths>
+                            <vectorPath windingRule="NONZERO" data="M 11 0 L 7 0 C 6.734783500432968 4.4408916749841526e-16 6.480429783463478 0.1053567875283434 6.292893409729004 0.2928931433779553 C 6.10535703599453 0.48042949922756717 6 0.734783430358553 6 0.9999999046325684 L 6 4.999999523162842 C 6 5.265215997436857 6.10535703599453 5.519569690149287 6.292893409729004 5.7071060459988985 C 6.480429783463478 5.89464240184851 6.734783500432968 5.9999994277954105 7 5.9999994277954105 L 11 5.9999994277954105 C 11.265216499567032 5.9999994277954105 11.519570216536522 5.89464240184851 11.707106590270996 5.7071060459988985 C 11.89464296400547 5.519569690149287 12 5.265215997436857 12 4.999999523162842 L 12 0.9999999046325684 C 12 0.734783430358553 11.89464296400547 0.48042949922756717 11.707106590270996 0.2928931433779553 C 11.519570216536522 0.1053567875283434 11.265216499567032 6.661337512476229e-16 11 0 Z M 5 13.999998664855957 L 1 13.999998664855957 C 0.7347835004329681 13.999998664855957 0.480429545044899 14.10535473712863 0.2928931713104248 14.292891092978243 C 0.10535679757595062 14.480427448827855 8.881784197001252e-16 14.73478209521451 0 14.999998569488525 L 0 18.9999981880188 C 4.440892098500626e-16 19.265214662292816 0.10535679757595062 19.51956930867947 0.2928931713104248 19.70710566452908 C 0.480429545044899 19.894642020378694 0.7347835004329681 19.999998092651367 1 19.999998092651367 L 5 19.999998092651367 C 5.265216499567032 19.999998092651367 5.519570216536522 19.894642020378694 5.707106590270996 19.70710566452908 C 5.89464296400547 19.51956930867947 6 19.265214662292816 6 18.9999981880188 L 6 14.999998569488525 C 6 14.73478209521451 5.89464296400547 14.480427448827855 5.707106590270996 14.292891092978243 C 5.519570216536522 14.10535473712863 5.265216499567032 13.999998664855957 5 13.999998664855957 Z M 17 13.999998664855957 L 13 13.999998664855957 C 12.734783500432968 13.999998664855957 12.480429783463478 14.10535473712863 12.292893409729004 14.292891092978243 C 12.10535703599453 14.480427448827855 12 14.73478209521451 12 14.999998569488525 L 12 18.9999981880188 C 12 19.265214662292816 12.10535703599453 19.51956930867947 12.292893409729004 19.70710566452908 C 12.480429783463478 19.894642020378694 12.734783500432968 19.999998092651367 13 19.999998092651367 L 17 19.999998092651367 C 17.265216499567032 19.999998092651367 17.51957117021084 19.894642020378694 17.707107543945312 19.70710566452908 C 17.894643917679787 19.51956930867947 18 19.265214662292816 18 18.9999981880188 L 18 14.999998569488525 C 18 14.73478209521451 17.894643917679787 14.480427448827855 17.707107543945312 14.292891092978243 C 17.51957117021084 14.10535473712863 17.265216499567032 13.999998664855957 17 13.999998664855957 Z" />
+                          </vectorPaths>
+                        </Vector>
+                        <Vector id="66:863" name="Vector" maskType="ALPHA" strokeWeight="2" strokeJoin="ROUND" strokeAlign="CENTER" strokeCap="ROUND" x="6" y="8.000000238418579" width="12" height="8" type="VECTOR">
+                          <strokes>
+                            <stroke blendMode="NORMAL" color="#e9e9e9" />
+                          </strokes>
+                          <fills>
+                            <fill blendMode="NORMAL" color="#000000" />
+                          </fills>
+                          <constraints horizontal="SCALE" vertical="SCALE" />
+                          <vectorPaths>
+                            <vectorPath windingRule="" data="M 6 4 L 6 0 M 12 8 L 12 4 M 0 8 L 0 4" />
+                          </vectorPaths>
+                        </Vector>
+                      </children>
+                    </Group>
+                  </children>
+                </Group>
+                <Vector id="66:864" name="Vector" maskType="ALPHA" strokeWeight="4.166666507720947" x="0" y="0" width="24" height="24" type="VECTOR">
+                  <fills>
+                    <fill blendMode="NORMAL" color="#e9e9e9" />
+                  </fills>
+                  <constraints horizontal="SCALE" vertical="SCALE" />
+                  <vectorPaths>
+                    <vectorPath windingRule="NONZERO" data="M 0 0 L 24 0 L 24 24 L 0 24 L 0 0 Z" />
+                  </vectorPaths>
+                </Vector>
+              </children>
+            </Group>
+          </children>
+          <fills>
+            <fill visible="false" blendMode="NORMAL" color="#ffffff" />
+          </fills>
+          <constraints horizontal="MIN" vertical="MIN" />
+        </Frame>
+        <Text id="72:981" name="Player_profile_info" maskType="ALPHA" strokeAlign="OUTSIDE" x="580" y="12" width="104" height="20" fontSize="15" fontWeight="700" hyperlink="" characters="Player profile info" type="TEXT" textAutoResize="WIDTH_AND_HEIGHT">
+          <fills>
+            <fill blendMode="NORMAL" color="#ffffff" />
+          </fills>
+          <constraints horizontal="MIN" vertical="MIN" />
+          <fontName family="Afacad" style="Bold" />
+          <letterSpacing value="0" unit="PERCENT" />
+          <lineHeight value="133.38667154312134" unit="PERCENT" />
+        </Text>
+      </children>
+    </Group>
+    <Group id="66:867" name="list" maskType="ALPHA" x="1317" y="132" width="566" height="955.4965209960938" type="GROUP">
+      <children>
+        <Rectangle id="72:976" name="Rectangle_14" maskType="ALPHA" x="1323" y="997.731689453125" width="559" height="89.76480865478516" cornerRadius="107" type="RECTANGLE">
+          <effects>
+            <effect type="BACKGROUND_BLUR" radius="30" />
+            <effect type="INNER_SHADOW" radius="14.199999809265137" spread="0" blendMode="NORMAL" color="#000000">
+              <offset x="0" y="0" />
+            </effect>
+          </effects>
+          <strokes>
+            <stroke opacity="0.46000000834465027" blendMode="NORMAL" color="#000000" />
+          </strokes>
+          <fills>
+            <fill opacity="0.5799999833106995" blendMode="NORMAL" color="#3e3e46" />
+          </fills>
+          <constraints horizontal="MIN" vertical="MIN" />
+        </Rectangle>
+        <Rectangle id="72:977" name="Rectangle_15" maskType="ALPHA" x="1323" y="900.9851684570312" width="559" height="90.76219177246094" cornerRadius="107" type="RECTANGLE">
+          <effects>
+            <effect type="BACKGROUND_BLUR" radius="30" />
+            <effect type="INNER_SHADOW" radius="14.199999809265137" spread="0" blendMode="NORMAL" color="#000000">
+              <offset x="0" y="0" />
+            </effect>
+          </effects>
+          <strokes>
+            <stroke opacity="0.46000000834465027" blendMode="NORMAL" color="#000000" />
+          </strokes>
+          <fills>
+            <fill opacity="0.5799999833106995" blendMode="NORMAL" color="#3e3e46" />
+          </fills>
+          <constraints horizontal="MIN" vertical="MIN" />
+        </Rectangle>
+        <Rectangle id="72:978" name="Rectangle_16" maskType="ALPHA" x="1323" y="804.2386474609375" width="559" height="90.76219177246094" cornerRadius="107" type="RECTANGLE">
+          <effects>
+            <effect type="BACKGROUND_BLUR" radius="30" />
+            <effect type="INNER_SHADOW" radius="14.199999809265137" spread="0" blendMode="NORMAL" color="#000000">
+              <offset x="0" y="0" />
+            </effect>
+          </effects>
+          <strokes>
+            <stroke opacity="0.46000000834465027" blendMode="NORMAL" color="#000000" />
+          </strokes>
+          <fills>
+            <fill opacity="0.5799999833106995" blendMode="NORMAL" color="#3e3e46" />
+          </fills>
+          <constraints horizontal="MIN" vertical="MIN" />
+        </Rectangle>
+        <Rectangle id="72:979" name="Rectangle_17" maskType="ALPHA" x="1323" y="707.4921875" width="559" height="90.76219177246094" cornerRadius="107" type="RECTANGLE">
+          <effects>
+            <effect type="BACKGROUND_BLUR" radius="30" />
+            <effect type="INNER_SHADOW" radius="14.199999809265137" spread="0" blendMode="NORMAL" color="#000000">
+              <offset x="0" y="0" />
+            </effect>
+          </effects>
+          <strokes>
+            <stroke opacity="0.46000000834465027" blendMode="NORMAL" color="#000000" />
+          </strokes>
+          <fills>
+            <fill opacity="0.5799999833106995" blendMode="NORMAL" color="#3e3e46" />
+          </fills>
+          <constraints horizontal="MIN" vertical="MIN" />
+        </Rectangle>
+        <Rectangle id="66:868" name="Rectangle_11" maskType="ALPHA" x="1323" y="615.7325439453125" width="559" height="85.77526092529297" cornerRadius="107" type="RECTANGLE">
+          <effects>
+            <effect type="BACKGROUND_BLUR" radius="30" />
+            <effect type="INNER_SHADOW" radius="14.199999809265137" spread="0" blendMode="NORMAL" color="#000000">
+              <offset x="0" y="0" />
+            </effect>
+          </effects>
+          <strokes>
+            <stroke opacity="0.46000000834465027" blendMode="NORMAL" color="#000000" />
+          </strokes>
+          <fills>
+            <fill opacity="0.5799999833106995" blendMode="NORMAL" color="#3e3e46" />
+          </fills>
+          <constraints horizontal="MIN" vertical="MIN" />
+        </Rectangle>
+        <Rectangle id="66:869" name="Rectangle_8" maskType="ALPHA" x="1323" y="519.9834594726562" width="559" height="88.76741790771484" cornerRadius="107" type="RECTANGLE">
+          <effects>
+            <effect type="BACKGROUND_BLUR" radius="30" />
+            <effect type="INNER_SHADOW" radius="14.199999809265137" spread="0" blendMode="NORMAL" color="#000000">
+              <offset x="0" y="0" />
+            </effect>
+          </effects>
+          <strokes>
+            <stroke opacity="0.46000000834465027" blendMode="NORMAL" color="#000000" />
+            <stroke opacity="0.20000000298023224" blendMode="NORMAL" color="#000000" />
+          </strokes>
+          <fills>
+            <fill opacity="0.5799999833106995" blendMode="NORMAL" color="#3e3e46" />
+          </fills>
+          <constraints horizontal="MIN" vertical="MIN" />
+        </Rectangle>
+        <Rectangle id="66:870" name="Rectangle_7" maskType="ALPHA" x="1323" y="423.2369384765625" width="559" height="88.76741790771484" cornerRadius="107" type="RECTANGLE">
+          <effects>
+            <effect type="BACKGROUND_BLUR" radius="30" />
+            <effect type="INNER_SHADOW" radius="14.199999809265137" spread="0" blendMode="NORMAL" color="#000000">
+              <offset x="0" y="0" />
+            </effect>
+          </effects>
+          <strokes>
+            <stroke opacity="0.46000000834465027" blendMode="NORMAL" color="#000000" />
+          </strokes>
+          <fills>
+            <fill opacity="0.5799999833106995" blendMode="NORMAL" color="#3e3e46" />
+          </fills>
+          <constraints horizontal="MIN" vertical="MIN" />
+        </Rectangle>
+        <Rectangle id="66:871" name="Rectangle_6" maskType="ALPHA" x="1323" y="325.4930419921875" width="559" height="90.76219177246094" cornerRadius="107" type="RECTANGLE">
+          <effects>
+            <effect type="BACKGROUND_BLUR" radius="30" />
+            <effect type="INNER_SHADOW" radius="14.199999809265137" spread="0" blendMode="NORMAL" color="#000000">
+              <offset x="0" y="0" />
+            </effect>
+          </effects>
+          <strokes>
+            <stroke opacity="0.46000000834465027" blendMode="NORMAL" color="#000000" />
+          </strokes>
+          <fills>
+            <fill opacity="0.5799999833106995" blendMode="NORMAL" color="#3e3e46" />
+          </fills>
+          <constraints horizontal="MIN" vertical="MIN" />
+        </Rectangle>
+        <Rectangle id="66:872" name="Rectangle_5" maskType="ALPHA" x="1323" y="228.74652099609375" width="559" height="90.76219177246094" cornerRadius="107" type="RECTANGLE">
+          <effects>
+            <effect type="BACKGROUND_BLUR" radius="30" />
+            <effect type="INNER_SHADOW" radius="14.199999809265137" spread="0" blendMode="NORMAL" color="#000000">
+              <offset x="0" y="0" />
+            </effect>
+          </effects>
+          <strokes>
+            <stroke opacity="0.46000000834465027" blendMode="NORMAL" color="#000000" />
+          </strokes>
+          <fills>
+            <fill opacity="0.5799999833106995" blendMode="NORMAL" color="#3e3e46" />
+          </fills>
+          <constraints horizontal="MIN" vertical="MIN" />
+        </Rectangle>
+        <Rectangle id="66:873" name="Rectangle_9" maskType="ALPHA" x="1323" y="132" width="559" height="90.76219177246094" cornerRadius="107" type="RECTANGLE">
+          <effects>
+            <effect type="BACKGROUND_BLUR" radius="30" />
+            <effect type="INNER_SHADOW" radius="14.199999809265137" spread="0" blendMode="NORMAL" color="#000000">
+              <offset x="0" y="0" />
+            </effect>
+          </effects>
+          <strokes>
+            <stroke opacity="0.46000000834465027" blendMode="NORMAL" color="#000000" />
+          </strokes>
+          <fills>
+            <fill opacity="0.5799999833106995" blendMode="NORMAL" color="#3e3e46" />
+          </fills>
+          <constraints horizontal="MIN" vertical="MIN" />
+        </Rectangle>
+        <Rectangle id="72:1005" name="Rectangle_18" maskType="ALPHA" strokeWeight="2" x="1323" y="519.9834594726562" width="559" height="88.76741790771484" cornerRadius="107" type="RECTANGLE">
+          <fills>
+            <fill opacity="0.029999999329447746" blendMode="NORMAL" color="#636363" />
+          </fills>
+          <constraints horizontal="MIN" vertical="MIN" />
+        </Rectangle>
+        <Text id="72:989" name="Alex_Giudici" maskType="ALPHA" strokeAlign="OUTSIDE" x="1324" y="566" width="559" height="44" fontSize="20" fontWeight="700" hyperlink="" characters="Alex Giudici" type="TEXT" textAlignHorizontal="CENTER">
+          <fills>
+            <fill blendMode="NORMAL" color="#e9e9e9" />
+          </fills>
+          <constraints horizontal="MIN" vertical="MIN" />
+          <fontName family="Afacad" style="Bold" />
+          <letterSpacing value="0" unit="PERCENT" />
+          <lineHeight value="133.38667154312134" unit="PERCENT" />
+        </Text>
+        <Text id="72:988" name="Reconstructing_Science__Alex_Giudici_Remix__V3" maskType="ALPHA" strokeAlign="OUTSIDE" x="1324" y="533" width="559" height="57" fontSize="25" fontWeight="700" hyperlink="" characters="Reconstructing Science (Alex Giudici Remix) V3" type="TEXT" textAlignHorizontal="CENTER">
+          <fills>
+            <fill blendMode="NORMAL" color="#e9e9e9" />
+          </fills>
+          <constraints horizontal="MIN" vertical="MIN" />
+          <fontName family="Afacad" style="Bold" />
+          <letterSpacing value="0" unit="PERCENT" />
+          <lineHeight value="133.38667154312134" unit="PERCENT" />
+        </Text>
+        <Text id="2012:46" name="Alex_Giudici" maskType="ALPHA" strokeAlign="OUTSIDE" x="1317" y="754" width="559" height="44" fontSize="20" fontWeight="700" hyperlink="" characters="Alex Giudici" type="TEXT" textAlignHorizontal="CENTER">
+          <fills>
+            <fill blendMode="NORMAL" color="#e9e9e9" />
+          </fills>
+          <constraints horizontal="MIN" vertical="MIN" />
+          <fontName family="Afacad" style="Bold" />
+          <letterSpacing value="0" unit="PERCENT" />
+          <lineHeight value="133.38667154312134" unit="PERCENT" />
+        </Text>
+        <Text id="2012:47" name="Reconstructing_Science__Alex_Giudici_Remix__V3" maskType="ALPHA" strokeAlign="OUTSIDE" x="1317" y="721" width="559" height="57" fontSize="25" fontWeight="700" hyperlink="" characters="Reconstructing Science (Alex Giudici Remix) V3" type="TEXT" textAlignHorizontal="CENTER">
+          <fills>
+            <fill blendMode="NORMAL" color="#e9e9e9" />
+          </fills>
+          <constraints horizontal="MIN" vertical="MIN" />
+          <fontName family="Afacad" style="Bold" />
+          <letterSpacing value="0" unit="PERCENT" />
+          <lineHeight value="133.38667154312134" unit="PERCENT" />
+        </Text>
+        <Text id="72:991" name="_execute._" maskType="ALPHA" strokeAlign="OUTSIDE" x="1324" y="241" width="559" height="58" fontSize="25" fontWeight="700" hyperlink="" characters="(execute.)" type="TEXT" textAlignHorizontal="CENTER">
+          <fills>
+            <fill blendMode="NORMAL" color="#e9e9e9" />
+          </fills>
+          <constraints horizontal="MIN" vertical="MIN" />
+          <fontName family="Afacad" style="Bold" />
+          <letterSpacing value="0" unit="PERCENT" />
+          <lineHeight value="133.38667154312134" unit="PERCENT" />
+        </Text>
+        <Text id="72:992" name="Ardolf" maskType="ALPHA" strokeAlign="OUTSIDE" x="1324" y="273" width="559" height="47" fontSize="20" fontWeight="700" hyperlink="" characters="Ardolf" type="TEXT" textAlignHorizontal="CENTER">
+          <fills>
+            <fill blendMode="NORMAL" color="#e9e9e9" />
+          </fills>
+          <constraints horizontal="MIN" vertical="MIN" />
+          <fontName family="Afacad" style="Bold" />
+          <letterSpacing value="0" unit="PERCENT" />
+          <lineHeight value="133.38667154312134" unit="PERCENT" />
+        </Text>
+        <Text id="72:993" name="Reconstructing_Science__Alex_Giudici_Remix__V3" maskType="ALPHA" strokeAlign="OUTSIDE" x="1323" y="331" width="559" height="57" fontSize="25" fontWeight="700" hyperlink="" characters="Reconstructing Science (Alex Giudici Remix) V3" type="TEXT" textAlignHorizontal="CENTER">
+          <fills>
+            <fill blendMode="NORMAL" color="#e9e9e9" />
+          </fills>
+          <constraints horizontal="MIN" vertical="MIN" />
+          <fontName family="Afacad" style="Bold" />
+          <letterSpacing value="0" unit="PERCENT" />
+          <lineHeight value="133.38667154312134" unit="PERCENT" />
+        </Text>
+        <Text id="72:994" name="Alex_Giudici" maskType="ALPHA" strokeAlign="OUTSIDE" x="1323" y="367" width="559" height="44" fontSize="20" fontWeight="700" hyperlink="" characters="Alex Giudici" type="TEXT" textAlignHorizontal="CENTER">
+          <fills>
+            <fill blendMode="NORMAL" color="#e9e9e9" />
+          </fills>
+          <constraints horizontal="MIN" vertical="MIN" />
+          <fontName family="Afacad" style="Bold" />
+          <letterSpacing value="0" unit="PERCENT" />
+          <lineHeight value="133.38667154312134" unit="PERCENT" />
+        </Text>
+        <Text id="72:996" name="_execute._" maskType="ALPHA" strokeAlign="OUTSIDE" x="1320" y="627" width="559" height="58" fontSize="25" fontWeight="700" hyperlink="" characters="(execute.)" type="TEXT" textAlignHorizontal="CENTER">
+          <fills>
+            <fill blendMode="NORMAL" color="#e9e9e9" />
+          </fills>
+          <constraints horizontal="MIN" vertical="MIN" />
+          <fontName family="Afacad" style="Bold" />
+          <letterSpacing value="0" unit="PERCENT" />
+          <lineHeight value="133.38667154312134" unit="PERCENT" />
+        </Text>
+        <Text id="72:997" name="Ardolf" maskType="ALPHA" strokeAlign="OUTSIDE" x="1317" y="658" width="559" height="47" fontSize="20" fontWeight="700" hyperlink="" characters="Ardolf" type="TEXT" textAlignHorizontal="CENTER">
+          <fills>
+            <fill blendMode="NORMAL" color="#e9e9e9" />
+          </fills>
+          <constraints horizontal="MIN" vertical="MIN" />
+          <fontName family="Afacad" style="Bold" />
+          <letterSpacing value="0" unit="PERCENT" />
+          <lineHeight value="133.38667154312134" unit="PERCENT" />
+        </Text>
+        <Text id="2013:49" name="_execute._" maskType="ALPHA" strokeAlign="OUTSIDE" x="1322" y="434" width="559" height="58" fontSize="25" fontWeight="700" hyperlink="" characters="(execute.)" type="TEXT" textAlignHorizontal="CENTER">
+          <fills>
+            <fill blendMode="NORMAL" color="#e9e9e9" />
+          </fills>
+          <constraints horizontal="MIN" vertical="MIN" />
+          <fontName family="Afacad" style="Bold" />
+          <letterSpacing value="0" unit="PERCENT" />
+          <lineHeight value="133.38667154312134" unit="PERCENT" />
+        </Text>
+        <Text id="2013:50" name="Ardolf" maskType="ALPHA" strokeAlign="OUTSIDE" x="1319" y="465" width="559" height="47" fontSize="20" fontWeight="700" hyperlink="" characters="Ardolf" type="TEXT" textAlignHorizontal="CENTER">
+          <fills>
+            <fill blendMode="NORMAL" color="#e9e9e9" />
+          </fills>
+          <constraints horizontal="MIN" vertical="MIN" />
+          <fontName family="Afacad" style="Bold" />
+          <letterSpacing value="0" unit="PERCENT" />
+          <lineHeight value="133.38667154312134" unit="PERCENT" />
+        </Text>
+        <Vector id="2008:35" name="Ellipse_4" maskType="ALPHA" x="1837" y="555" width="15" height="15" type="VECTOR">
+          <fills>
+            <fill blendMode="NORMAL" color="#e9e9e9" />
+          </fills>
+          <constraints horizontal="MIN" vertical="MIN" />
+          <vectorPaths>
+            <vectorPath windingRule="NONZERO" data="M 15 7.5 C 15 11.642135828733444 11.642135828733444 15 7.5 15 C 3.357864171266556 15 0 11.642135828733444 0 7.5 C 0 3.357864171266556 3.357864171266556 0 7.5 0 C 11.642135828733444 0 15 3.357864171266556 15 7.5 Z" />
+          </vectorPaths>
+        </Vector>
+        <Vector id="2012:44" name="Ellipse_5" maskType="ALPHA" x="1350" y="555" width="15" height="15" type="VECTOR">
+          <fills>
+            <fill blendMode="NORMAL" color="#e9e9e9" />
+          </fills>
+          <constraints horizontal="MIN" vertical="MIN" />
+          <vectorPaths>
+            <vectorPath windingRule="NONZERO" data="M 15 7.5 C 15 11.642135828733444 11.642135828733444 15 7.5 15 C 3.357864171266556 15 0 11.642135828733444 0 7.5 C 0 3.357864171266556 3.357864171266556 0 7.5 0 C 11.642135828733444 0 15 3.357864171266556 15 7.5 Z" />
+          </vectorPaths>
+        </Vector>
+        <Group id="2009:39" name="Group_13" visible="false" maskType="ALPHA" x="1839" y="518" width="46" height="95" type="GROUP">
+          <children>
+            <Rectangle id="2009:38" name="Rectangle_33" isMask="true" maskType="ALPHA" x="1839" y="518" width="46" height="95" type="RECTANGLE">
+              <fills>
+                <fill blendMode="NORMAL" color="#d9d9d9" />
+              </fills>
+              <constraints horizontal="MIN" vertical="MIN" />
+            </Rectangle>
+            <Vector id="2008:33" name="Ellipse_3" maskType="ALPHA" x="1796" y="521.0645141601562" width="85" height="86.82795715332031" type="VECTOR">
+              <fills>
+                <fill blendMode="NORMAL" color="#dadada" />
+              </fills>
+              <constraints horizontal="MIN" vertical="MIN" />
+              <vectorPaths>
+                <vectorPath windingRule="NONZERO" data="M 85 43.413978576660156 C 85 67.39085815202321 65.97210311889648 86.82795715332031 42.5 86.82795715332031 C 19.027896881103516 86.82795715332031 0 67.39085815202321 0 43.413978576660156 C 0 19.437099001297096 19.027896881103516 0 42.5 0 C 65.97210311889648 0 85 19.437099001297096 85 43.413978576660156 Z" />
+              </vectorPaths>
+            </Vector>
+            <Vector id="2009:40" name="Ellipse_4" maskType="ALPHA" x="1801" y="526" width="75" height="77" type="VECTOR">
+              <fills>
+                <fill blendMode="NORMAL" color="#dadada" />
+              </fills>
+              <constraints horizontal="MIN" vertical="MIN" />
+              <vectorPaths>
+                <vectorPath windingRule="NONZERO" data="M 75 38.5 C 75 59.762964001823875 58.210679222555726 77 37.5 77 C 16.789320777444278 77 0 59.762964001823875 0 38.5 C 0 17.237035998176125 16.789320777444278 0 37.5 0 C 58.210679222555726 0 75 17.237035998176125 75 38.5 Z" />
+              </vectorPaths>
+            </Vector>
+          </children>
+        </Group>
+        <Vector id="2010:43" name="Vector_21" visible="false" maskType="ALPHA" strokeWeight="5" strokeAlign="CENTER" strokeCap="ROUND" x="1838" y="521" width="43.5" height="87" type="VECTOR">
+          <strokes>
+            <stroke blendMode="NORMAL" color="#e9e9e9" />
+          </strokes>
+          <constraints horizontal="MIN" vertical="MIN" />
+          <vectorPaths>
+            <vectorPath windingRule="" data="M 0 87 C 0 87 43.5 87.00001525878906 43.5 43.50000762939453 C 43.50000000000023 0 0 0 0 0" />
+          </vectorPaths>
+        </Vector>
+      </children>
+    </Group>
+    <Group id="2013:53" name="Group_15" maskType="ALPHA" x="1274" y="997" width="646" height="83" type="GROUP">
+      <children>
+        <Vector id="66:865" name="select-bottom" maskType="ALPHA" strokeWeight="2" x="1274" y="1080" width="646" height="83" type="VECTOR">
+          <effects>
+            <effect type="BACKGROUND_BLUR" radius="30" />
+          </effects>
+          <strokes>
+            <stroke blendMode="NORMAL" color="#14151a" />
+          </strokes>
+          <fills>
+            <fill blendMode="NORMAL" color="#292733" />
+            <fill type="GRADIENT_LINEAR" opacity="0.4399999976158142" blendMode="NORMAL">
+              <gradientTransform matrix="2.5101198275478964e-7,0.8876404762268066,0.112359419465065,-34.284481048583984,5.277911441226024e-8,17.616615295410156" />
+              <gradientStops>
+                <gradientStop position="0" color="#060608" />
+                <gradientStop position="1" color="#292733" />
+              </gradientStops>
+            </fill>
+          </fills>
+          <constraints horizontal="MIN" vertical="MIN" />
+          <vectorPaths>
+            <vectorPath windingRule="NONZERO" data="M 0 0 L 646 0 L 646 41.5 L 608.4709527498063 83 L 41.10177406647887 83 L 0 41.25149700598802 L 0 0 Z" />
+          </vectorPaths>
+        </Vector>
+        <Vector id="2004:4" name="select-bottom-center" maskType="ALPHA" strokeWeight="2" x="1435" y="1078" width="334.5" height="79" type="VECTOR">
+          <effects>
+            <effect type="BACKGROUND_BLUR" radius="30" />
+          </effects>
+          <fills>
+            <fill blendMode="NORMAL" color="#25232e" />
+            <fill type="GRADIENT_LINEAR" opacity="0.4399999976158142" blendMode="NORMAL">
+              <gradientTransform matrix="2.5101198275478964e-7,0.8876404762268066,0.112359419465065,-34.284481048583984,5.277911441226024e-8,17.616615295410156" />
+              <gradientStops>
+                <gradientStop position="0" color="#060608" />
+                <gradientStop position="1" color="#24222d" />
+              </gradientStops>
+            </fill>
+          </fills>
+          <constraints horizontal="MIN" vertical="MIN" />
+          <vectorPaths>
+            <vectorPath windingRule="NONZERO" data="M 104 0 L 231.5 0 L 262 30.5 L 287 30.5 L 334.5 79 L 0 79 L 49.5 29 L 74 29 L 104 0 Z" />
+          </vectorPaths>
+        </Vector>
+      </children>
+    </Group>
+    <Group id="66:874" name="Group_11" maskType="ALPHA" x="1288" y="997" width="632" height="83" type="GROUP">
+      <children>
+        <Vector id="66:875" name="Vector_12" maskType="ALPHA" strokeWeight="2" strokeAlign="CENTER" x="1666" y="998.4999389648438" width="105.00001525878906" height="80.5000228881836" type="VECTOR">
+          <effects>
+            <effect type="DROP_SHADOW" radius="12.199999809265137" spread="0" visible="false" blendMode="NORMAL" showShadowBehindNode="false" color="#000000">
+              <offset x="0" y="0" />
+            </effect>
+          </effects>
+          <strokes>
+            <stroke blendMode="NORMAL" color="#14151a" />
+          </strokes>
+          <constraints horizontal="MIN" vertical="MIN" />
+          <vectorPaths>
+            <vectorPath windingRule="" data="M 0 80.5000228881836 L 31 49.50004959106445 L 55.49999237060547 49.50004959106445 L 105.00001525878906 0" />
+          </vectorPaths>
+        </Vector>
+        <Vector id="66:876" name="Vector_13" maskType="ALPHA" strokeWeight="2" strokeAlign="CENTER" x="1540" y="999" width="105" height="81" rotation="-180" type="VECTOR">
+          <effects>
+            <effect type="DROP_SHADOW" radius="12.199999809265137" spread="0" visible="false" blendMode="NORMAL" showShadowBehindNode="false" color="#000000">
+              <offset x="0" y="0" />
+            </effect>
+          </effects>
+          <strokes>
+            <stroke blendMode="NORMAL" color="#14151a" />
+          </strokes>
+          <constraints horizontal="CENTER" vertical="MIN" />
+          <vectorPaths>
+            <vectorPath windingRule="" data="M 0 81 L 30.999995495024834 49.80748915370515 L 55.499984305247814 49.80748915370515 L 105 0" />
+          </vectorPaths>
+        </Vector>
+        <Text id="66:877" name="Locations" maskType="ALPHA" strokeAlign="OUTSIDE" x="1288" y="999" width="181" height="81" fontSize="24" fontWeight="700" hyperlink="" characters="Locations" type="TEXT" textAlignHorizontal="CENTER">
+          <fills>
+            <fill blendMode="NORMAL" color="#e9e9e9" />
+          </fills>
+          <constraints horizontal="MIN" vertical="MIN" />
+          <fontName family="Afacad" style="Bold" />
+          <letterSpacing value="0" unit="PERCENT" />
+          <lineHeight value="133.38667154312134" unit="PERCENT" />
+        </Text>
+        <Text id="66:878" name="Manage_collections" maskType="ALPHA" strokeAlign="OUTSIDE" x="1511" y="997" width="181" height="81" fontSize="24" fontWeight="700" hyperlink="" characters="Manage collections" type="TEXT" textAlignHorizontal="CENTER">
+          <fills>
+            <fill blendMode="NORMAL" color="#e9e9e9" />
+          </fills>
+          <constraints horizontal="MIN" vertical="MIN" />
+          <fontName family="Afacad" style="Bold" />
+          <letterSpacing value="0" unit="PERCENT" />
+          <lineHeight value="133.38667154312134" unit="PERCENT" />
+        </Text>
+        <Text id="66:879" name="Direct" maskType="ALPHA" strokeAlign="OUTSIDE" x="1739" y="997" width="181" height="81" fontSize="24" fontWeight="700" hyperlink="" characters="Direct" type="TEXT" textAlignHorizontal="CENTER">
+          <fills>
+            <fill blendMode="NORMAL" color="#e9e9e9" />
+          </fills>
+          <constraints horizontal="MIN" vertical="MIN" />
+          <fontName family="Afacad" style="Bold" />
+          <letterSpacing value="0" unit="PERCENT" />
+          <lineHeight value="133.38667154312134" unit="PERCENT" />
+        </Text>
+      </children>
+    </Group>
+    <Group id="66:880" name="Group_10" maskType="ALPHA" x="1371" y="44" width="468" height="82" type="GROUP">
+      <children>
+        <Vector id="66:881" name="Vector" maskType="ALPHA" strokeWeight="8.333333015441895" x="1839" y="69" width="36" height="31" rotation="-180" type="VECTOR">
+          <fills>
+            <fill blendMode="NORMAL" color="#e9e9e9" />
+          </fills>
+          <constraints horizontal="SCALE" vertical="SCALE" />
+          <vectorPaths>
+            <vectorPath windingRule="NONZERO" data="M 33.64831728001842 0 L 2.351679255620792 0 C -0.10734241955221302 0 -0.7779843736009313 1.3285716133458276 1.0103950144117408 3.100000211170742 L 10.39938750101266 12.400000844682967 C 12.187766889025331 14.171429442507883 13.529050530633477 17.492857090064458 13.529050530633477 19.92857142857143 L 13.529050530633477 31 L 22.470946271495027 26.571428571428573 L 22.470946271495027 18.821428571428573 C 22.470946271495027 17.049999973603658 23.812229913103174 14.171429442507883 25.600609301115846 12.400000844682967 L 34.98960265380696 3.100000211170742 C 36.777982041819634 1.3285716133458276 36.10733895519142 0 33.64831728001842 0 Z" />
+          </vectorPaths>
+        </Vector>
+        <Vector id="66:882" name="Vector" maskType="ALPHA" strokeWeight="0.46296295523643494" x="1371" y="69" width="25" height="32" type="VECTOR">
+          <fills>
+            <fill blendMode="NORMAL" color="#e9e9e9" />
+          </fills>
+          <constraints horizontal="SCALE" vertical="SCALE" />
+          <vectorPaths>
+            <vectorPath windingRule="NONZERO" data="M 21.920821114369502 0 C 22.751710631630637 0 23.472629544322444 0.31298906926258063 24.083577712609973 0.9389671361502347 C 24.6945258808975 1.564945203037889 25 2.3035993979010785 25 3.154929577464789 L 25 28.845070422535212 C 25 29.696400602098922 24.6945258808975 30.435054796962113 24.083577712609973 31.061032863849768 C 23.472629544322444 31.687010930737422 22.751710631630637 32 21.920821114369502 32 L 3.152492668621701 32 C 2.272727272727273 32 1.5273704556775582 31.687010930737422 0.9164222873900294 31.061032863849768 C 0.30547411910250044 30.435054796962113 0 29.696400602098922 0 28.845070422535212 L 0 3.154929577464789 C 0 2.3035993979010785 0.30547411910250044 1.564945203037889 0.9164222873900294 0.9389671361502347 C 1.5273704556775582 0.31298906926258063 2.272727272727273 0 3.152492668621701 0 L 21.920821114369502 0 Z M 3.152492668621701 3.154929577464789 L 3.152492668621701 16 L 7.038123167155426 13.5962441314554 L 10.92375366568915 16 L 10.92375366568915 3.154929577464789 L 3.152492668621701 3.154929577464789 Z" />
+          </vectorPaths>
+        </Vector>
+        <Vector id="66:883" name="Vector" maskType="ALPHA" strokeWeight="0.78125" x="1580" y="67" width="36" height="36" type="VECTOR">
+          <fills>
+            <fill blendMode="NORMAL" color="#e9e9e9" />
+          </fills>
+          <constraints horizontal="SCALE" vertical="SCALE" />
+          <vectorPaths>
+            <vectorPath windingRule="NONZERO" data="M 16.531142374520254 25.725783557386098 C 16.749948938518056 25.943834901134807 16.923560670087056 26.20293837024972 17.042020568590818 26.488229374939795 C 17.16048046709458 26.773520379629872 17.221458543485916 27.079386643951338 17.221458543485916 27.388294585378173 C 17.221458543485916 27.697202526805007 17.16048046709458 28.00307476004532 17.042020568590818 28.288365764735396 C 16.923560670087056 28.573656769425472 16.749948938518056 28.83275426962154 16.531142374520254 29.050805613370247 L 10.272369685502307 35.30967065992864 C 10.05432155937942 35.528480452744155 9.795224898082214 35.70209474621359 9.50993810322496 35.820556392770115 C 9.224651308367704 35.93901803932664 8.918786573077888 36 8.609883189981915 36 C 8.300979806885941 36 7.995115071596125 35.93901803932664 7.709828276738869 35.820556392770115 C 7.424541481881613 35.70209474621359 7.1654448205844075 35.528480452744155 6.9473966944615215 35.30967065992864 L 0.6886247515474193 29.050805613370247 C 0.47030390115317805 28.832481564641817 0.29712232176698283 28.573297585070772 0.17896792947229567 28.28804344311778 C 0.06081353717760854 28.002789301164785 4.600768095000985e-9 27.697051438546747 0 27.388294585378173 C -4.600768095000985e-9 27.079537732209598 0.060813548835481124 26.773805838510405 0.17896792947229567 26.488551696557412 C 0.2971223101091102 26.20329755460442 0.47030315504933234 25.94410762943062 0.6886240054435736 25.725783557386098 C 0.9069448558378148 25.507459485341577 1.1661294641258348 25.334277577089004 1.4513793967899629 25.216121452907803 C 1.7366293294540909 25.097965328726602 2.042358950000597 25.03714938566582 2.351111247067812 25.037149390266652 C 2.659863544135027 25.037149394867495 2.965592418577687 25.097965317068557 3.250842351241815 25.216121452907803 C 3.536092283905943 25.33427758874705 3.795276915509708 25.507459485341577 4.013597742588204 25.725783557386098 L 6.2647997158836555 27.973111347030787 L 6.2647997158836555 2.3508810704526413 C 6.2647997158836555 1.7283982391772308 6.512076110426353 1.1314103856783753 6.952231447381772 0.6912485535734508 C 7.392386784337191 0.2510867214685265 7.989365828518476 0.0038066779932442426 8.611839474265386 0.0038066779932428526 C 9.234313120012295 0.0038066779932428526 9.83129216419358 0.2510867214685265 10.271447501149 0.6912485535734508 C 10.711602838104419 1.1314103856783753 10.958879232647117 1.7283982391772308 10.958879232647117 2.3508810704526413 L 10.958879232647117 27.973111347030787 L 13.210081952046414 25.719916110161705 C 13.428444047993876 25.502078155261696 13.687601050439605 25.329417641396642 13.972735873269786 25.211805924583043 C 14.257870696099966 25.094194207769444 14.563390824676041 25.033940809627023 14.871828312551854 25.03448576023218 C 15.180265800427666 25.035030710837336 15.485572076988962 25.096362848887452 15.770289547980445 25.214981389408454 C 16.055007018971928 25.333599929929456 16.31355137689734 25.507175355478132 16.531142374520254 25.725783557386098 Z M 35.3074604415741 6.9491914021703325 L 29.04868775255615 0.6903256094970804 C 28.830639626433264 0.4715158166815696 28.571545949551442 0.29790226932698616 28.286259154694186 0.17944062277046374 C 28.00097235983693 0.06097897621394131 27.69510464013173 0 27.386201257035758 0 C 27.077297873939784 0 26.771436123065353 0.06097897621394131 26.486149328208096 0.17944062277046374 C 26.20086253335084 0.29790226932698616 25.941762887638255 0.4715158166815696 25.723714761515367 0.6903256094970804 L 19.46494356470511 6.9491914021703325 C 19.02402477698956 7.390116742933422 18.77631954996986 7.988139830794415 18.776319559261534 8.611702430162406 C 18.776319568553202 9.235265029530398 19.024024730358068 9.83328811739139 19.46494356470511 10.274213458154481 C 19.90586239905215 10.715138798917572 20.503876662319367 10.96284761598212 21.127430060225503 10.962847625273929 C 21.75098345813164 10.962847634565737 22.348997721398852 10.715138752285393 22.789916555745894 10.274213458154481 L 25.041119275145192 8.022977518896187 L 25.041119275145192 33.645207795474334 C 25.041119275145192 34.26769062674975 25.2883941774802 34.864674003559465 25.728549514435617 35.30483583566439 C 26.168704851391034 35.74499766776932 26.76568538778001 35.99228218793373 27.38815903352692 35.99228218793373 C 28.010632679273833 35.99228218793373 28.607607246832043 35.74499766776932 29.04776258378746 35.30483583566439 C 29.487917920742877 34.864674003559465 29.73519879190865 34.26769062674975 29.73519879190865 33.645207795474334 L 29.73519879190865 8.022977518896187 L 31.986397034684874 10.276168279076138 C 32.427315869031915 10.717093619839229 33.02533013229913 10.964803938425296 33.64888353020527 10.964803938425296 C 34.272436928111404 10.964803938425296 34.87045119137862 10.717093619839229 35.31137002572566 10.276168279076138 C 35.752288860072696 9.835242938313048 36 9.237219850452055 36 8.613657251084064 C 36 7.990094651716072 35.752288860072696 7.39207156385508 35.31137002572566 6.95114622309199 L 35.3074604415741 6.9491914021703325 Z" />
+          </vectorPaths>
+        </Vector>
+        <Vector id="66:884" name="Vector_14" maskType="ALPHA" strokeWeight="2" strokeAlign="CENTER" x="1661" y="126" width="105" height="81" type="VECTOR">
+          <effects>
+            <effect type="DROP_SHADOW" radius="12.199999809265137" spread="0" visible="false" blendMode="NORMAL" showShadowBehindNode="false" color="#000000">
+              <offset x="0" y="0" />
+            </effect>
+          </effects>
+          <strokes>
+            <stroke blendMode="NORMAL" color="#14151a" />
+          </strokes>
+          <constraints horizontal="MIN" vertical="MIN" />
+          <vectorPaths>
+            <vectorPath windingRule="" data="M 0 81 L 30.999995495024834 49.80748915370515 L 55.499984305247814 49.80748915370515 L 105 0" />
+          </vectorPaths>
+        </Vector>
+        <Vector id="66:885" name="Vector_15" maskType="ALPHA" strokeWeight="2" strokeAlign="CENTER" x="1535" y="126" width="105" height="82" rotation="-180" type="VECTOR">
+          <effects>
+            <effect type="DROP_SHADOW" radius="12.199999809265137" spread="0" visible="false" blendMode="NORMAL" showShadowBehindNode="false" color="#000000">
+              <offset x="0" y="0" />
+            </effect>
+          </effects>
+          <strokes>
+            <stroke blendMode="NORMAL" color="#14151a" />
+          </strokes>
+          <constraints horizontal="CENTER" vertical="MIN" />
+          <vectorPaths>
+            <vectorPath windingRule="" data="M 0 82 L 30.999995495024834 50.42239642720768 L 55.499984305247814 50.42239642720768 L 105 0" />
+          </vectorPaths>
+        </Vector>
+      </children>
+    </Group>
+    <Group id="72:1004" name="Group_12" maskType="ALPHA" x="1294" y="0" width="608" height="44" type="GROUP">
+      <children>
+        <Rectangle id="72:1001" name="Rectangle_32" maskType="ALPHA" x="1294" y="7" width="608" height="29" cornerRadius="5" type="RECTANGLE">
+          <fills>
+            <fill blendMode="NORMAL" color="#2e2b38" />
+          </fills>
+          <constraints horizontal="MIN" vertical="MIN" />
+        </Rectangle>
+        <Text id="72:1002" name="Search..." maskType="ALPHA" strokeAlign="OUTSIDE" x="1565" y="0" width="83" height="44" fontSize="20" fontWeight="700" hyperlink="" characters="Search..." type="TEXT" textAlignHorizontal="CENTER">
+          <fills>
+            <fill blendMode="NORMAL" color="#484854" />
+          </fills>
+          <constraints horizontal="MIN" vertical="MIN" />
+          <fontName family="Afacad" style="Bold" />
+          <letterSpacing value="0" unit="PERCENT" />
+          <lineHeight value="133.38667154312134" unit="PERCENT" />
+        </Text>
+      </children>
+    </Group>
+    <Group id="66:886" name="Helpers" visible="false" maskType="ALPHA" x="564" y="26" width="70.71067810058594" height="70.71067810058594" type="GROUP">
+      <children>
+        <Vector id="66:887" name="Rectangle_4" maskType="ALPHA" x="564" y="61.35533905029297" width="50" height="50" rotation="45" type="VECTOR">
+          <fills>
+            <fill opacity="0.3199999928474426" blendMode="NORMAL" color="#ff0000" />
+          </fills>
+          <constraints horizontal="MIN" vertical="MIN" />
+          <vectorPaths>
+            <vectorPath windingRule="NONZERO" data="M 0 0 L 50 0 L 50 50 L 0 50 L 0 0 Z" />
+          </vectorPaths>
+        </Vector>
+      </children>
+    </Group>
+    <Group id="66:888" name="Borders" maskType="ALPHA" x="-141" y="-112" width="2160" height="2012" type="GROUP">
+      <children>
+        <Rectangle id="66:889" name="Rectangle_28" maskType="ALPHA" x="-76" y="1080" width="2095" height="820" type="RECTANGLE">
+          <fills>
+            <fill blendMode="NORMAL" color="#1e1e1e" />
+          </fills>
+          <constraints horizontal="MIN" vertical="MIN" />
+        </Rectangle>
+        <Rectangle id="66:890" name="Rectangle_29" maskType="ALPHA" x="-141" y="-112" width="140" height="1292" type="RECTANGLE">
+          <fills>
+            <fill blendMode="NORMAL" color="#1e1e1e" />
+          </fills>
+          <constraints horizontal="MIN" vertical="MIN" />
+        </Rectangle>
+        <Rectangle id="66:891" name="Rectangle_30" maskType="ALPHA" x="-141" y="-112" width="2160" height="111" type="RECTANGLE">
+          <fills>
+            <fill blendMode="NORMAL" color="#1e1e1e" />
+          </fills>
+          <constraints horizontal="MIN" vertical="MIN" />
+        </Rectangle>
+        <Rectangle id="66:892" name="Rectangle_31" maskType="ALPHA" x="1920" y="-112" width="99" height="1260" type="RECTANGLE">
+          <fills>
+            <fill blendMode="NORMAL" color="#1e1e1e" />
+          </fills>
+          <constraints horizontal="MIN" vertical="MIN" />
+        </Rectangle>
+      </children>
+    </Group>
+  </children>
+  <backgrounds>
+    <background blendMode="NORMAL" color="#1e1e1e" />
+  </backgrounds>
+</page>
