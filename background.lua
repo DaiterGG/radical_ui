@@ -7,14 +7,14 @@ local class = require("class")
 -- completely independent widget file.
 
 local background = class()
+background.type = "background"
 
 function background:new()
-  self.type = "background"
 end
 
-function background:pointer_collision(ctx, hit)
+-- function background:pointer_collision(elem, ctx, hit)
   -- background is not interactive
-end
+-- end
 
 -- draw an image covering the rect (centered, keep aspect ratio, cover)
 local function draw_cover(image, x, y, w, h)

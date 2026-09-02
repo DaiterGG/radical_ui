@@ -5,15 +5,16 @@ local apply_display = require("apply_display")
 
 local slider = {}
 slider.__index = slider
+slider.type = "slider"
 
 -- widget instance with custom data (e.g. { min = 0, max = 100, value = 50 })
 function slider:new()
   return setmetatable({}, slider)
 end
 
-function slider:pointer_collision(ctx, hit)
-  -- TODO: drag handling (update value from thumb/mouse, ctx.input_state)
-end
+-- function slider:pointer_collision(elem, ctx, hit)
+--   -- TODO: drag handling (update value from thumb/mouse, ctx.input_state)
+-- end
 
 function slider:draw(elem, ctx)
   local display = ctx.display_list and ctx.display_list[elem.display_key]

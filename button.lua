@@ -1,6 +1,7 @@
 local apply_display = require("apply_display")
 local class = require("class")
 local ui_element = require("ui_element")
+local utils = require("utils")
 
 -- button widget: interactive (hover/press states).
 -- optionally owns a child ui_element (text or icon element, created in the
@@ -8,20 +9,22 @@ local ui_element = require("ui_element")
 -- completely independent widget file.
 
 local button = class()
+button.type = "button"
 
 function button:new(data)
-  self.type = "button"
   self.on_press = data.action
   self.child = data.child
 end
 
-function button:pointer_collision(ctx, hit)
+function button:pointer_collision(elem, ctx, hit)
   local input = ctx.input_state
 
-  -- when pressed, record this button as the widget being interacted with
-  -- (so callers can do `self == ctx.input_state.interacting_with`)
+  -- keyed by the element's hash: several elements can be interacted with at once
+  local interacting = input.interacting_with[elem.hash_num] == elem
   if hit and input.left == "pressed" then
-    input.interacting_with = self
+    input.interacting_with[elem.hash_num] = elem
+  elseif interacting and not (input.left == "held" or input.left == "pressed") then
+    input.interacting_with[elem.hash_num] = nil
   end
 
   -- push the configured action into the action queue when clicked
@@ -32,7 +35,7 @@ end
 
 function button:draw(elem, ctx, data, entry)
   local r = elem.rect
-  if not data or not r then return end
+  if not data then return end
 
   apply_display.draw_background(
     r.x, r.y, r.w, r.h,
@@ -44,7 +47,7 @@ function button:draw(elem, ctx, data, entry)
   if self.child then
     self.child.rect = { x = r.x, y = r.y, w = r.w, h = r.h }
     self.child.states = elem.states
-    ui_element:draw(self.child, ctx)
+    self.child:draw(ctx)
   end
 end
 

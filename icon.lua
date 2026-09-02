@@ -8,16 +8,16 @@ local fonts = require("fonts")
 -- completely independent widget file.
 
 local icon = class()
+icon.type = "icon"
 
 -- text: the icon string (glyph or name/ligature)
 function icon:new(text)
-  self.type = "icon"
   self.text = text or ""
 end
 
-function icon:pointer_collision(ctx, hit)
-  -- not interactive
-end
+-- function icon:pointer_collision(elem, ctx, hit)
+--   -- not interactive
+-- end
 
 function icon:draw(elem, ctx, data, entry)
   local r = elem.rect

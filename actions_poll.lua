@@ -1,6 +1,9 @@
 local execute = {
   Quit = function()
   end,
+  quit = function()
+    love.event.push("quit") -- same as the osu_ui example: the loop polls it and exits
+  end,
   print_a = function()
     print("pressed button A")
   end,

@@ -6,14 +6,15 @@ local class = require("class")
 -- completely independent widget file.
 
 local box = class()
+box.type = "box"
 
 -- widget instance with custom data
 function box:new()
 end
 
-function box:pointer_collision(ctx, hit)
-  -- TODO: per-type interaction state
-end
+-- function box:pointer_collision(elem, ctx, hit)
+--   -- TODO: per-type interaction state
+-- end
 
 function box:draw(elem, ctx, data, entry)
   local r = elem.rect

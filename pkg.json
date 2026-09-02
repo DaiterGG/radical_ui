@@ -1,8 +1,8 @@
 {
-  "name": "my_ui_mod",
-  "display_name": "My UI Mod",
-  "desc": "ui",
-  "creator": "you",
+  "name": "radical_ui",
+  "display_name": "Radical UI",
+  "desc": "ui theme",
+  "creator": "Daiter",
   "version": "1.0.0",
   "types": {
     "ui": "ui_init"

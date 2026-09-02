@@ -7,58 +7,36 @@ local Direction = {
   Down = "down",
 }
 
-local SizeTreatAs = {
-  PercentOfHor = "PercentOfHor",
-  PercentOfVert = "PercentOfVert",
-  JustPixels = "JustPixels",
-}
-
-local Value = class()
-
--- Value("15")  -> percent: 15 out of 100 of the reference length
--- Value("5px") -> pixels: scaled by ui_scale
-function Value:new(str)
-  str = tostring(str)
-  if str:sub(-2) == "px" then
-    self.is_px = true
-    self.value = tonumber(str:sub(1, -3)) or 0
-  else
-    self.is_px = false
-    self.value = tonumber(str) or 0
-  end
-end
-
-function Value:unwrap(length, ui_scale)
-  if self.is_px then
-    return self.value * (ui_scale or 1.0)
-  end
-  return (length * self.value) / 100
-end
-
 local Size = class()
 
--- Size({ percentOfHor = 30, percentOfVert = 30 }) -> % of parent
--- Size({ justPixels = 30 }) -> 30px for both axes (ui-scaled)
--- Size({ horPixels = 50, vertPixels = 40 }) -> independent pixel axes
--- percentOfHor/percentOfVert override their axis; horPixels/vertPixels set pixels per axis
+-- Size API (matches quick-board pattern):
+--   Size({ per_hor = 30, per_vert = 30 })         -> both axes as % of parent dimension
+--   Size({ px_hor = 44, px_vert = 40 })           -> both axes as ui-scaled pixels
+--   Size({ px_hor = 44, per_vert = 20 })          -> mixed: horizontal pixels, vertical percent
+--   Size({ per = 30 })                            -> shortcut: both axes percent
+--   Size({ px = 30 })                             -> shortcut: both axes pixels
 function Size:new(opts)
   opts = opts or {}
-  local px = opts.justPixels or 0
-  local hor_px = opts.horPixels or px
-  local vert_px = opts.vertPixels or px
-  self.hor = opts.percentOfHor ~= nil and opts.percentOfHor or hor_px
-  self.hor_type = opts.percentOfHor ~= nil and SizeTreatAs.PercentOfHor or SizeTreatAs.JustPixels
-  self.vert = opts.percentOfVert ~= nil and opts.percentOfVert or vert_px
-  self.vert_type = opts.percentOfVert ~= nil and SizeTreatAs.PercentOfVert or SizeTreatAs.JustPixels
+  self.hor = opts.per_hor ~= nil and opts.per_hor or opts.px_hor or opts.per or opts.px or 0
+  self.hor_type = opts.per_hor ~= nil and "PercentOfHor" or (opts.px_hor ~= nil or opts.px ~= nil or opts.per ~= nil) and "JustPixels" or "JustPixels"
+  if opts.per ~= nil then
+    self.hor_type = "PercentOfHor"
+  end
+
+  self.vert = opts.per_vert ~= nil and opts.per_vert or opts.px_vert or opts.per or opts.px or 0
+  self.vert_type = opts.per_vert ~= nil and "PercentOfVert" or (opts.px_vert ~= nil or opts.px ~= nil or opts.per ~= nil) and "JustPixels" or "JustPixels"
+  if opts.per ~= nil then
+    self.vert_type = "PercentOfVert"
+  end
 end
 
 function Size:unwrap(length_w, length_h, ui_scale)
   ui_scale = ui_scale or 1.0
 
   local function resolve(val, type_, ref_length)
-    if type_ == SizeTreatAs.PercentOfHor then
+    if type_ == "PercentOfHor" then
       return (length_w * val) / 100
-    elseif type_ == SizeTreatAs.PercentOfVert then
+    elseif type_ == "PercentOfVert" then
       return (length_h * val) / 100
     else
       return val * ui_scale
@@ -76,8 +54,10 @@ local Align = class()
 function Align:block(direction, length)
   self.kind = "Block"
   self.direction = direction or Direction.Up
-  self.length = length and Value(length) or Value("100")
-  self._gap = Value("0")
+  self.length = tonumber(length) or 100
+  self.length_type = type(length) == "string" and length:find("px") and "pixels" or "percent"
+  self.gap = 0
+  self.gap_type = "percent"
   return self
 end
 
@@ -86,20 +66,21 @@ function Align:absolute(opts)
   opts = opts or {}
   self.pivot = opts.pivot or { x = 0, y = 0 }
   self.parent_pivot = opts.parent_pivot or { x = 0, y = 0 }
-  self.size = opts.size or Size({ justPixels = 0 })
+  self.size = opts.size or Size({ px = 0 })
   return self
 end
 
 function Align:gap(new_gap)
   if self.kind == "Block" then
-    self._gap = new_gap and Value(new_gap) or Value("0")
+    self.gap = new_gap
+    self.gap_type = type(new_gap) == "string" and new_gap:find("px") and "pixels" or "percent"
   else
     error("gap can only be applied to Block align")
   end
   return self
 end
 
-local function split_window(window, block_length, direction, ui_scale, gap_val)
+local function split_window(window, block_length, direction, ui_scale, gap_val, gap_type)
   local block = {
     x = window.x,
     y = window.y,
@@ -109,16 +90,27 @@ local function split_window(window, block_length, direction, ui_scale, gap_val)
 
   ui_scale = ui_scale or 1.0
 
-  -- left/right grow horizontally, up/down vertically;
-  -- left/up take from the start edge, right/down from the end edge
   local horizontal = direction == Direction.Left or direction == Direction.Right
   local from_start = direction == Direction.Left or direction == Direction.Up
 
   local current_length = horizontal and window.w or window.h
-  local gap_length = gap_val:unwrap(current_length, ui_scale)
+
+  local gap_length
+  if gap_type == "pixels" then
+    gap_length = gap_val * (ui_scale or 1.0)
+  else
+    gap_length = (current_length * gap_val) / 100
+  end
+
+  local block_len
+  if type(block_length) == "string" and block_length:find("px") then
+    block_len = tonumber(block_length:sub(1, -3)) * (ui_scale or 1.0)
+  else
+    block_len = (current_length * block_length) / 100
+  end
 
   if horizontal then
-    block.w = block_length:unwrap(current_length, ui_scale)
+    block.w = block_len
 
     if from_start then
       window.x = window.x + block.w + gap_length
@@ -128,7 +120,7 @@ local function split_window(window, block_length, direction, ui_scale, gap_val)
 
     window.w = window.w - block.w - gap_length
   else
-    block.h = block_length:unwrap(current_length, ui_scale)
+    block.h = block_len
 
     if from_start then
       window.y = window.y + block.h + gap_length
@@ -142,13 +134,11 @@ local function split_window(window, block_length, direction, ui_scale, gap_val)
   return block
 end
 
--- window: input rect; ui_scale: optional
--- returns the computed rect
 function Align:apply(window, ui_scale)
   ui_scale = ui_scale or 1.0
 
   if self.kind == "Block" then
-    return split_window(window, self.length, self.direction, ui_scale, self._gap)
+    return split_window(window, self.length, self.direction, ui_scale, self.gap, self.gap_type)
   elseif self.kind == "Absolute" then
     local abs_size = self.size:unwrap(window.w, window.h, ui_scale)
 
@@ -168,8 +158,6 @@ end
 
 return {
   Align = Align,
-  Value = Value,
   Size = Size,
   Direction = Direction,
-  SizeTreatAs = SizeTreatAs,
 }

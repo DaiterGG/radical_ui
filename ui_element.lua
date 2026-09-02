@@ -1,83 +1,113 @@
+local class = require("class")
 -- ui_element(display_key, widgets)
 -- display_key: string key from ctx.display_list
 -- widgets: list of independent widget modules (box/button/slider)
-local ui_element = {}
 
--- methods below take the element explicitly as `this`, so they work both
--- module-style (ui_element:draw(elem, ctx)) and instance-style
--- (elem:draw(ctx)) once attached in :new.
+-- unique per-element id, used to key ctx.input_state.interacting_with
+local next_hash = 0
 
-function ui_element:push_child(this, child)
-  this.children[#this.children + 1] = child
+local ui_element = class()
+
+function ui_element:new(display_key, widgets)
+  next_hash = next_hash + 1
+  self.hash_num = next_hash
+  self.type = "ui_element"
+  self.display_key = display_key
+  self.widget = widgets or {}
+  self.align = nil
+  self.children = {}
+  self.rect = nil
+  self.states = {
+    idle = true,
+    hovered = false,
+    pressed = false,
+    held = false,
+    released = false,
+  }
+end
+
+function ui_element:push_child(child)
+  self.children[#self.children + 1] = child
 end
 
 -- draw one widget: if its display data is a state map (has an `idle` table)
 -- iterate the element's active states, otherwise pass the plain data through.
-local function draw_widget(w, this, ctx, data, entry)
+function ui_element:draw_widget(w, ctx, data, display_data)
+
   if not w.draw then return end
   if not (data and type(data.idle) == "table") then
-    w:draw(this, ctx, data, entry)
+    w:draw(self, ctx, data, display_data)
     return
   end
-  for state, active in pairs(this.states) do
+  for state, active in pairs(self.states) do
     local state_data = active and data[state]
     if state_data then
-      w:draw(this, ctx, state_data, entry)
+      w:draw(self, ctx, state_data, display_data)
     end
   end
 end
 
--- draw this element's widgets (children are drawn by ui_manager recursion)
-function ui_element:draw(this, ctx)
-  local entry = ctx.display_list and ctx.display_list[this.display_key]
-  for _, w in ipairs(this.widget) do
-    draw_widget(w, this, ctx, entry and entry[w.type], entry)
+function ui_element:draw(ctx)
+  local display_data = ctx.display_list[self.display_key]
+  for _, w in ipairs(self.widget) do
+    self:draw_widget(w, ctx, display_data and display_data[w.type], display_data)
   end
 end
 
--- pointer pass: handle display states and return whether this element was
--- hit. recursion into children is done by the manager (mirrors quick-board's
--- UIElement::pointer_collision_rec).
-function ui_element:pointer_collision(this, ctx, parent_hit)
-  -- hit = parent was hit and pointer is within this element's rect
-  local rect = this.rect
+-- recursive variants (moved from ui_manager): a whole subtree can be aligned /
+-- drawn / hit-tested by calling these on the root element, e.g. root:align_rec()
+
+-- set this element's rect from its align + window, hand each child a fresh
+-- window clipped to this rect, and recurse
+function ui_element:align_rec(window, ctx)
+  if self.align then
+    local rect = self.align:apply(window, ctx.ui_scale)
+    self.rect = rect
+    window = { x = rect.x, y = rect.y, w = rect.w, h = rect.h }
+  end
+  -- always hand children a fresh window: block aligns mutate their window
+  for _, child in ipairs(self.children) do
+    child:align_rec({ x = window.x, y = window.y, w = window.w, h = window.h }, ctx)
+  end
+end
+
+-- draw this element, then recurse into children
+function ui_element:draw_rec(ctx)
+  self:draw(ctx)
+  for _, child in ipairs(self.children) do
+    child:draw_rec(ctx)
+  end
+end
+
+-- recursive hit-test: this element's hit is passed down as parent_hit, so
+-- children only react when an ancestor is hit
+function ui_element:pointer_collision_rec(ctx, parent_hit)
+  local hit = self:pointer_collision(ctx, parent_hit)
+  for _, child in ipairs(self.children) do
+    child:pointer_collision_rec(ctx, hit)
+  end
+end
+
+function ui_element:pointer_collision(ctx, parent_hit)
+  local rect = self.rect
   local hit = parent_hit and rect ~= nil
       and ctx.input_state.pos.x >= rect.x and ctx.input_state.pos.x < rect.x + rect.w
       and ctx.input_state.pos.y >= rect.y and ctx.input_state.pos.y < rect.y + rect.h
 
   -- update display states (idle stays active as the base)
-  this.states.hovered = hit
-  this.states.pressed = hit and ctx.input_state.left == "pressed"
-  this.states.held = hit and ctx.input_state.left == "held"
-  this.states.released = hit and ctx.input_state.left == "released"
+  self.states.hovered = hit
+  self.states.pressed = hit and ctx.input_state.left == "pressed"
+  self.states.held = hit and ctx.input_state.left == "held"
+  self.states.released = hit and ctx.input_state.left == "released"
 
-  -- widget-specific logic (widgets take (ctx, hit))
-  for _, w in ipairs(this.widget) do
+  -- widget-specific logic (widgets take (elem, ctx, hit), elem = this element)
+  for _, w in ipairs(self.widget) do
     if w.pointer_collision then
-      w:pointer_collision(ctx, hit)
+      w:pointer_collision(self, ctx, hit)
     end
   end
 
   return hit
-end
-
--- factory: returns a plain element table with ui_element methods attached
-function ui_element:new(display_key, widgets)
-  local elem = {
-    display_key = display_key,
-    widget = widgets or {},
-    align = nil,
-    children = {},
-    rect = nil,
-    states = {
-      idle = true,
-      hovered = false,
-      pressed = false,
-      held = false,
-      released = false,
-    },
-  }
-  return elem
 end
 
 return ui_element

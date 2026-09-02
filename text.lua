@@ -7,15 +7,15 @@ local fonts = require("fonts")
 -- completely independent widget file.
 
 local text = class()
+text.type = "text"
 
 function text:new(str)
-  self.type = "text"
   self.text = str or ""
 end
 
-function text:pointer_collision(ctx, hit)
-  -- not interactive
-end
+-- function text:pointer_collision(elem, ctx, hit)
+--   -- not interactive
+-- end
 
 function text:draw(elem, ctx, data, entry)
   local r = elem.rect
