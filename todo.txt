@@ -1,0 +1,10 @@
+check if scroll bar reiligns when not hit and not interacting with;
+
+widgest:
+    switch?
+    optional complex polyline border?
+    input box
+    
+later
+animations
+

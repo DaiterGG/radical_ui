@@ -1,57 +1,86 @@
 local utils = {}
 
--- prints a value recursively; `seen` tracks visited tables to break loops
-local function print_rec(value, indent, seen)
-  local prefix = string.rep("  ", indent)
-  if type(value) ~= "table" then
-    print(prefix .. tostring(value))
-    return
-  end
-  if seen[value] then
-    print(prefix .. "<circular>")
-    return
-  end
-  seen[value] = true
+local function json_escape(value)
+	return tostring(value):gsub("\\", "\\\\"):gsub('"', '\\"'):gsub("\n", "\\n"):gsub("\r", "\\r"):gsub("\t", "\\t")
+end
 
-  print(prefix .. "{")
-  for k, v in pairs(value) do
-    if type(v) == "table" then
-      print(prefix .. "  [" .. tostring(k) .. "] =")
-      print_rec(v, indent + 1, seen)
-    else
-      print(prefix .. "  [" .. tostring(k) .. "] = " .. tostring(v))
-    end
-  end
-  print(prefix .. "}")
+local function json_string(value)
+	return '"' .. json_escape(value) .. '"'
+end
 
-  seen[value] = nil
+local function is_array(t)
+	local count = 0
+
+	for k in pairs(t) do
+		if type(k) ~= "number" or k ~= math.floor(k) or k < 1 then
+			return false
+		end
+		count = count + 1
+	end
+
+	for i = 1, count do
+		if t[i] == nil then
+			return false
+		end
+	end
+
+	return true
+end
+
+local function serialize(value, indent, seen)
+	indent = indent or 0
+	seen = seen or {}
+
+	local prefix = string.rep("  ", indent)
+	local next_prefix = string.rep("  ", indent + 1)
+
+	if value == nil then
+		return "null"
+	elseif type(value) == "string" then
+		return json_string(value)
+	elseif type(value) == "number" or type(value) == "boolean" then
+		return tostring(value)
+	elseif type(value) ~= "table" then
+		return json_string(value)
+	end
+
+	if seen[value] then
+		return json_string("<circular>")
+	end
+
+	seen[value] = true
+
+	local parts = {}
+
+	if is_array(value) then
+		for i = 1, #value do
+			parts[#parts + 1] = next_prefix .. serialize(value[i], indent + 1, seen)
+		end
+
+		seen[value] = nil
+
+		if #parts == 0 then
+			return "[]"
+		end
+
+		return "[\n" .. table.concat(parts, ",\n") .. "\n" .. prefix .. "]"
+	end
+
+	for k, v in pairs(value) do
+		parts[#parts + 1] = next_prefix .. json_string(k) .. ": " .. serialize(v, indent + 1, seen)
+	end
+
+	seen[value] = nil
+
+	if #parts == 0 then
+		return "{}"
+	end
+
+	return "{\n" .. table.concat(parts, ",\n") .. "\n" .. prefix .. "}"
 end
 
 function utils.print(value)
-  print_rec(value, 0, {})
-end
-
--- encode a Unicode codepoint as a UTF-8 string (no utf8 lib needed).
--- used for Font Awesome icon glyphs, e.g. utils.utf8_char(0xE052)
-function utils.utf8_char(cp)
-  cp = tonumber(cp) or 0
-  if cp < 0x80 then
-    return string.char(cp)
-  elseif cp < 0x800 then
-    return string.char(0xC0 + math.floor(cp / 0x40), 0x80 + cp % 0x40)
-  else
-    return string.char(
-      0xE0 + math.floor(cp / 0x1000),
-      0x80 + math.floor(cp / 0x40) % 0x40,
-      0x80 + cp % 0x40
-    )
-  end
-end
-
-function utils.display_init()
-  return {
-    elements = {},
-  }
+	print(serialize(value))
 end
 
 return utils

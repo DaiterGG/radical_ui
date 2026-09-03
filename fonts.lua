@@ -9,56 +9,74 @@ local fonts = {}
 
 -- name -> { file = <path under fonts/>, size = <px> }
 local registrations = {
-  glyphter1_20 = { file = "Glyphter.ttf", size = 20 },
-  -- add more fonts here, e.g.:
-  -- awesome = { file = "Font Awesome 7 Brands-Regular-400.otf", size = 20 },
+	icons = { file = "Glyphter.ttf", size = 20 },
+	afacad = { file = "Afacad-Regular.ttf", size = 20 },
+	afacad_bold = { file = "Afacad-Bold.ttf", size = 20 },
+	afacad_medium = { file = "Afacad-Medium.ttf", size = 20 },
+	afacad_semibold = { file = "Afacad-SemiBold.ttf", size = 20 },
+	afacad_italic = { file = "Afacad-Italic.ttf", size = 20 },
+	afacad_bolditalic = { file = "Afacad-BoldItalic.ttf", size = 20 },
+	afacad_mediumitalic = { file = "Afacad-MediumItalic.ttf", size = 20 },
+	afacad_semibolditalic = { file = "Afacad-SemiBoldItalic.ttf", size = 20 },
 }
 
 local paths = {} -- name -> resolved file path
 local cache = {} -- "name:size" -> love.Font
 
 local function join_path(mount_path, part)
-  local p = mount_path or ""
-  if p:sub(-1) ~= "/" and part:sub(1) ~= "/" then
-    p = p .. "/"
-  end
-  return p .. part
+	local p = mount_path or ""
+	if p:sub(-1) ~= "/" and part:sub(1) ~= "/" then
+		p = p .. "/"
+	end
+	return p .. part
 end
 
 -- resolve each registered font's file path (missing files are skipped).
 -- validation uses love.graphics.newFont (works for the mod's mounts) and
 -- the default-size font is kept in the cache.
 function fonts.load(mount_path)
-  for name, reg in pairs(registrations) do
-    local candidates = {
-      join_path(mount_path, "fonts/" .. reg.file),
-      "fonts/" .. reg.file,
-    }
-    for _, p in ipairs(candidates) do
-      local ok, font = pcall(love.graphics.newFont, p, reg.size or 20)
-      if ok then
-        paths[name] = p
-        cache[name .. ":" .. tostring(reg.size or 20)] = font
-        break
-      end
-    end
-  end
+	for name, reg in pairs(registrations) do
+		local candidates = {
+			join_path(mount_path, "fonts/" .. reg.file),
+			"fonts/" .. reg.file,
+		}
+		for _, p in ipairs(candidates) do
+			local ok, font = pcall(love.graphics.newFont, p, reg.size or 20)
+			if ok then
+				paths[name] = p
+				cache[name .. ":" .. tostring(reg.size or 20)] = font
+				break
+			end
+		end
+	end
 end
 
 -- get a font at a size (created + cached on first request);
 -- size defaults to the registration's default_size
 function fonts:get(name, size)
-  local reg = registrations[name]
-  if not reg then return nil end
-  size = size or reg.size or 20
+	local reg = registrations[name]
+	if not reg then
+		return nil
+	end
+	size = size or reg.size or 20
 
-  local key = name .. ":" .. tostring(size)
-  if cache[key] == nil then
-    local path = paths[name]
-    local ok, font = path and pcall(love.graphics.newFont, path, size)
-    cache[key] = ok and font or nil
-  end
-  return cache[key]
+	local key = name .. ":" .. tostring(size)
+	if cache[key] == nil then
+		local path = paths[name]
+		local ok, font = pcall(love.graphics.newFont, path, size)
+		cache[key] = ok and font or nil
+	end
+	return cache[key]
+end
+
+-- get a font scaled by ui_scale.
+-- target_size = math.floor(size * ui_scale + 0.5), clamped >= 1
+-- returns scaled_font, target_size
+function fonts:get_scaled(name, size, ui_scale)
+	local s = ui_scale or 1
+	size = size or (registrations[name] and registrations[name].size) or 20
+	local target_size = math.max(1, math.floor(size * s + 0.5))
+	return self:get(name, target_size), target_size
 end
 
 return fonts

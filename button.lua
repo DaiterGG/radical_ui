@@ -11,44 +11,45 @@ local utils = require("utils")
 local button = class()
 button.type = "button"
 
-function button:new(data)
-  self.on_press = data.action
-  self.child = data.child
+function button:new(on_press, child)
+	self.on_press = on_press
+	self.child = child
 end
 
 function button:pointer_collision(elem, ctx, hit)
-  local input = ctx.input_state
+	local input = ctx.input_state
 
-  -- keyed by the element's hash: several elements can be interacted with at once
-  local interacting = input.interacting_with[elem.hash_num] == elem
-  if hit and input.left == "pressed" then
-    input.interacting_with[elem.hash_num] = elem
-  elseif interacting and not (input.left == "held" or input.left == "pressed") then
-    input.interacting_with[elem.hash_num] = nil
-  end
+	-- keyed by the element's hash: several elements can be interacted with at once
+	local interacting = input.interacting_with[elem.hash_num] == elem
+	if hit and input.left == "pressed" then
+		input.interacting_with[elem.hash_num] = elem
+	elseif interacting and not (input.left == "held" or input.left == "pressed") then
+		input.interacting_with[elem.hash_num] = nil
+	end
 
-  -- push the configured action into the action queue when clicked
-  if self.on_press and hit and input.left == "pressed" then
-    ctx.action_queue:register(self.on_press)
-  end
+	-- push the configured action into the action queue when clicked
+	if self.on_press and hit and input.left == "pressed" then
+		ctx.action_queue:register(self.on_press)
+	end
 end
 
-function button:draw(elem, ctx, data, entry)
-  local r = elem.rect
-  if not data then return end
+function button:draw(elem, ctx, widget_data, entry)
+	local r = elem.rect
 
-  apply_display.draw_background(
-    r.x, r.y, r.w, r.h,
-    data.bg, data.border, entry and entry.polyline,
-    { scale = ctx.ui_scale or 1 }
-  )
+	apply_display.draw_background(
+		r,
+		widget_data.bg,
+		widget_data.border,
+		entry and entry.polyline,
+		{ scale = ctx.ui_scale or 1 }
+	)
 
-  -- draw the owned child (text/icon) on top; its state mirrors the button's
-  if self.child then
-    self.child.rect = { x = r.x, y = r.y, w = r.w, h = r.h }
-    self.child.states = elem.states
-    self.child:draw(ctx)
-  end
+	-- draw the owned child (text/icon) on top; its state mirrors the button's
+	if self.child then
+		self.child.rect = { x = r.x, y = r.y, w = r.w, h = r.h }
+		self.child.states = elem.states
+		self.child:draw(ctx)
+	end
 end
 
 return button
