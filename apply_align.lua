@@ -1,4 +1,5 @@
 local class = require("class")
+local utils = require("utils")
 
 local Direction = {
 	Left = "left",
@@ -8,6 +9,7 @@ local Direction = {
 }
 
 local Size = class()
+local Align = class()
 
 -- Size API (matches quick-board pattern):
 --   Size({ per_hor = 30, per_vert = 30 })         -> both axes as % of parent dimension
@@ -53,13 +55,11 @@ function Size:unwrap(length_w, length_h, ui_scale)
 	}
 end
 
-local Align = class()
-
 function Align:block(direction, length)
 	self.kind = "Block"
 	self.direction = direction or Direction.Up
-	self.length = tonumber(length) or 100
-	self.length_type = type(length) == "string" and length:find("px") and "pixels" or "percent"
+	self.length = length.pc or length.px
+	self.length_type = length.px and "pixels" or "percent"
 	self.gap = 0
 	self.gap_type = "percent"
 	return self
@@ -76,15 +76,16 @@ end
 
 function Align:gap(new_gap)
 	if self.kind == "Block" then
-		self.gap = new_gap
-		self.gap_type = type(new_gap) == "string" and new_gap:find("px") and "pixels" or "percent"
+		self.gap = new_gap.pc or new_gap.px
+		self.gap_type = new_gap.px and "pixels" or "percent"
 	else
 		error("gap can only be applied to Block align")
 	end
 	return self
 end
 
-local function split_window(window, block_length, direction, ui_scale, gap_val, gap_type)
+function Align:split_window(window, ui_scale)
+	utils.print(self)
 	local block = {
 		x = window.x,
 		y = window.y,
@@ -94,23 +95,22 @@ local function split_window(window, block_length, direction, ui_scale, gap_val, 
 
 	ui_scale = ui_scale or 1.0
 
-	local horizontal = direction == Direction.Left or direction == Direction.Right
-	local from_start = direction == Direction.Left or direction == Direction.Up
+	local horizontal = self.direction == Direction.Left or self.direction == Direction.Right
+	local from_start = self.direction == Direction.Left or self.direction == Direction.Up
 
 	local current_length = horizontal and window.w or window.h
-
 	local gap_length
-	if gap_type == "pixels" then
-		gap_length = gap_val * (ui_scale or 1.0)
+	if self.gap_type == "pixels" then
+		gap_length = self.gap * (ui_scale or 1.0)
 	else
-		gap_length = (current_length * gap_val) / 100
+		gap_length = (current_length * self.gap) / 100
 	end
 
 	local block_len
-	if type(block_length) == "string" and block_length:find("px") then
-		block_len = tonumber(block_length:sub(1, -3)) * (ui_scale or 1.0)
+	if self.length_type == "pixels" then
+		block_len = self.length * (ui_scale or 1.0)
 	else
-		block_len = (current_length * block_length) / 100
+		block_len = (current_length * self.length) / 100
 	end
 
 	if horizontal then
@@ -142,7 +142,8 @@ function Align:apply(window, ui_scale)
 	ui_scale = ui_scale or 1.0
 
 	if self.kind == "Block" then
-		return split_window(window, self.length, self.direction, ui_scale, self.gap, self.gap_type)
+		utils.print(self)
+		return self:split_window(window, ui_scale)
 	elseif self.kind == "Absolute" then
 		local abs_size = self.size:unwrap(window.w, window.h, ui_scale)
 

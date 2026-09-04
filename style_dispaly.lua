@@ -1,15 +1,22 @@
 local color = require("color")
 
 local main_hover_c = color("#00000001")
-local header_border = color("#111114")
+local main_text = color("#cccccc")
+local main_panel = color("#25232E")
+local main_panel_br = color("#292733")
+local separator_main = color("#14151A")
+local glass_icons = color("#C7C7C7")
+
+local separator_header = color("#0E0E12")
+local glass_bg_tint = color("#3E3E4694") --TODO:
 local header_text = {
 	font = "icons",
 	size = 40,
-	color = color("#cccccc"),
+	color = main_text,
 }
 
 local display_list = {
-	root = { box = { bg = "#333333" } },
+	root = { box = { bg = color("#333333") } },
 
 	header = {
 		box = {
@@ -20,7 +27,7 @@ local display_list = {
 	header_left_b = {
 		button = {
 			idle = {
-				border = { center = true, width = 2, color = header_border },
+				border = { center = true, width = 2, color = separator_header },
 			},
 			hovered = {
 				bg = main_hover_c,
@@ -30,6 +37,77 @@ local display_list = {
 	},
 	header_left_b_icons = {
 		text = header_text,
+	},
+	first_b = {
+		polyline = {
+			{ 0, 0 },
+			{ 220, 0 },
+			{ 220, 50 },
+			{ 270, 100 },
+			{ 270, 150 },
+			{ 0, 100 },
+		},
+		button = {
+			idle = {
+				bg = main_panel_br,
+				border = { center = true, width = 2, color = separator_main },
+			},
+		},
+	},
+	first_b_text = {
+		text = {
+			font = "afacad",
+			size = 80,
+			color = main_text,
+		},
+	},
+	second_b_text = {
+		text = {
+			font = "afacad",
+			size = 100,
+			color = main_text,
+		},
+	},
+	second_b = {
+		button = {
+			idle = {
+				bg = main_panel,
+				border = { center = true, width = 2, color = separator_main },
+			},
+		},
+	},
+	third_b = {
+		button = {
+			idle = {
+				bg = main_panel_br,
+				border = { center = true, width = 2, color = separator_main },
+			},
+		},
+	},
+	up_panel = {
+		-- polyline = {
+		-- 	{ 0, 0 },
+		-- 	{ 750, 0 },
+		-- 	{ 750, 300 },
+		-- 	{ 720, 330 },
+		-- 	{ 0, 330 },
+		-- },
+		box = {
+			bg = glass_bg_tint,
+			border = { center = true, width = 1, color = separator_main }, -- TODO:
+		},
+	},
+	middle_panel = {
+		box = {
+			bg = glass_bg_tint,
+			border = { center = true, width = 1, color = separator_main }, -- TODO:
+		},
+	},
+	down_panel = {
+		box = {
+			bg = glass_bg_tint,
+			border = { center = true, width = 1, color = separator_main }, -- TODO:
+		},
 	},
 }
 

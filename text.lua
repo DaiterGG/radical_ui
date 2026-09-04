@@ -59,7 +59,7 @@ function text:draw(elem, ctx, widget_data, entry)
 		y = r.y
 	end
 
-	apply_display.draw_text(x, y, self.text, font, widget_data.color and { widget_data.color:to_rgba() })
+	apply_display.draw_text(x, y, self.text, font, widget_data.color)
 end
 
 return text

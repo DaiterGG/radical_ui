@@ -77,7 +77,6 @@ function ui_element:align_rec(window, ctx)
 		self.rect = rect
 		window = { x = rect.x, y = rect.y, w = rect.w, h = rect.h }
 	end
-	-- always hand children a fresh window: block aligns mutate their window
 	for _, child in ipairs(self.children) do
 		child:align_rec(window, ctx)
 	end

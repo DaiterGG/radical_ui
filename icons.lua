@@ -5,16 +5,9 @@ local icons = {
 	["back1"] = 0x0023,
 	["back2"] = 0x004A,
 	["cog1"] = 0x0041,
+	["brush1"] = 0x0067,
+	["online1"] = 0x0058,
 }
-
--- encode a Unicode codepoint as a UTF-8 string (no utf8 lib needed).
--- used for Font Awesome icon glyphs, e.g. utils.utf8_char(0xE052)
-local function utf8_char(cp)
-	cp = tonumber(cp) or 0
-	if cp < 0x80 then
-		return string.char(cp)
-	end
-end
 
 -- precompute ready UTF-8 glyph strings (no utf8 lib needed)
 local glyphs = {}

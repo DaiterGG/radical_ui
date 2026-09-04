@@ -29,18 +29,19 @@ function button:pointer_collision(elem, ctx, hit)
 
 	-- push the configured action into the action queue when clicked
 	if self.on_press and hit and input.left == "pressed" then
+		print("hi")
 		ctx.action_queue:register(self.on_press)
 	end
 end
 
-function button:draw(elem, ctx, widget_data, entry)
+function button:draw(elem, ctx, widget_data, all_data)
 	local r = elem.rect
 
 	apply_display.draw_background(
 		r,
 		widget_data.bg,
 		widget_data.border,
-		entry and entry.polyline,
+		all_data.polyline,
 		{ scale = ctx.ui_scale or 1 }
 	)
 

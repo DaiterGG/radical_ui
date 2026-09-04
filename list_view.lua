@@ -348,7 +348,7 @@ function list_view:draw(elem, ctx, widget_data, display_data)
 		love.graphics.push("all")
 
 		love.graphics.stencil(function()
-			love.graphics.rectangle("fill", r.x, r.y, r.w, r.h)
+			love.graphics.rectangle("fill", math.floor(r.x + 0.5), math.floor(r.y + 0.5), r.w, r.h)
 		end, "replace", 1)
 		love.graphics.setStencilTest("greater", 0)
 

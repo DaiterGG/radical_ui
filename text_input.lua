@@ -66,7 +66,7 @@ function text_input:draw(elem, ctx, widget_data, entry)
 
 	-- colors
 	local text_color = widget_data.text_color or { r = 1, g = 1, b = 1 }
-	local placeholder_color = widget_data.placeholder_color or { r = 0.5, g = 0.5, b = 0.5 }
+	local placeholder_color = widget_data.placeholder_color or "#b07cf7"
 
 	if display_text == self.placeholder then
 		text_color = placeholder_color
@@ -92,7 +92,7 @@ function text_input:draw(elem, ctx, widget_data, entry)
 
 	local y = r.y + (r.h - th) / 2
 
-	apply_display.draw_text(x, y, display_text, font, { text_color:to_rgba() })
+	apply_display.draw_text(x, y, display_text, font, text_color)
 end
 
 return text_input
