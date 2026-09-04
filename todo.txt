@@ -12,10 +12,10 @@ animations as a display data ,  if data then hijack recurcive draw loop of the w
 can you make apply display methods take color or str and turn str to color; widgets could just pass color data if it's not nil
 
 
-polyline = { { x_pc = 0, y_pc = 0 }, { x_px = 200, y_px = 200 }, { x_px = 280, y_pc = 100 },{ x_pc = 0, y_pc = 0 }}; make it work like that just like apply align can be percent or pixels; pixels should be still scaled by the ui_scale; try to only make changes to the specific apply_display method
+polyline = { { x_pc = 0, y_pc = 0 }, { x_px = 200, y_px = 200 }, { x_px = 280, y_pc = 100 },{ x_pc = 0, y_pc = 0 }}; make it work like that just like apply align can be percent or pixels; pixels should be still scaled by the ui_scale; try to only make changes to the specific apply_display method --DONE
 
 
-make { bg = ..., border = {  down = { center = true, width = 2, color = separator_main }, left = { center = true, width = 2, color = separator_main } } }, make an optional direction specific borders for a rectangular bg, try to make changes only to a specific  apply_display method
+make { bg = ..., border = {  down = { center = true, width = 2, color = separator_main }, left = { center = true, width = 2, color = separator_main } } }, make an optional direction specific borders for a rectangular bg, try to make changes only to a specific  apply_display method --DONE
 
 
 make { polyline = { { x_pc = 0, y_pc = 0, center = true }, ... }, make an optional line specific center opion for a polylyne, try to make changes only to a specific  apply_display method; disable last 'close()' line in a chain so chain has to be closed manually: { x_pc = 0, y_pc = 0 }, ... ,{ x_pc = 0, y_pc = 0, center = false } }

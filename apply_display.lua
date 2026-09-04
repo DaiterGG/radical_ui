@@ -36,10 +36,57 @@ function apply_display.draw_box(x, y, w, h, c)
 	love.graphics.rectangle("fill", math.floor(x + 0.5), math.floor(y + 0.5), w, h)
 end
 
--- draw a box border (outline). border = { width, radius, color, center = false }
--- default: inner border (drawn inside rect, not expanding outside).
--- set border.center = true to draw centered on the edge (classic rect line behavior).
+-- draw a box border (outline).
+--
+-- single shared style: border = { width, radius, color, center = false }
+--   default inner border (drawn inside the rect, not expanding outside);
+--   set border.center = true to draw centered on the edge.
+--
+-- optional direction-specific borders (rectangular bg): give each edge its
+-- own config instead of one shared style:
+--   border = {
+--     up    = { width = 2, color = c, center = true },
+--     down  = { width = 2, color = c },
+--     left  = { width = 2, color = c },
+--     right = { width = 2, color = c },
+--   }
+--   any subset of the 4 edges may be given; each is drawn as a filled strip
+--   along that edge (center = true straddles the edge, default stays inside).
 function apply_display.draw_box_border(x, y, w, h, border, c)
+	-- direction map form: detect per-edge configs (colors live per side, not
+	-- in the shared `c` argument)
+	if border and (border.up or border.down or border.left or border.right) then
+		local function strip(side, sb)
+			local bw = sb.width or 1
+			local sc = resolve(sb.color)
+			if not sc then
+				return
+			end
+			local ox, oy, ow, oh
+			if side == "up" then
+				ox, ow, oh = x, w, bw
+				oy = sb.center and y - bw / 2 or y
+			elseif side == "down" then
+				ox, ow, oh = x, w, bw
+				oy = sb.center and y + h - bw / 2 or y + h - bw
+			elseif side == "left" then
+				oy, ow, oh = y, bw, h
+				ox = sb.center and x - bw / 2 or x
+			else -- right
+				oy, ow, oh = y, bw, h
+				ox = sb.center and x + w - bw / 2 or x + w - bw
+			end
+			love.graphics.setColor(sc)
+			love.graphics.rectangle("fill", math.floor(ox + 0.5), math.floor(oy + 0.5), ow, oh)
+		end
+		for _, side in ipairs({ "up", "down", "left", "right" }) do
+			if border[side] then
+				strip(side, border[side])
+			end
+		end
+		return
+	end
+
 	c = resolve(c)
 	if not border or not c then
 		return
@@ -128,11 +175,26 @@ function apply_display.draw_polyline(x, y, points, width, c, opts)
 	love.graphics.polygon("line", verts)
 end
 
--- scale raw-pixel points by a factor (like Value("px") uses ui_scale)
-function apply_display.scale_points(points, scale)
+-- resolve polyline points into rect-local screen pixels.
+-- each point may be:
+--   { x_pc = n, y_pc = n }        percent of the rect w / h
+--   { x_px = n, y_px = n }        ui-scaled pixels (raw px * scale)
+--   { x_px = n, y_pc = n }        mixed per axis
+--   { raw_x, raw_y }              legacy: raw px scaled by ui_scale
+-- scale = ui_scale, w/h = rect size (needed for the % forms)
+function apply_display.scale_points(points, scale, w, h)
 	local out = {}
 	for i, p in ipairs(points) do
-		out[i] = { p[1] * scale, p[2] * scale }
+		local px, py
+		if p.x_px ~= nil or p.x_pc ~= nil or p.y_px ~= nil or p.y_pc ~= nil then
+			-- keyed form: each axis is pixels (px * scale) or percent (w/h * n / 100)
+			px = p.x_px ~= nil and p.x_px * scale or (p.x_pc ~= nil and w * p.x_pc / 100 or 0)
+			py = p.y_px ~= nil and p.y_px * scale or (p.y_pc ~= nil and h * p.y_pc / 100 or 0)
+		else
+			-- legacy numeric pair: raw pixels scaled by ui_scale
+			px, py = p[1] * scale, p[2] * scale
+		end
+		out[i] = { px, py }
 	end
 	return out
 end
@@ -150,7 +212,7 @@ function apply_display.draw_background(rect, bg, border, polyline, opts)
 	local h = rect.h
 
 	if polyline then
-		local pts = apply_display.scale_points(polyline, scale)
+		local pts = apply_display.scale_points(polyline, scale, w, h)
 		apply_display.draw_polygon(x, y, pts, bg)
 		if border and border.color then
 			apply_display.draw_polyline(x, y, pts, border.width, border.color, { center = border.center })
@@ -165,7 +227,7 @@ function apply_display.draw_background(rect, bg, border, polyline, opts)
 		apply_display.corner_radius(x, y, w, h, radius, bg)
 	end
 
-	if border and border.color then
+	if border and (border.color or border.up or border.down or border.left or border.right) then
 		apply_display.draw_box_border(x, y, w, h, border, border.color)
 	end
 end
