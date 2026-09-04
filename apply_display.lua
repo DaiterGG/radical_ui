@@ -133,46 +133,73 @@ function apply_display.draw_polygon(x, y, points, c)
 	love.graphics.polygon("fill", verts)
 end
 
--- draw a polyline border (closed outline); no corner radius
--- if opts.center is true draws centered on edge; default inner (scaled inward).
+-- draw a polyline border (open chain, no auto-close); points are rect-local
+-- px (see scale_points). the chain is NOT closed automatically: repeat the
+-- first point at the end to close it manually.
+--
+-- per-point center flag controls the segment that arrives at that point:
+--   { x = n, y = n, center = true }  stroke drawn centered on the segment path
+--   { x = n, y = n, center = false } stroke inset inward by half its width
+--                                      (segment stays parallel / grid-aligned)
+--   points without center fall back to opts.center, default false.
 function apply_display.draw_polyline(x, y, points, width, c, opts)
 	c = resolve(c)
-	if not c or not points then
+	if not c or not points or #points < 2 then
 		return
 	end
 	opts = opts or {}
 	local w = width or 1
-	local verts = {}
+	local n = #points
 
-	-- inner by default: scale points toward centroid
-	if not opts.center then
-		local cx, cy = 0, 0
-		for i, p in ipairs(points) do
-			cx = cx + p[1]
-			cy = cy + p[2]
+	-- detect winding with the trapezoid formula:
+	-- this formula is negative for CCW, positive for CW
+	local signed_area = 0
+	for i = 1, n do
+		local j = i % n + 1
+		signed_area = signed_area + (points[j][1] - points[i][1]) * (points[j][2] + points[i][2])
+	end
+	local ccw = signed_area < 0
+
+	-- collect vertices into a single strip so corners join with miter caps
+	local verts = {}
+	for i = 1, n - 1 do
+		local p1 = points[i]
+		local p2 = points[i + 1]
+		local dx = p2[1] - p1[1]
+		local dy = p2[2] - p1[2]
+		local len = math.sqrt(dx * dx + dy * dy)
+		if len == 0 then
+			goto continue
 		end
-		local n = #points
-		if n > 0 then
-			cx, cy = cx / n, cy / n
-			local scale = 1 - (w / (2 * math.max(w, cy))) -- conservative shrink factor
-			scale = math.max(scale, 0)
-			for i, p in ipairs(points) do
-				verts[#verts + 1] = math.floor(x + cx + (p[1] - cx) * scale + 0.5)
-				verts[#verts + 1] = math.floor(y + cy + (p[2] - cy) * scale + 0.5)
+
+		local center = p2.center
+		if center == nil then
+			center = opts.center or false
+		end
+
+		local shiftx, shifty = 0, 0
+		if not center then
+			-- inward normal (half-width shift keeps border inside the shape)
+			local nx, ny
+			if ccw then
+				nx, ny = -dy / len, dx / len
+			else
+				nx, ny = dy / len, -dx / len
 			end
-		else
-			return
+			shiftx = nx * (w / 2)
+			shifty = ny * (w / 2)
 		end
-	else
-		for i, p in ipairs(points) do
-			verts[#verts + 1] = math.floor(x + p[1] + 0.5)
-			verts[#verts + 1] = math.floor(y + p[2] + 0.5)
-		end
+
+		verts[#verts + 1] = math.floor(x + p1[1] + shiftx + 0.5)
+		verts[#verts + 1] = math.floor(y + p1[2] + shifty + 0.5)
+		verts[#verts + 1] = math.floor(x + p2[1] + shiftx + 0.5)
+		verts[#verts + 1] = math.floor(y + p2[2] + shifty + 0.5)
+		::continue::
 	end
 
 	love.graphics.setColor(c)
 	love.graphics.setLineWidth(w)
-	love.graphics.polygon("line", verts)
+	love.graphics.line(verts)
 end
 
 -- resolve polyline points into rect-local screen pixels.
@@ -195,6 +222,10 @@ function apply_display.scale_points(points, scale, w, h)
 			px, py = p[1] * scale, p[2] * scale
 		end
 		out[i] = { px, py }
+		-- carry per-point render flags (e.g. center) through to the draw stage
+		if p.center ~= nil then
+			out[i].center = p.center
+		end
 	end
 	return out
 end

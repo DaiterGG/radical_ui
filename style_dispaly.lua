@@ -38,15 +38,32 @@ local display_list = {
 	header_left_b_icons = {
 		text = header_text,
 	},
+	test_p = {
+		polyline = {
+			{ x_px = 0, y_pc = 0 },
+			{ x_px = 220, y_pc = 0 },
+			{ x_px = 220, y_pc = 45 },
+			-- { x_px = 270, y_pc = 100 },
+			{ x_px = 320, y_pc = 100 },
+			{ x_pc = 0, y_pc = 100, center = false },
+			{ x_px = 0, y_px = 0, center = false },
+		},
+		button = {
+			idle = {
+				bg = main_panel_br,
+				border = { center = true, width = 2, color = separator_main },
+			},
+		},
+	},
 	first_b = {
 		polyline = {
-			{ 0, 0 },
+			{ x_px = 0, y_px = 0 },
 			{ x_px = 220, y_px = 0 },
 			{ x_px = 220, y_pc = 45 },
 			{ x_px = 270, y_pc = 80 },
 			{ x_px = 270, y_pc = 100 },
-			{ x_px = 0, y_pc = 100 },
-			{ 0, 0 },
+			{ x_px = 0, y_pc = 100, center = false },
+			{ x_px = 0, y_px = 0, center = false },
 		},
 		button = {
 			idle = {

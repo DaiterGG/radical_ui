@@ -118,8 +118,20 @@ return function(ctx)
 			size = Size({ per_hor = 100, per_vert = 100 }),
 		}),
 	})
-	root:push_child(header)
-	root:push_child(left_p)
+
+	test_p = ui_element({
+		display = "test_p",
+		widgets = { button(first) },
+		align = absolute({
+			pivot = { x = 0, y = 100 },
+			parent_pivot = { x = 0, y = 100 },
+			size = Size({ per_hor = 20, per_vert = 10 }),
+		}),
+	})
+	root:push_child(test_p)
+	-- root:push_child(header)
+	-- root:push_child(left_p)
+
 	-- local bar = ui_element({ display = "scrollable_list_scroll_bar", widgets = { box() } })
 	-- local ch = ui_element({ display = "header", widgets = { box() }, align = block(Direction.Up, "50") })
 	-- bar:push_child(ch)
