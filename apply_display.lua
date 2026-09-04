@@ -149,10 +149,6 @@ function apply_display.draw_background(rect, bg, border, polyline, opts)
 	local w = rect.w
 	local h = rect.h
 
-	if type(bg) == "string" then
-		bg = color(bg)
-	end
-
 	if polyline then
 		local pts = apply_display.scale_points(polyline, scale)
 		apply_display.draw_polygon(x, y, pts, bg)

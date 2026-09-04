@@ -25,10 +25,16 @@ end
 local Color = {}
 Color.__index = Color
 
--- color(r, g, b, a) | color(0xRRGGBB[AA]) | color("#RRGGBB[AA]")
+-- color(r, g, b, a) | color(0xRRGGBB[AA]) | color("#RRGGBB[AA]") | color("#RRGGBB", alfa_percent)
+--   alfa_percent: 0..100 alpha percent ("#RRGGBB" gets this alpha)
 local function new(r, g, b, a)
   if type(r) == "string" then
-    r, g, b, a = hex_digits(r)
+    local hr, hg, hb, ha = hex_digits(r)
+    if type(g) == "number" and b == nil then
+      -- color("#RRGGBB", alfa_percent): second arg is alpha as a percent
+      ha = (g / 100) * 255
+    end
+    r, g, b, a = hr, hg, hb, ha
   elseif g == nil then
     local v = math.floor(r)
     if v >= 0x1000000 then

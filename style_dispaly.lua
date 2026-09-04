@@ -1,6 +1,6 @@
 local color = require("color")
 
-local main_hover_c = color("#00000001")
+local main_hover_c = color("#000000", 1)
 local main_text = color("#cccccc")
 local main_panel = color("#25232E")
 local main_panel_br = color("#292733")
@@ -8,7 +8,7 @@ local separator_main = color("#14151A")
 local glass_icons = color("#C7C7C7")
 
 local separator_header = color("#0E0E12")
-local glass_bg_tint = color("#3E3E4694") --TODO:
+local glass_bg_tint = color("#3E3E46", 58)
 local header_text = {
 	font = "icons",
 	size = 40,

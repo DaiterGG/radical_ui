@@ -12,10 +12,6 @@ animations as a display data ,  if data then hijack recurcive draw loop of the w
 can you make apply display methods take color or str and turn str to color; widgets could just pass color data if it's not nil
 
 
-make
-color.lua
-local function new("#353232", alfa_percent); make it detect that pattern
-
 polyline = { { x_pc = 0, y_pc = 0 }, { x_px = 200, y_px = 200 }, { x_px = 280, y_pc = 100 },{ x_pc = 0, y_pc = 0 }}; make it work like that just like apply align can be percent or pixels; pixels should be still scaled by the ui_scale; try to only make changes to the specific apply_display method
 
 
