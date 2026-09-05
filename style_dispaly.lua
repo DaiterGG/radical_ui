@@ -140,7 +140,7 @@ local display_list = {
 		polyline = {
 			{ x_px = 15, y_px = 1 },
 			{ x_px = 270, y_px = 1 },
-			{ x_px = 270, y_px = 102 },
+			{ x_px = 370, y_px = 102 },
 			{ x_px = -5, y_px = 102 },
 			{ x_px = -5, y_px = 45 },
 			{ x_px = 15, y_px = 25 },
