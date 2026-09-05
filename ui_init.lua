@@ -38,6 +38,7 @@ function UserInterface:update(dt)
 	actions(self.ctx)
 	ui_manager.pointer_collision(self.ctx)
 	view(self.ctx)
+	ui_manager.align(self.ctx)
 
 	-- 2) reset stored per-frame deltas and drive the button state machines
 	self.ctx.input_state:reset()

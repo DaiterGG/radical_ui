@@ -85,7 +85,6 @@ function Align:gap(new_gap)
 end
 
 function Align:split_window(window, ui_scale)
-	utils.print(self)
 	local block = {
 		x = window.x,
 		y = window.y,
@@ -142,7 +141,6 @@ function Align:apply(window, ui_scale)
 	ui_scale = ui_scale or 1.0
 
 	if self.kind == "Block" then
-		utils.print(self)
 		return self:split_window(window, ui_scale)
 	elseif self.kind == "Absolute" then
 		local abs_size = self.size:unwrap(window.w, window.h, ui_scale)

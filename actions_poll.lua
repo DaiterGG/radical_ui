@@ -2,33 +2,34 @@ local execute = {
 	quit = function()
 		love.event.push("quit") -- same as the osu_ui example: the loop polls it and exits
 	end,
-	print_a = function()
-		print("pressed button A")
+	ui_scale_custom = function(ctx, new_scale)
+		ctx.ui.custom_scale = new_scale
+		ctx.ui.need_to_realign = true
 	end,
-	print_b = function()
+	print_b = function(ctx)
 		print("pressed button B")
 	end,
 
 	-- Gameplay
-	pause_game = function()
+	pause_game = function(ctx)
 		local api = SELECT_CONTEXT and SELECT_CONTEXT.gameplayApi
 		if api and api.loaded then
 			api:pause()
 		end
 	end,
-	resume_game = function()
+	resume_game = function(ctx)
 		local api = SELECT_CONTEXT and SELECT_CONTEXT.gameplayApi
 		if api and api.loaded then
 			api:play()
 		end
 	end,
-	retry = function()
+	retry = function(ctx)
 		local api = SELECT_CONTEXT and SELECT_CONTEXT.gameplayApi
 		if api and api.loaded then
 			api:retry()
 		end
 	end,
-	skip_intro = function()
+	skip_intro = function(ctx)
 		local api = SELECT_CONTEXT and SELECT_CONTEXT.gameplayApi
 		if api and api.loaded and api:canSkipIntro() then
 			api:skipIntro()
@@ -43,32 +44,32 @@ local execute = {
 	end,
 
 	-- Select / chart browser
-	toggle_autoplay = function()
+	toggle_autoplay = function(ctx)
 		local api = SELECT_CONTEXT and SELECT_CONTEXT.selectApi
 		if api then
 			local replay = api:getReplayBase()
 			api:setAutoplay(not replay.autoplay)
 		end
 	end,
-	remove_all_mods = function()
+	remove_all_mods = function(ctx)
 		local api = SELECT_CONTEXT and SELECT_CONTEXT.selectApi
 		if api then
 			api:removeAllMods()
 		end
 	end,
-	play_preview = function()
+	play_preview = function(ctx)
 		local api = SELECT_CONTEXT and SELECT_CONTEXT.selectApi
 		if api then
 			api:playPreview()
 		end
 	end,
-	pause_preview = function()
+	pause_preview = function(ctx)
 		local api = SELECT_CONTEXT and SELECT_CONTEXT.selectApi
 		if api then
 			api:pausePreview()
 		end
 	end,
-	toggle_preview = function()
+	toggle_preview = function(ctx)
 		local api = SELECT_CONTEXT and SELECT_CONTEXT.selectApi
 		if api then
 			local src = api:getPreviewAudioSource()
@@ -79,19 +80,19 @@ local execute = {
 			end
 		end
 	end,
-	open_chart_directory = function()
+	open_chart_directory = function(ctx)
 		local api = SELECT_CONTEXT and SELECT_CONTEXT.selectApi
 		if api then
 			api:openChartDirectory()
 		end
 	end,
-	export_osu_chart = function()
+	export_osu_chart = function(ctx)
 		local api = SELECT_CONTEXT and SELECT_CONTEXT.selectApi
 		if api then
 			api:exportOsuChart()
 		end
 	end,
-	open_web_notechart = function()
+	open_web_notechart = function(ctx)
 		local api = SELECT_CONTEXT and SELECT_CONTEXT.selectApi
 		if api then
 			api:openWebNotechart()
@@ -99,19 +100,19 @@ local execute = {
 	end,
 
 	-- Locations
-	load_locations = function()
+	load_locations = function(ctx)
 		local api = SELECT_CONTEXT and SELECT_CONTEXT.locationsApi
 		if api then
 			api:loadLocations()
 		end
 	end,
-	delete_chart_cache = function()
+	delete_chart_cache = function(ctx)
 		local api = SELECT_CONTEXT and SELECT_CONTEXT.locationsApi
 		if api then
 			api:deleteChartCache()
 		end
 	end,
-	recalculate_scores = function()
+	recalculate_scores = function(ctx)
 		local api = SELECT_CONTEXT and SELECT_CONTEXT.locationsApi
 		if api then
 			api:recalculateScores()
@@ -126,7 +127,7 @@ local function poll(ctx)
 	end
 	local fn = execute[action.action]
 	if fn then
-		fn(action)
+		fn(ctx, action)
 	end
 end
 

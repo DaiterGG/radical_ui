@@ -18,19 +18,28 @@ local block = align_mod.Block
 local Size = align_mod.Size
 
 return function(ctx)
-	if not ctx.ui.need_to_realign then
+	if not ctx.ui.need_to_rebuild then
 		return
 	end
-	ctx.ui.need_to_realign = false
+	ctx.ui.need_to_rebuild = false
 
 	local header = ui_element({
 		display = "header",
 		widgets = { box() },
-		align = block(Direction.Up, { pc = 5 }),
+		align = block(Direction.Up, { px = 50 }),
 	})
 
-	local buttons_ic =
-		{ { icons.back2, "quit" }, { icons.cog1, "quit" }, { icons.brush1, "quit" }, { icons.online1, "quit" } }
+	local header_back_icon = ui_element({
+		display = "header_left_b_icons",
+		widgets = { text(icons.back2) },
+	})
+	local header_back = ui_element({
+		display = "header_back_b",
+		widgets = { button("quit", header_back_icon) },
+		align = block(Direction.Left, { px = 130 }),
+	})
+	header:push_child(header_back)
+	local buttons_ic = { { icons.cog1, "quit" }, { icons.brush1, "quit" }, { icons.online1, "quit" } }
 	for _, b in pairs(buttons_ic) do
 		local header_b_icon = ui_element({
 			display = "header_left_b_icons",
@@ -39,7 +48,7 @@ return function(ctx)
 		local header_b = ui_element({
 			display = "header_left_b",
 			widgets = { button(b[2], header_b_icon) },
-			align = block(Direction.Left, { pc = 8 }),
+			align = block(Direction.Left, { px = 130 }),
 		})
 
 		header:push_child(header_b)
@@ -51,7 +60,7 @@ return function(ctx)
 	})
 	local first_b = ui_element({
 		display = "first_b",
-		widgets = { button(first) },
+		widgets = { button(nil, first) },
 		align = block(Direction.Left, { pc = 33 }),
 	})
 	local sec = ui_element({
@@ -60,18 +69,18 @@ return function(ctx)
 	})
 	local second_b = ui_element({
 		display = "second_b",
-		widgets = { button(sec) },
-		align = block(Direction.Left, { pc = 50 }),
+		widgets = { button(nil, sec) },
+		align = block(Direction.Left, { pc = 55 }),
 	})
 
 	local third = ui_element({
 		display = "first_b_text",
-		widgets = { text("Input") },
+		widgets = { text("Mods") },
 	})
 	local third_b = ui_element({
 
 		display = "third_b",
-		widgets = { button(third) },
+		widgets = { button(nil, third) },
 		align = block(Direction.Left, { pc = 100 }),
 	})
 	local bottom_bp = ui_element({
@@ -119,18 +128,18 @@ return function(ctx)
 		}),
 	})
 
-	test_p = ui_element({
-		display = "test_p",
-		widgets = { button(first) },
-		align = absolute({
-			pivot = { x = 0, y = 100 },
-			parent_pivot = { x = 0, y = 100 },
-			size = Size({ per_hor = 20, per_vert = 10 }),
-		}),
-	})
-	root:push_child(test_p)
-	-- root:push_child(header)
-	-- root:push_child(left_p)
+	-- local test_p = ui_element({
+	-- 	display = "test_p",
+	-- 	widgets = { button(first) },
+	-- 	align = absolute({
+	-- 		pivot = { x = 0, y = 100 },
+	-- 		parent_pivot = { x = 0, y = 100 },
+	-- 		size = Size({ per_hor = 20, per_vert = 10 }),
+	-- 	}),
+	-- })
+	-- root:push_child(test_p)
+	root:push_child(header)
+	root:push_child(left_p)
 
 	-- local bar = ui_element({ display = "scrollable_list_scroll_bar", widgets = { box() } })
 	-- local ch = ui_element({ display = "header", widgets = { box() }, align = block(Direction.Up, "50") })
@@ -175,5 +184,5 @@ return function(ctx)
 
 	ctx.ui.root_elements = { root }
 
-	ui_manager.align(ctx)
+	ctx.ui.need_to_realign = true
 end
