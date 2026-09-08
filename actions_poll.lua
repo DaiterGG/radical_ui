@@ -9,6 +9,10 @@ local execute = {
 	print_b = function(ctx)
 		print("pressed button B")
 	end,
+	settings_tab = function(ctx, data)
+		ctx.state.settings_tab = data.tab
+		ctx.ui.need_to_rebuild = true
+	end,
 
 	-- Gameplay
 	pause_game = function(ctx)

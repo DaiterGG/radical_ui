@@ -26,7 +26,8 @@ function text_input:pointer_collision(elem, ctx, hit)
 	if hit and input.left == "pressed" and not self.focused then
 		self.focused = true
 		if self.action then
-			ctx.action_queue:register(self.action, {
+			ctx.action_queue:register({
+				action = self.action,
 				event = "focus",
 				text = self.current,
 			})
@@ -42,7 +43,8 @@ function text_input:draw(elem, ctx, widget_data, entry)
 	end
 
 	local ui_scale = ctx and ctx.ui_scale
-	local font = widget_data.font and fonts:get_scaled(widget_data.font, widget_data.size or widget_data.font_size, ui_scale)
+	local font = widget_data.font
+		and fonts:get_scaled(widget_data.font, widget_data.size or widget_data.font_size, ui_scale)
 	if not font then
 		return
 	end
@@ -77,7 +79,7 @@ function text_input:draw(elem, ctx, widget_data, entry)
 	local pad_y = widget_data.pad_y or 2
 
 	-- alignment: left or center only; center is default
-	local align_x = widget_data.align_x or "center"  -- "left" or "center"
+	local align_x = widget_data.align_x or "center" -- "left" or "center"
 
 	love.graphics.setFont(font)
 	local tw = love.graphics.getFont():getWidth(display_text)

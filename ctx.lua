@@ -1,4 +1,5 @@
 local actions = require("actions")
+local unils = require("utils")
 local display_list = require("style_dispaly")
 local input_state = require("input_state")
 local keybinding = require("keybinding")
@@ -26,6 +27,13 @@ function ctx:new(game, mount_path)
 		need_to_realign = true,
 		root_elements = {},
 	}
+	self.state = {
+		active_window = "Settings",
+		settings_tab = "Graphics",
+		animation_state = {
+			test_animation = { start_in = 0, start_from = love.timer.getTime() },
+		},
+	}
 	self.last_delta = 0.1
 
 	local ui_scale = self.ui.custom_scale * h / 1080
@@ -36,6 +44,11 @@ function ctx:update(dt)
 	local w, h = love.graphics.getDimensions()
 	local res = { w = w, h = h }
 	local ui_scale = self.ui.custom_scale * h / 1080
+	if w ~= self.res.w or h ~= self.res.h then
+		print("new res:", res.w, res.h)
+		print("ratio:", w / h)
+		self.ui.need_to_rebuild = true
+	end
 
 	self.dt = dt
 	self.res = res

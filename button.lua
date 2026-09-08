@@ -29,7 +29,8 @@ function button:pointer_collision(elem, ctx, hit)
 
 	-- push the configured action into the action queue when clicked
 	if self.on_press and hit and input.left == "pressed" then
-		ctx.action_queue:register(self.on_press)
+		local data = self.on_press
+		ctx.action_queue:register(data)
 	end
 end
 

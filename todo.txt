@@ -5,29 +5,19 @@ widgest:
     optional complex polyline border?
     input box
     
+
+
 later
-animations as a display data ,  if data then hijack recurcive draw loop of the widgetsmake px string wor
+animations as a display data ,  if data then hijack recurcive draw loop of the widgets
 
 
-can you make apply display methods take color or str and turn str to color; widgets could just pass color data if it's not nil
+@main_view.lua animation todo api, @ctx.lua animation registry,
+apply_align.lua should register absolute:animation(...) and then check every align if animation_data and ctx.registry[data.key].start_in/from - data.length to trigger the code;
+code should calculate lerp for scale and pos, if only in or from is in ragne it's easy, if both then calculate earlier one -> then later one -> then sum earler + later * 2 -> ease_fn; at least I think that should work; apply to rect and set needs realign so next frame we align it again; crate a test action that sets test animation registry to time
 
- { x_pc = 0, y_pc = 0 },
- { x_px = 220, y_px = 0 },
- { x_px = 220, y_pc = 45 },
- { x_px = 270, y_pc = 80 },
- { x_px = 270, y_pc = 100 },
- { x_px = 0, y_pc = 100, center = false },
- { x_pc = 0, y_pc = 0 },
- in that polygon, last line (100->0) goes from slightly inside of the poigon (like 2px, 100px) to proper 0,0 (0px, 0px);
- { x_px = 0, y_px = 0 },
- { x_px = 220, y_px = 0 },
- { x_px = 220, y_pc = 45 },
- { x_px = 270, y_pc = 80 },
- { x_px = 270, y_pc = 100 },
- { x_px = 0, y_pc = 100, center = false },
- { x_px = 0, y_px = 0, center = false },
- in that polygon it last 0,0 point is also offset by 2px to the right
- center should affect only segment from previous point to current; if point draw a grid aligned line, border should always be aligned, even if it goes from center-> inner->center, borders
- should be defined precicly to match that,  make sure that pc 0 and px 0 is the same thing
 
 do love switch font back to default at the end of draw call
+
+
+
+move poliline to the ui_element and main_view

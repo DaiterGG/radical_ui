@@ -46,6 +46,10 @@ function ui_element:draw_widget(w, ctx, widget_data, display_data)
 	if not w.draw then
 		return
 	end
+	if not widget_data then
+		print("widget_data is not set: ", self.display_key)
+		return
+	end
 	if not (widget_data and type(widget_data.idle) == "table") then
 		w:draw(self, ctx, widget_data, display_data)
 		return

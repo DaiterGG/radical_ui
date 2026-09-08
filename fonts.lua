@@ -10,9 +10,10 @@ local fonts = {}
 -- name -> { file = <path under fonts/>, size = <px> }
 local registrations = {
 	icons = { file = "Glyphter.ttf", size = 20 },
+	custom = { file = "Custom.ttf", size = 20 },
 	afacad = { file = "Afacad-Regular.ttf", size = 20 },
-	afacad_bold = { file = "Afacad-Bold.ttf", size = 20 },
 	afacad_medium = { file = "Afacad-Medium.ttf", size = 20 },
+	afacad_bold = { file = "Afacad-Bold.ttf", size = 20 },
 	afacad_semibold = { file = "Afacad-SemiBold.ttf", size = 20 },
 	afacad_italic = { file = "Afacad-Italic.ttf", size = 20 },
 	afacad_bolditalic = { file = "Afacad-BoldItalic.ttf", size = 20 },

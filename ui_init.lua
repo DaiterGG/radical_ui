@@ -35,8 +35,8 @@ function UserInterface:update(dt)
 	-- 1) feed this frame's queued events into input_state (pos/buttons/modifiers/delta/scroll)
 	event_handler.process(self.ctx)
 
-	actions(self.ctx)
 	ui_manager.pointer_collision(self.ctx)
+	actions(self.ctx)
 	view(self.ctx)
 	ui_manager.align(self.ctx)
 

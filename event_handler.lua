@@ -75,7 +75,7 @@ function event_handler.process(ctx)
 				if not set_modifier(input.modifiers, key, true) then
 					local action = ctx.keybindings:trigger(key, input.modifiers)
 					if action then
-						ctx.action_queue:register(action)
+						ctx.action_queue:register({ action = action })
 					end
 				end
 			else

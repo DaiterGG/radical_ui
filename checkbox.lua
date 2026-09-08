@@ -25,7 +25,9 @@ function chekbox:pointer_collision(elem, ctx, hit)
 	if hit and input.left == "pressed" then
 		self.is_on = not self.is_on
 		if self.on_press then
-			ctx.action_queue:register(self.on_press, { state = self.is_on })
+			local data = self.on_press
+			data.is_on = self.is_on
+			ctx.action_queue:register(data)
 		end
 	end
 end
