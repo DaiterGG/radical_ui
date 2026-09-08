@@ -55,7 +55,7 @@ function ui_element:draw_widget(w, ctx, widget_data, display_data)
 		w:draw(self, ctx, widget_data, display_data)
 		return
 	end
-	for _, state_name in pairs(draw_order) do
+	for _, state_name in ipairs(draw_order) do
 		local active = self.states[state_name]
 		local state_data = active and widget_data[state_name]
 		if state_data then

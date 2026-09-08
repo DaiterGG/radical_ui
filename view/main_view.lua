@@ -65,7 +65,7 @@ return function(ctx)
 			local tab_h = 60
 			local tab_w = 120
 			local active_tab_w = 400
-			for i, tab in pairs(tabs) do
+			for i, tab in ipairs(tabs) do
 				if ctx.state.settings_tab == tab then
 					active = true
 
@@ -194,7 +194,7 @@ return function(ctx)
 	header:push_child(header_back)
 	local buttons_ic =
 		{ { icons.cog1, "quit" }, { icons.input1, "quit" }, { icons.brush1, "quit" }, { icons.online1, "quit" } }
-	for _, b in pairs(buttons_ic) do
+	for _, b in ipairs(buttons_ic) do
 		local header_b_icon = ui_element({
 			display = "header_left_b_icons",
 			widgets = { text(b[1]) },

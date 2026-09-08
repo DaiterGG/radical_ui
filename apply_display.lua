@@ -258,10 +258,10 @@ function apply_display.draw_polyline(x, y, points, width, c)
 
 	local function offset_line(a, b, nx, ny)
 		return {
-			x1 = a[1] + nx * w,
-			y1 = a[2] + ny * w,
-			x2 = b[1] + nx * w,
-			y2 = b[2] + ny * w,
+			x1 = a[1] + nx * (w / 2),
+			y1 = a[2] + ny * (w / 2),
+			x2 = b[1] + nx * (w / 2),
+			y2 = b[2] + ny * (w / 2),
 		}
 	end
 
@@ -304,63 +304,39 @@ function apply_display.draw_polyline(x, y, points, width, c)
 	end
 
 	love.graphics.setColor(c)
-	for i = 1, segment_count do
-		local next_i = i % count + 1
-		local line = lines[i]
-		local next_line = lines[next_i]
-		if line and (not closed or next_line) then
-			local inner_start
-			local inner_end
-			if closed then
-				local previous_line = lines[(i - 2) % count + 1]
-				if previous_line then
-					inner_start = line_intersection(previous_line, line)
-					inner_end = line_intersection(line, next_line)
-				end
-			else
-				inner_start = { line.x1, line.y1 }
-				inner_end = { line.x2, line.y2 }
+	local stroke = {}
+	if closed then
+		for i = 1, count do
+			local previous_line = lines[(i - 2) % count + 1]
+			local current_line = lines[i]
+			if previous_line and current_line then
+				stroke[#stroke + 1] = line_intersection(previous_line, current_line)
 			end
-			if inner_start and inner_end then
-				local a, b = vertices[i], vertices[next_i]
-				love.graphics.polygon("fill",
-					{
-						x + a[1], y + a[2],
-						x + b[1], y + b[2],
-						x + inner_end[1], y + inner_end[2],
-						x + inner_start[1], y + inner_start[2],
-					})
+		end
+		if #stroke > 1 then
+			stroke[#stroke + 1] = stroke[1]
+		end
+	else
+		if lines[1] then
+			stroke[#stroke + 1] = { lines[1].x1, lines[1].y1 }
+		end
+		for i = 1, segment_count do
+			if lines[i] then
+				stroke[#stroke + 1] = { lines[i].x2, lines[i].y2 }
 			end
 		end
 	end
 
-	local first_join = closed and 1 or 2
-	local last_join = closed and count or count - 1
-	for i = first_join, last_join do
-		local previous_i = (i - 2) % count + 1
-		local current_i = i % count + 1
-		local previous_line = lines[previous_i]
-		local current_line = lines[i]
-		local is_convex = true
-		if closed then
-			local previous = vertices[previous_i]
-			local current = vertices[i]
-			local next = vertices[current_i]
-			local incoming_x = current[1] - previous[1]
-			local incoming_y = current[2] - previous[2]
-			local outgoing_x = next[1] - current[1]
-			local outgoing_y = next[2] - current[2]
-			local turn = incoming_x * outgoing_y - incoming_y * outgoing_x
-			is_convex = (signed_area > 0 and turn > 0) or (signed_area < 0 and turn < 0)
+	if #stroke >= 2 then
+		local line_vertices = {}
+		for _, point in ipairs(stroke) do
+			line_vertices[#line_vertices + 1] = x + point[1]
+			line_vertices[#line_vertices + 1] = y + point[2]
 		end
-		if previous_line and current_line and is_convex then
-			love.graphics.polygon("fill",
-				{
-					x + vertices[i][1], y + vertices[i][2],
-					x + previous_line.x2, y + previous_line.y2,
-					x + current_line.x1, y + current_line.y1,
-				})
-		end
+		love.graphics.setLineWidth(w)
+		love.graphics.setLineJoin("miter")
+		love.graphics.setLineStyle("smooth")
+		love.graphics.line(line_vertices)
 	end
 end
 

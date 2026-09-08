@@ -50,8 +50,8 @@ function fonts.load(init_font, mount_path)
 				break
 			end
 		end
-		return fonts
 	end
+	return fonts
 end
 
 -- get a font at a size (created + cached on first request);
