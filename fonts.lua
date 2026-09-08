@@ -35,7 +35,8 @@ end
 -- resolve each registered font's file path (missing files are skipped).
 -- validation uses love.graphics.newFont (works for the mod's mounts) and
 -- the default-size font is kept in the cache.
-function fonts.load(mount_path)
+function fonts.load(init_font, mount_path)
+	fonts.init = init_font
 	for name, reg in pairs(registrations) do
 		local candidates = {
 			join_path(mount_path, "fonts/" .. reg.file),
@@ -49,6 +50,7 @@ function fonts.load(mount_path)
 				break
 			end
 		end
+		return fonts
 	end
 end
 

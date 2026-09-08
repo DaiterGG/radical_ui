@@ -1,5 +1,6 @@
 local class = require("class")
 
+local utils = require("utils")
 local ctx_init = require("ctx")
 local actions = require("actions_poll")
 local view = require("view.view")
@@ -11,6 +12,8 @@ local UserInterface = class()
 
 function UserInterface:new(game, mount_path)
 	self.ctx = ctx_init(game, mount_path)
+	local font = love.graphics.getFont()
+	love.graphics.setFont(font)
 end
 
 function UserInterface:load()

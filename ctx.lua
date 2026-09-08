@@ -20,7 +20,7 @@ function ctx:new(game, mount_path)
 	self.display_list = display_list
 	self.input_state = input_state()
 	self.keybindings = keybinding()
-	self.fonts = fonts.load(mount_path)
+	self.fonts = fonts.load(love.graphics.getFont(), mount_path)
 	self.ui = {
 		custom_scale = 1,
 		need_to_rebuild = true,

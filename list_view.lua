@@ -335,7 +335,7 @@ function list_view:draw(elem, ctx, widget_data, display_data)
 		r,
 		widget_data and widget_data.bg,
 		widget_data and widget_data.border,
-		display_data and display_data.polyline,
+		elem.polyline,
 		{ scale = ctx.ui_scale or 1 }
 	)
 

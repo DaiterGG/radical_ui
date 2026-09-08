@@ -41,7 +41,7 @@ function button:draw(elem, ctx, widget_data, all_data)
 		r,
 		widget_data.bg,
 		widget_data.border,
-		all_data.polyline,
+		elem.polyline,
 		{ scale = ctx.ui_scale or 1 }
 	)
 

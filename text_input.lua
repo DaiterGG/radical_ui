@@ -58,7 +58,7 @@ function text_input:draw(elem, ctx, widget_data, entry)
 		border = widget_data.border_focused or border
 	end
 
-	apply_display.draw_background(r, bg, border, entry and entry.polyline, { scale = ctx.ui_scale or 1 })
+	apply_display.draw_background(r, bg, border, elem.polyline, { scale = ctx.ui_scale or 1 })
 
 	-- choose what to display: real text or placeholder
 	local display_text = self.current

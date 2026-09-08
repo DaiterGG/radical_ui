@@ -21,7 +21,7 @@ function box:draw(elem, ctx, widget_data, all_data)
 		return
 	end
 
-	apply_display.draw_background(r, widget_data.bg, widget_data.border, all_data.polyline, {
+	apply_display.draw_background(r, widget_data.bg, widget_data.border, elem.polyline, {
 		blur = widget_data.blur,
 		source = ctx.ui.background_canvas,
 		scale = ctx.ui_scale or 1,

@@ -8,7 +8,6 @@ widgest:
 
 
 later
-animations as a display data ,  if data then hijack recurcive draw loop of the widgets
 
 
 @main_view.lua animation todo api, @ctx.lua animation registry,
@@ -16,8 +15,6 @@ apply_align.lua should register absolute:animation(...) and then check every ali
 code should calculate lerp for scale and pos, if only in or from is in ragne it's easy, if both then calculate earlier one -> then later one -> then sum earler + later * 2 -> ease_fn; at least I think that should work; apply to rect and set needs realign so next frame we align it again; crate a test action that sets test animation registry to time
 
 
-do love switch font back to default at the end of draw call
+do love switch font back to fonts.init at the end of draw call
 
 
-
-move poliline to the ui_element and main_view

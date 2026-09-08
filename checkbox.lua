@@ -42,7 +42,7 @@ function chekbox:draw(elem, ctx, widget_data, entry)
 		r,
 		widget_data.bg,
 		widget_data.border,
-		entry and entry.polyline,
+		elem.polyline,
 		{ scale = ctx.ui_scale or 1 }
 	)
 

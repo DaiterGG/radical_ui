@@ -1,7 +1,7 @@
 local class = require("class")
 local utils = require("utils")
 -- ui_element(opts)
--- opts: { display = display_key, widgets = {...}, align = Align(...) }
+-- opts: { display = display_key, widgets = {...}, align = Align(...), polyline = {...} }
 -- display_key: string key from ctx.display_list
 -- widgets: list of independent widget modules (box/button/slider)
 -- align: optional alignment
@@ -18,6 +18,7 @@ function ui_element:new(opts)
 	self.display_key = opts.display
 	self.widget = opts.widgets or {}
 	self.align = opts.align
+	self.polyline = opts.polyline
 	self.children = {}
 	self.rect = nil
 	self.states = {
