@@ -121,111 +121,265 @@ end
 -- draw a filled polygon from points (local coords, offset by x,y)
 function apply_display.draw_polygon(x, y, points, c)
 	c = resolve(c)
-	if not c or not points then
+	if not c or not points or #points < 3 then
 		return
 	end
-	local verts = {}
-	for i, p in ipairs(points) do
-		verts[#verts + 1] = math.floor(x + p[1] + 0.5)
-		verts[#verts + 1] = math.floor(y + p[2] + 0.5)
+
+	local vertices = {}
+	for _, point in ipairs(points) do
+		local previous = vertices[#vertices]
+		if not previous or previous[1] ~= point[1] or previous[2] ~= point[2] then
+			vertices[#vertices + 1] = { point[1], point[2] }
+		end
 	end
+	if #vertices > 2 then
+		local first, last = vertices[1], vertices[#vertices]
+		if first[1] == last[1] and first[2] == last[2] then
+			vertices[#vertices] = nil
+		end
+	end
+
+	local count = #vertices
+	if count < 3 then
+		return
+	end
+
+	local signed_area = 0
+	for i = 1, count do
+		local next_i = i % count + 1
+		signed_area = signed_area
+			+ vertices[i][1] * vertices[next_i][2]
+			- vertices[next_i][1] * vertices[i][2]
+	end
+	local orientation = signed_area >= 0 and 1 or -1
+
+	local function cross(a, b, c_point)
+		return (b[1] - a[1]) * (c_point[2] - a[2])
+			- (b[2] - a[2]) * (c_point[1] - a[1])
+	end
+
+	local function inside_triangle(point, a, b, c_point)
+		local ab = cross(a, b, point) * orientation
+		local bc = cross(b, c_point, point) * orientation
+		local ca = cross(c_point, a, point) * orientation
+		return ab >= -0.000001 and bc >= -0.000001 and ca >= -0.000001
+	end
+
+	local remaining = {}
+	for i = 1, count do
+		remaining[i] = i
+	end
+
 	love.graphics.setColor(c)
-	love.graphics.polygon("fill", verts)
+	local guard = count * count
+	while #remaining > 3 and guard > 0 do
+		local clipped = false
+		for position = 1, #remaining do
+			local previous_position = (position - 2) % #remaining + 1
+			local next_position = position % #remaining + 1
+			local a = vertices[remaining[previous_position]]
+			local b = vertices[remaining[position]]
+			local c_point = vertices[remaining[next_position]]
+			if cross(a, b, c_point) * orientation > 0 then
+				local contains_vertex = false
+				for other_position, vertex_index in ipairs(remaining) do
+					if other_position ~= previous_position
+						and other_position ~= position
+						and other_position ~= next_position
+						and inside_triangle(vertices[vertex_index], a, b, c_point) then
+						contains_vertex = true
+						break
+					end
+				end
+				if not contains_vertex then
+					love.graphics.polygon("fill", {
+						x + a[1], y + a[2],
+						x + b[1], y + b[2],
+						x + c_point[1], y + c_point[2],
+					})
+					table.remove(remaining, position)
+					clipped = true
+					break
+				end
+			end
+		end
+		if not clipped then
+			break
+		end
+		guard = guard - 1
+	end
+
+	if #remaining == 3 then
+		local a = vertices[remaining[1]]
+		local b = vertices[remaining[2]]
+		local c_point = vertices[remaining[3]]
+		love.graphics.polygon("fill", {
+			x + a[1], y + a[2],
+			x + b[1], y + b[2],
+			x + c_point[1], y + c_point[2],
+		})
+	end
 end
 
--- draw a polyline border (open chain, no auto-close); points are rect-local
--- px (see scale_points). the chain is NOT closed automatically: repeat the
--- first point at the end to close it manually.
---
--- per-point center flag controls the segment that arrives at that point:
---   { x = n, y = n, center = true }  stroke drawn centered on the segment path
---   { x = n, y = n, center = false } stroke inset inward by half its width
---                                      (segment stays parallel / grid-aligned)
---   points without center fall back to opts.center, default false.
-function apply_display.draw_polyline(x, y, points, width, c, opts)
+-- draw a polyline border. Three or more points are treated as a closed
+-- polygon, matching love.graphics.polygon. The border uses an inward offset,
+-- so it never extends outside the supplied coordinates.
+function apply_display.draw_polyline(x, y, points, width, c)
 	c = resolve(c)
 	if not c or not points or #points < 2 then
 		return
 	end
-	opts = opts or {}
-	local w = width or 1
-	local n = #points
-
-	-- detect winding with the trapezoid formula:
-	-- this formula is negative for CCW, positive for CW
-	local signed_area = 0
-	for i = 1, n do
-		local j = i % n + 1
-		signed_area = signed_area + (points[j][1] - points[i][1]) * (points[j][2] + points[i][2])
+	local w = math.max(0, width or 1)
+	if w == 0 then
+		return
 	end
-	local ccw = signed_area < 0
 
-	-- collect vertices into a single strip so corners join with miter caps
-	local verts = {}
-	for i = 1, n - 1 do
-		local p1 = points[i]
-		local p2 = points[i + 1]
-		local dx = p2[1] - p1[1]
-		local dy = p2[2] - p1[2]
-		local len = math.sqrt(dx * dx + dy * dy)
-		if len == 0 then
-			goto continue
+	local vertices = {}
+	for i, point in ipairs(points) do
+		local previous = vertices[#vertices]
+		if not previous or previous[1] ~= point[1] or previous[2] ~= point[2] then
+			vertices[#vertices + 1] = { point[1], point[2] }
 		end
+	end
 
-		local center = p2.center
-		if center == nil then
-			center = opts.center or false
+	local closed = #vertices > 2
+	if closed then
+		local first = vertices[1]
+		local last = vertices[#vertices]
+		if first[1] == last[1] and first[2] == last[2] then
+			vertices[#vertices] = nil
 		end
+	end
 
-		local shiftx, shifty = 0, 0
-		if not center then
-			-- inward normal (half-width shift keeps border inside the shape)
-			local nx, ny
-			if ccw then
-				nx, ny = -dy / len, dx / len
-			else
-				nx, ny = dy / len, -dx / len
+	local count = #vertices
+	if count < 2 then
+		return
+	end
+
+	local function offset_line(a, b, nx, ny)
+		return {
+			x1 = a[1] + nx * w,
+			y1 = a[2] + ny * w,
+			x2 = b[1] + nx * w,
+			y2 = b[2] + ny * w,
+		}
+	end
+
+	local function line_intersection(a, b)
+		local dx1, dy1 = a.x2 - a.x1, a.y2 - a.y1
+		local dx2, dy2 = b.x2 - b.x1, b.y2 - b.y1
+		local denominator = dx1 * dy2 - dy1 * dx2
+		if math.abs(denominator) < 0.000001 then
+			return { (a.x2 + b.x1) / 2, (a.y2 + b.y1) / 2 }
+		end
+		local t = ((b.x1 - a.x1) * dy2 - (b.y1 - a.y1) * dx2) / denominator
+		return { a.x1 + dx1 * t, a.y1 + dy1 * t }
+	end
+
+	local lines = {}
+	local segment_count = closed and count or count - 1
+	local signed_area = 0
+	if closed then
+		for i = 1, count do
+			local next_i = i % count + 1
+			signed_area = signed_area
+				+ vertices[i][1] * vertices[next_i][2]
+				- vertices[next_i][1] * vertices[i][2]
+		end
+	end
+	local inward_left = signed_area > 0
+
+	for i = 1, segment_count do
+		local next_i = i % count + 1
+		local a, b = vertices[i], vertices[next_i]
+		local dx, dy = b[1] - a[1], b[2] - a[2]
+		local length = math.sqrt(dx * dx + dy * dy)
+		if length > 0 then
+			local left_x, left_y = -dy / length, dx / length
+			if not closed or not inward_left then
+				left_x, left_y = -left_x, -left_y
 			end
-			shiftx = nx * (w / 2)
-			shifty = ny * (w / 2)
+			lines[i] = offset_line(a, b, left_x, left_y)
 		end
-
-		verts[#verts + 1] = math.floor(x + p1[1] + shiftx + 0.5)
-		verts[#verts + 1] = math.floor(y + p1[2] + shifty + 0.5)
-		verts[#verts + 1] = math.floor(x + p2[1] + shiftx + 0.5)
-		verts[#verts + 1] = math.floor(y + p2[2] + shifty + 0.5)
-		::continue::
 	end
 
 	love.graphics.setColor(c)
-	love.graphics.setLineWidth(w)
-	love.graphics.line(verts)
+	for i = 1, segment_count do
+		local next_i = i % count + 1
+		local line = lines[i]
+		local next_line = lines[next_i]
+		if line and (not closed or next_line) then
+			local inner_start
+			local inner_end
+			if closed then
+				local previous_line = lines[(i - 2) % count + 1]
+				if previous_line then
+					inner_start = line_intersection(previous_line, line)
+					inner_end = line_intersection(line, next_line)
+				end
+			else
+				inner_start = { line.x1, line.y1 }
+				inner_end = { line.x2, line.y2 }
+			end
+			if inner_start and inner_end then
+				local a, b = vertices[i], vertices[next_i]
+				love.graphics.polygon("fill",
+					{
+						x + a[1], y + a[2],
+						x + b[1], y + b[2],
+						x + inner_end[1], y + inner_end[2],
+						x + inner_start[1], y + inner_start[2],
+					})
+			end
+		end
+	end
+
+	local first_join = closed and 1 or 2
+	local last_join = closed and count or count - 1
+	for i = first_join, last_join do
+		local previous_i = (i - 2) % count + 1
+		local current_i = i % count + 1
+		local previous_line = lines[previous_i]
+		local current_line = lines[i]
+		local is_convex = true
+		if closed then
+			local previous = vertices[previous_i]
+			local current = vertices[i]
+			local next = vertices[current_i]
+			local incoming_x = current[1] - previous[1]
+			local incoming_y = current[2] - previous[2]
+			local outgoing_x = next[1] - current[1]
+			local outgoing_y = next[2] - current[2]
+			local turn = incoming_x * outgoing_y - incoming_y * outgoing_x
+			is_convex = (signed_area > 0 and turn > 0) or (signed_area < 0 and turn < 0)
+		end
+		if previous_line and current_line and is_convex then
+			love.graphics.polygon("fill",
+				{
+					x + vertices[i][1], y + vertices[i][2],
+					x + previous_line.x2, y + previous_line.y2,
+					x + current_line.x1, y + current_line.y1,
+				})
+		end
+	end
 end
 
 -- resolve polyline points into rect-local screen pixels.
 -- each point may be:
---   { x_pc = n, y_pc = n }        percent of the rect w / h
---   { x_px = n, y_px = n }        ui-scaled pixels (raw px * scale)
---   { x_px = n, y_pc = n }        mixed per axis
 --   { raw_x, raw_y }              legacy: raw px scaled by ui_scale
--- scale = ui_scale, w/h = rect size (needed for the % forms)
-function apply_display.scale_points(points, scale, w, h)
+--   { x_px = n, y_px = n }        explicit px values scaled by ui_scale
+function apply_display.scale_points(points, scale)
 	local out = {}
 	for i, p in ipairs(points) do
 		local px, py
-		if p.x_px ~= nil or p.x_pc ~= nil or p.y_px ~= nil or p.y_pc ~= nil then
-			-- keyed form: each axis is pixels (px * scale) or percent (w/h * n / 100)
-			px = p.x_px ~= nil and p.x_px * scale or (p.x_pc ~= nil and w * p.x_pc / 100 or 0)
-			py = p.y_px ~= nil and p.y_px * scale or (p.y_pc ~= nil and h * p.y_pc / 100 or 0)
+		if p.x_px ~= nil or p.y_px ~= nil then
+			px = (p.x_px or 0) * scale
+			py = (p.y_px or 0) * scale
 		else
 			-- legacy numeric pair: raw pixels scaled by ui_scale
 			px, py = p[1] * scale, p[2] * scale
 		end
 		out[i] = { px, py }
-		-- carry per-point render flags (e.g. center) through to the draw stage
-		if p.center ~= nil then
-			out[i].center = p.center
-		end
 	end
 	return out
 end
@@ -243,10 +397,10 @@ function apply_display.draw_background(rect, bg, border, polyline, opts)
 	local h = rect.h
 
 	if polyline then
-		local pts = apply_display.scale_points(polyline, scale, w, h)
+		local pts = apply_display.scale_points(polyline, scale)
 		apply_display.draw_polygon(x, y, pts, bg)
 		if border and border.color then
-			apply_display.draw_polyline(x, y, pts, border.width, border.color, { center = border.center })
+			apply_display.draw_polyline(x, y, pts, border.width, border.color)
 		end
 		return
 	end
