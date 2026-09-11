@@ -36,7 +36,7 @@ function ctx:new(game, mount_path)
 	self.anim_reg = animation_registry.new()
 	self.widget_reg = widget_registry.new()
 	self.state = {
-		active_window = "Settings",
+		-- active_window = "Settings",
 		settings_tab = "Gameplay",
 	}
 	self.last_delta = 0.1

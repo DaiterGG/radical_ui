@@ -244,7 +244,11 @@ return function(ctx)
 	local header = ui_element({
 		display = "header",
 		widgets = { box() },
-		align = block(Direction.Up, { px = header_h }),
+		align = absolute({
+			pivot = { x = 0, y = 0 },
+			parent_pivot = { x = 0, y = 0 },
+			size = Size({ per_hor = 100, px_vert = header_h }),
+		}),
 	})
 
 	local header_back_icon = ui_element({
@@ -493,7 +497,8 @@ return function(ctx)
 	up_header:push_child(first_header_b)
 
 	-- NOTE: RIGHT SCROLL
-	local song_h_full = (1080 - header_h - right_header_h * 2) / 7
+	local scroll_h = 1080 - header_h - right_header_h * 2
+	local song_h_full = scroll_h / 7
 	local song_h = song_h_full - 10
 
 	local main_list_w = spring_list()
@@ -502,13 +507,13 @@ return function(ctx)
 	local main_list = ui_element({
 		display = "main_list",
 		widgets = { main_list_w },
-		align = block(Direction.Left, { px = right_width - (right_scroll_gap * 2) }),
+
+		align = absolute({
+			pivot = { x = 50, y = 50 },
+			parent_pivot = { x = 50, y = 50 },
+			size = Size({ px_hor = right_width - (right_scroll_gap * 2), px_vert = scroll_h }),
+		}),
 	})
-	local middle_scroll = ui_element({
-		widgets = {},
-		align = block(Direction.Right, { px = right_width - right_scroll_gap }),
-	})
-	middle_scroll:push_child(main_list)
 	-- NOTE: RIGHT FOOTTER
 
 	local first_footer = ui_element({
@@ -634,9 +639,9 @@ return function(ctx)
 			length_ms = main_anim_length,
 		}),
 	})
+	right_p:push_child(main_list)
 	right_p:push_child(up_header)
 	right_p:push_child(down_footer)
-	right_p:push_child(middle_scroll)
 
 	local root = ui_element({
 		display = "root",
@@ -647,7 +652,10 @@ return function(ctx)
 			size = Size({ per_hor = 100, per_vert = 100 }),
 		}),
 	})
-	root:push_child(header)
+	local padding = ui_element({
+		align = block(Direction.Up, { px = header_h }),
+	})
+	root:push_child(padding)
 	if ratio > 1.2527 then
 		root:push_child(left_p)
 		root:push_child(right_p)
@@ -726,6 +734,9 @@ return function(ctx)
 	end
 	if root_window then
 		ctx.ui.root_elements[#ctx.ui.root_elements + 1] = root_window
+	end
+	if header then
+		ctx.ui.root_elements[#ctx.ui.root_elements + 1] = header
 	end
 
 	ctx.ui.need_to_realign = true

@@ -27,9 +27,9 @@ local function pointer_collision(ctx)
 	local hit = false
 	for i = #ctx.ui.root_elements, 1, -1 do
 		hit = ctx.ui.root_elements[i]:pointer_collision_rec(ctx, true) or hit
-		if hit then
-			break
-		end
+		-- if hit then
+		-- 	break
+		-- end
 	end
 end
 

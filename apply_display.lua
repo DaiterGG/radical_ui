@@ -407,7 +407,7 @@ function apply_display.draw_text(x, y, text, font, c, scale)
 	if c then
 		love.graphics.setColor(c)
 	end
-	love.graphics.print(text, math.floor(x + 0.5), math.floor(y + 0.5), 0, scale or 1, scale or 1)
+	love.graphics.print(text, math.floor(x + 0.5), y, 0, scale or 1, scale or 1)
 end
 
 -- -- draw an icon: a Font Awesome glyph or multi-char/ligature string
