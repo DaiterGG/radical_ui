@@ -66,23 +66,27 @@ function event_handler.process(ctx)
 			input[btn] = "released"
 		elseif event.name == "wheelmoved" then
 			input.scroll_y = input.scroll_y + (event[2] or 0)
+		elseif event.name == "keypressed" then
+			-- UI key event: [2]=key, [3]=isrepeat
+			local key = event[2]
+			if not ctx.state.keybind_capture and not set_modifier(input.modifiers, key, true) then
+				ctx.keybindings:trigger_key(ctx, key, event[3])
+			end
 		elseif event.name == "inputchanged" then
 			-- game's normalized input: [1]=device, [2]=id, [3]=key, [4]=state (true=press)
 			local key = event[3]
 			if event[4] then
-				-- modifiers update ctx.input_state.modifiers (available everywhere);
-				-- non-modifier keys go event -> keybinding -> action -> queue
-				if not set_modifier(input.modifiers, key, true) then
-					local action = ctx.keybindings:trigger(key, input.modifiers)
-					if action then
-						ctx.action_queue:register({ action = action })
-					end
+				local capture = ctx.state.keybind_capture
+				if capture then
+					ctx.keybindings:rebind(capture.action, capture.pos, key)
+					ctx.state.keybind_capture = nil
 				end
 			else
 				set_modifier(input.modifiers, key, false)
 			end
 		elseif event.name == "keyreleased" then
-			set_modifier(input.modifiers, event[1], false)
+			-- UI key event: [2]=key
+			set_modifier(input.modifiers, event[2], false)
 		elseif event.name == "update" or event.name == "draw" or event.name == "quit" then
 		-- frame events: the game loop drives the UI via update()/draw() method
 		-- calls (GameController intercepts them); they only reach receive() when

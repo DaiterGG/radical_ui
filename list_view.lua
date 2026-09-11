@@ -114,7 +114,7 @@ end
 -- can generate their rects recursively. we never set scrollbar_elem.rect.
 function list_view:update_scrollbar(elem, ctx)
 	local data = self:get_data(ctx)
-	local r = self.rect
+	local r = elem.rect
 	if not r or r.h <= 0 then
 		return
 	end
@@ -135,6 +135,11 @@ function list_view:update_scrollbar(elem, ctx)
 	local scale = ctx.ui_scale or 1
 	local pad = padding * scale
 	local bar_w = width * scale
+	local available_w = r.w - pad * 2
+	if available_w <= 0 then
+		return
+	end
+	bar_w = math.min(bar_w, available_w)
 
 	-- the scroll bar track is the viewport inset by top/bottom padding
 	local track_h = r.h - pad * 2
@@ -155,12 +160,11 @@ function list_view:update_scrollbar(elem, ctx)
 	data.bar_travel = track_h - thumb_h
 	data.bar_thumb_h = thumb_h
 	data.bar_track_top = r.y + pad
-	-- hit column is padding + width + padding wide on the right edge of the
-	-- viewport, spanning the whole track vertically
+	-- Keep the hit column and thumb completely inside the viewport.
 	data.bar_hit = {
-		x = r.x + r.w - pad * 2 - bar_w,
+		x = r.x + r.w - pad - bar_w,
 		y = r.y + pad,
-		w = pad * 2 + bar_w,
+		w = bar_w,
 		h = track_h,
 	}
 
@@ -174,7 +178,7 @@ function list_view:update_scrollbar(elem, ctx)
 	-- absolute align values (parent_pivot/pivot are 0..100 percentages).
 	local parent_pivot = { x = 100, y = 0 }
 	local pivot = {
-		x = 100 + (100 * pad / bar_w),
+		x = 100,
 		y = -100 * y_off / thumb_h,
 	}
 	local size = apply_align.Size({
@@ -206,6 +210,9 @@ function list_view:update_scroll(elem, ctx)
 	local r = elem.rect
 
 	data.max_scroll_y = math.max(0, data.content_height - r.h)
+	local display_data = ctx.display_list[elem.display_key]
+	local widget_data = display_data and display_data.list_view
+	local scroll_speed = tonumber(widget_data and widget_data.scroll_speed) or 1
 
 	local input = ctx.input_state
 	local mx = input.pos.x
@@ -284,7 +291,7 @@ function list_view:update_scroll(elem, ctx)
 	-- keeps working while a drag is active even if the pointer left the viewport
 	local wheel_active = in_rect
 	if wheel_active and input.scroll_y and input.scroll_y ~= 0 then
-		set_drag_scroll(data.scroll_y - input.scroll_y * data.wheel_speed)
+		set_drag_scroll(data.scroll_y - input.scroll_y * data.wheel_speed * scroll_speed)
 		input.scroll_y = 0
 		start_spring()
 	end

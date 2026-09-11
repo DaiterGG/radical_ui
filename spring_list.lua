@@ -146,19 +146,15 @@ local function update_horizontal_motion(data, dt)
 	end
 end
 
-local function horizontal_drag_target(rect, mouse_x, res_w)
+local function horizontal_drag_target(rect, mouse_x)
 	local start_distance = rect.w * HORIZONTAL_START_OUTSIDE_RATIO
-	local left_start = math.max(0, rect.x - start_distance)
-	local right_start = rect.x + rect.w + start_distance
-	local progress
+	local relative_x = mouse_x - rect.x
 
-	if mouse_x < left_start then
-		local available_width = math.max(1, left_start)
-		progress = clamp((left_start - mouse_x) / available_width, 0, 1)
+	if relative_x < -start_distance then
+		local progress = clamp((-relative_x - start_distance) / math.max(1, rect.w), 0, 1)
 		return -rect.w * progress
-	elseif mouse_x > right_start then
-		local available_width = math.max(1, res_w - right_start)
-		progress = clamp((mouse_x - right_start) / available_width, 0, 1)
+	elseif relative_x > rect.w + start_distance then
+		local progress = clamp((relative_x - rect.w - start_distance) / math.max(1, rect.w), 0, 1)
 		return rect.w * progress
 	else
 		return 0
@@ -266,9 +262,8 @@ function spring_list:realign(ctx, elem)
 		0,
 		1
 	)
-	local cursor_offset = (ctx.input_state.pos.y - (rect.y + rect.h / 2))
-		* VERTICAL_CURSOR_FOLLOW_MAX_RATIO
-		* cursor_follow_progress
+	local cursor_y = data.is_dragging and data.drag_cursor_y or ctx.input_state.pos.y
+	local cursor_offset = (cursor_y - (rect.y + rect.h / 2)) * VERTICAL_CURSOR_FOLLOW_MAX_RATIO * cursor_follow_progress
 	for _, child in ipairs(self.children) do
 		local child_height = child.rect and child.rect.h or 0
 		local influence = horizontal_influence(rect, y, child_height)
@@ -296,10 +291,18 @@ function spring_list:update_scroll(elem, ctx)
 	local input = ctx.input_state
 	local mouse_x = input.pos.x
 	local mouse_y = input.pos.y
-	local inside = mouse_x >= rect.x and mouse_x < rect.x + rect.w and mouse_y >= rect.y and mouse_y < rect.y + rect.h
 	local old_scroll = data.scroll_y
 	local old_horizontal_offset = data.horizontal_offset
+	local old_drag_cursor_x = data.drag_cursor_x
+	local old_drag_cursor_y = data.drag_cursor_y
 	local dt = math.min(ctx.dt or 0, MAX_DT)
+
+	if data.is_dragging then
+		mouse_x = data.drag_cursor_x + input.delta.x
+		mouse_y = data.drag_cursor_y + input.delta.y
+	end
+
+	local inside = mouse_x >= rect.x and mouse_x < rect.x + rect.w and mouse_y >= rect.y and mouse_y < rect.y + rect.h
 
 	data.max_scroll_y = math.max(0, data.content_height - rect.h)
 	local elem_h = rect.h / ROW_COUNT
@@ -366,20 +369,11 @@ function spring_list:update_scroll(elem, ctx)
 	if data.is_dragging then
 		if held then
 			local previous_drag_cursor_y = data.drag_cursor_y
-			local outside_window = mouse_x <= 0 or mouse_x >= ctx.res.w
-			if outside_window then
-				data.drag_cursor_x = data.drag_cursor_x + input.delta.x
-			else
-				data.drag_cursor_x = mouse_x
-			end
-			if outside_window then
-				data.drag_cursor_y = data.drag_cursor_y + input.delta.y
-			else
-				data.drag_cursor_y = mouse_y
-			end
+			data.drag_cursor_x = mouse_x
+			data.drag_cursor_y = mouse_y
 			local drag_delta_y = data.drag_cursor_y - previous_drag_cursor_y
-			local next_horizontal_offset = horizontal_drag_target(rect, data.drag_cursor_x, ctx.res.w)
-			local scroll_factor = outside_window and 1 or vertical_scroll_factor(rect, next_horizontal_offset)
+			local next_horizontal_offset = horizontal_drag_target(rect, data.drag_cursor_x)
+			local scroll_factor = vertical_scroll_factor(rect, next_horizontal_offset)
 			local next_scroll = data.scroll_y - drag_delta_y * scroll_factor
 			if dt > 0 then
 				local measured_velocity = (next_scroll - data.scroll_y) / dt
@@ -393,14 +387,15 @@ function spring_list:update_scroll(elem, ctx)
 			if next_scroll ~= data.scroll_y then
 				data.drag_direction = next_scroll > data.scroll_y and 1 or -1
 			end
-			data.scroll_y = next_scroll * (outside_window and 0.1 or 1) -- TODO:
+			-- for integrated_run
+			-- print( "SPRING_LIST_CROSS", "x", mouse_x, "y", mouse_y, "delta_x", input.delta.x, "drag_delta_y", drag_delta_y, "rect", rect.x, rect.y, rect.w, rect.h, "res", ctx.res.w, ctx.res.h, "offset_before", data.horizontal_offset, "offset_after", next_horizontal_offset, "factor", scroll_factor, "velocity", data.velocity, "scroll_before", data.scroll_y, "scroll_after", next_scroll)
+			data.scroll_y = next_scroll
 			data.horizontal_offset = next_horizontal_offset
 		else
 			data.is_dragging = false
 			input.interacting_with = nil
 			data.horizontal_velocity = data.horizontal_velocity - data.horizontal_offset * HORIZONTAL_RELEASE_FORCE
-			local release_cursor_y = (mouse_x <= 0 or mouse_x >= ctx.res.w) and data.drag_cursor_y or mouse_y
-			local drag_distance = data.drag_start_y - release_cursor_y
+			local drag_distance = data.drag_start_y - data.drag_cursor_y
 			if drag_distance ~= 0 then
 				data.drag_direction = drag_distance > 0 and 1 or -1
 			end
@@ -421,6 +416,19 @@ function spring_list:update_scroll(elem, ctx)
 	end
 
 	local fully_stretched = math.abs(data.horizontal_offset) >= rect.w * HORIZONTAL_FULL_STRETCH_EPSILON
+	if fully_stretched and not data.is_dragging and not data.middle_scrolling and not data.right_scrolling then
+		print(
+			"SPRING_LIST_LOCK",
+			"x",
+			mouse_x,
+			"offset",
+			data.horizontal_offset,
+			"velocity_before",
+			data.velocity,
+			"scroll",
+			data.scroll_y
+		)
+	end
 	if not data.is_dragging and not data.middle_scrolling and not data.right_scrolling and fully_stretched then
 		data.acceleration = -data.velocity * VERTICAL_LOCK_DAMPING
 		data.velocity = data.velocity + data.acceleration * dt
@@ -433,7 +441,10 @@ function spring_list:update_scroll(elem, ctx)
 		update_motion(data, dt, elem_h)
 	end
 	update_horizontal_motion(data, dt)
-	return data.scroll_y ~= old_scroll or data.horizontal_offset ~= old_horizontal_offset
+	return data.scroll_y ~= old_scroll
+		or data.horizontal_offset ~= old_horizontal_offset
+		or data.drag_cursor_x ~= old_drag_cursor_x
+		or data.drag_cursor_y ~= old_drag_cursor_y
 end
 
 function spring_list:align(elem, ctx)

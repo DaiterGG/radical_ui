@@ -8,7 +8,11 @@ local main_panel = color("#25232E")
 local main_panel_br = color("#292733")
 local separator_main = color("#14151A")
 local glass_icons = color("#C7C7C7")
-local stroke_glass = color("#000000", 46)
+local glass_stroke = color("#000000", 46)
+local glass_list_element_dark = color("#000000", 5)
+local glass_list_element_transparent = color("#000000", 0)
+local glass_list_bg = color("#000000", 8)
+local glass_scroll_bar = color("#000000", 8)
 local glass_buttons_fill = color("#000000", 15)
 
 local separator_header = color("#0E0E12")
@@ -205,13 +209,13 @@ local display_list = {
 	w_settings_tab_left = {
 		button = {
 			bg = glass_bg_tint,
-			border = { width = 1, color = stroke_glass },
+			border = { width = 1, color = glass_stroke },
 		},
 	},
 	w_settings_tab_right = {
 		button = {
 			bg = glass_bg_tint,
-			border = { width = 1, color = stroke_glass },
+			border = { width = 1, color = glass_stroke },
 		},
 	},
 	w_settings_active_tab_text = {
@@ -224,13 +228,13 @@ local display_list = {
 	w_settings_active_tab = {
 		box = {
 			bg = glass_bg_tint,
-			border = { width = 1, color = stroke_glass },
+			border = { width = 1, color = glass_stroke },
 		},
 	},
 	w_header_dis = {
 		box = {
 			bg = glass_bg_tint,
-			border = { width = 1, color = stroke_glass },
+			border = { width = 1, color = glass_stroke },
 		},
 	},
 	w_main = {
@@ -242,7 +246,7 @@ local display_list = {
 	w_footer = {
 		box = {
 			bg = glass_bg_tint,
-			border = { width = 1, color = stroke_glass },
+			border = { width = 1, color = glass_stroke },
 		},
 	},
 
@@ -271,7 +275,7 @@ local display_list = {
 	main_list_button = {
 		button = {
 			bg = glass_bg_tint,
-			border = { center = true, radius = 999, width = 1, color = stroke_glass },
+			border = { center = true, radius = 999, width = 1, color = glass_stroke },
 		},
 	},
 	main_list_title = {
@@ -329,19 +333,58 @@ local display_list = {
 	up_panel = {
 		box = {
 			bg = glass_bg_tint,
-			border = { center = true, width = 1, color = stroke_glass },
+			border = { center = true, width = 1, color = glass_stroke },
 		},
 	},
 	middle_panel = {
 		box = {
 			bg = glass_bg_tint,
-			border = { center = true, width = 1, color = stroke_glass },
+			border = { center = true, width = 1, color = glass_stroke },
 		},
 	},
 	down_panel = {
 		box = {
 			bg = glass_bg_tint,
-			border = { center = true, width = 1, color = stroke_glass },
+			border = { center = true, width = 1, color = glass_stroke },
+		},
+	},
+	down_list = {
+		list_view = {
+			bg = glass_list_bg,
+			scroll_speed = 0.4,
+			scroll_bar = {
+				width = 16,
+				padding = 8,
+			},
+		},
+	},
+	down_list_item_dark = {
+		box = {
+			bg = glass_list_element_dark,
+		},
+		text = {
+			font = "afacad_medium",
+			size = 28,
+			align_x = "left",
+			align_y = "center",
+			color = main_text,
+		},
+	},
+	down_list_item_transparent = {
+		box = {
+			bg = glass_list_element_transparent,
+		},
+		text = {
+			font = "afacad_medium",
+			size = 28,
+			align_x = "left",
+			align_y = "center",
+			color = main_text,
+		},
+	},
+	down_list_scrollbar = {
+		box = {
+			bg = glass_scroll_bar,
 		},
 	},
 }

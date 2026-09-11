@@ -61,6 +61,17 @@ function beatmaps:set_collection(index)
 	self.select_model:noDebouncePullNoteChartSet()
 end
 
+---@param index integer
+function beatmaps:select(index)
+	assert(type(index) == "number" and index % 1 == 0, "index must be an integer")
+	assert(index >= 1, "index must be greater than or equal to 1")
+
+	self:ensure_loaded()
+	self.select_model:scrollNoteChartSet(nil, index)
+	self.select_model:scrollNoteChart(nil, 1)
+	self.select_model:noDebouncePullNoteChartSet()
+end
+
 ---@param text string
 function beatmaps:set_search(text)
 	assert(type(text) == "string", "text must be a string")

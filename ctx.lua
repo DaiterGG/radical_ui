@@ -9,6 +9,7 @@ local animation_registry = require("animation_registry")
 local widget_registry = require("widget_registry")
 local beatmaps = require("beatmaps")
 local cursor = require("cursor")
+local GameplayAPI = require("game_api.Gameplay")
 
 local ctx = class()
 
@@ -18,6 +19,7 @@ function ctx:new(game, mount_path)
 	self.game = game
 	self.mountPath = mount_path
 	self.beatmaps = beatmaps(game)
+	self.gameplay_api = GameplayAPI(game)
 	self.action_queue = actions()
 	self.event_queue = {} -- game events queued by receive(), drained each update
 	self.res = res
@@ -32,12 +34,14 @@ function ctx:new(game, mount_path)
 		need_to_rebuild = true,
 		need_to_realign = true,
 		root_elements = {},
+		scene = "select",
 	}
 	self.anim_reg = animation_registry.new()
 	self.widget_reg = widget_registry.new()
 	self.state = {
 		-- active_window = "Settings",
 		settings_tab = "Gameplay",
+		keybind_capture = nil,
 	}
 	self.last_delta = 0.1
 

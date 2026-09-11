@@ -12,23 +12,23 @@ local Size = class()
 local Align = class()
 
 -- Size API (matches quick-board pattern):
---   Size({ per_hor = 30, per_vert = 30 })         -> both axes as % of parent dimension
+--   Size({ pc_hor = 30, pc_vert = 30 })          -> both axes as % of parent dimension
 --   Size({ px_hor = 44, px_vert = 40 })           -> both axes as ui-scaled pixels
---   Size({ px_hor = 44, per_vert = 20 })          -> mixed: horizontal pixels, vertical percent
---   Size({ per = 30 })                            -> shortcut: both axes percent
+--   Size({ px_hor = 44, pc_vert = 20 })           -> mixed: horizontal pixels, vertical percent
+--   Size({ pc = 30 })                             -> shortcut: both axes percent
 --   Size({ px = 30 })                             -> shortcut: both axes pixels
 function Size:new(opts)
 	opts = opts or {}
-	self.hor = opts.per_hor ~= nil and opts.per_hor or opts.px_hor or opts.per or opts.px or 0
-	self.hor_type = opts.per_hor ~= nil and "PercentOfHor"
+	self.hor = opts.pc_hor ~= nil and opts.pc_hor or opts.px_hor or opts.per or opts.px or 0
+	self.hor_type = opts.pc_hor ~= nil and "PercentOfHor"
 		or (opts.px_hor ~= nil or opts.px ~= nil or opts.per ~= nil) and "JustPixels"
 		or "JustPixels"
 	if opts.per ~= nil then
 		self.hor_type = "PercentOfHor"
 	end
 
-	self.vert = opts.per_vert ~= nil and opts.per_vert or opts.px_vert or opts.per or opts.px or 0
-	self.vert_type = opts.per_vert ~= nil and "PercentOfVert"
+	self.vert = opts.pc_vert ~= nil and opts.pc_vert or opts.px_vert or opts.per or opts.px or 0
+	self.vert_type = opts.pc_vert ~= nil and "PercentOfVert"
 		or (opts.px_vert ~= nil or opts.px ~= nil or opts.per ~= nil) and "JustPixels"
 		or "JustPixels"
 	if opts.per ~= nil then

@@ -11,6 +11,7 @@ local icons = require("icons")
 local checkbox = require("checkbox")
 local align_mod = require("apply_align")
 local spring_list = require("spring_list")
+local list_view = require("list_view")
 local ui_manager = require("ui_manager")
 local ui_element = require("ui_element")
 local utils = require("utils")
@@ -62,7 +63,11 @@ local function add_beatmap_rows(ctx, list, song_h_full, song_h)
 		content:push_child(artist)
 		local list_button = ui_element({
 			display = "main_list_button",
-			widgets = { button(content) },
+			widgets = {
+				button(content, {
+					on_release = { action = "select_beatmap", index = #list.children + 1 },
+				}),
+			},
 			align = absolute({
 				pivot = { x = 50, y = 50 },
 				parent_pivot = { x = 50, y = 50 },
@@ -324,7 +329,7 @@ return function(ctx)
 	})
 	local second_b = ui_element({
 		display = "second_b",
-		widgets = { button(sec) },
+		widgets = { button(sec, { on_release = { action = "start_gameplay" } }) },
 		polyline = {
 			{ -20, 1 },
 			{ 285, 1 },
@@ -414,6 +419,43 @@ return function(ctx)
 		},
 		align = block(Direction.Up, { pc = 100 }),
 	})
+	local down_list_scrollbar = ui_element({
+		display = "down_list_scrollbar",
+		widgets = { box() },
+	})
+	local down_list_w = list_view("main_down_list", down_list_scrollbar, true)
+	local test_list_data = {
+		"Locations",
+		"Collections",
+		"Direct",
+		"Favorites",
+		"Recently played",
+		"Downloaded",
+		"Unplayed",
+		"All beatmaps",
+	}
+	for _, value in ipairs(test_list_data) do
+		local index = #down_list_w.children + 1
+		down_list_w:add_child(ui_element({
+			display = index % 2 == 1 and "down_list_item_dark" or "down_list_item_transparent",
+			widgets = { box(), text(value) },
+			align = absolute({
+				pivot = { x = 0, y = 0 },
+				parent_pivot = { x = 0, y = 0 },
+				size = Size({ per_hor = 100, px_vert = 56 }),
+			}),
+		}))
+	end
+	local down_list = ui_element({
+		display = "down_list",
+		widgets = { down_list_w },
+		align = absolute({
+			pivot = { x = 0, y = 0 },
+			parent_pivot = { x = 0, y = 0 },
+			size = Size({ px_hor = middle_w - 40, per_vert = 100 }),
+		}),
+	})
+	down_panel:push_child(down_list)
 	-- NOTE: RIGHT SIDE
 	local right_width = 638
 	local right_scroll_gap = 40

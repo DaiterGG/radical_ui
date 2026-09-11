@@ -94,6 +94,18 @@ function keybinding:trigger(key, modifiers)
 	return self._keys[key]
 end
 
+-- resolve a non-repeating key press and enqueue its action
+function keybinding:trigger_key(ctx, key, is_repeat)
+	if is_repeat then
+		return nil
+	end
+	local action = self:trigger(key, ctx.input_state.modifiers)
+	if action then
+		ctx.action_queue:register({ action = action })
+	end
+	return action
+end
+
 -- canonical combo string, e.g. "ctrl+shift+p"
 function keybinding:comb(modifiers, key)
 	local parts = {}

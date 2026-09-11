@@ -1,6 +1,39 @@
-local execute = {
-	quit = function()
+local execute
+execute = {
+	quit = function(ctx)
+		if ctx.ui.scene == "gameplay" then
+			execute.stop_gameplay(ctx)
+			return
+		end
 		love.event.push("quit") -- same as the osu_ui example: the loop polls it and exits
+	end,
+	select_beatmap = function(ctx, data)
+		ctx.beatmaps:select(data.index)
+	end,
+	start_gameplay = function(ctx)
+		if ctx.ui.scene == "gameplay" then
+			return
+		end
+
+		ctx.beatmaps:ensure_loaded()
+		if not ctx.game.selectModel:notechartExists() then
+			return
+		end
+
+		ctx.gameplay_api:start()
+		ctx.ui.scene = "gameplay"
+		ctx.ui.need_to_rebuild = true
+		ctx.ui.need_to_realign = true
+	end,
+	stop_gameplay = function(ctx)
+		if ctx.ui.scene ~= "gameplay" then
+			return
+		end
+
+		ctx.gameplay_api:stop()
+		ctx.ui.scene = "select"
+		ctx.ui.need_to_rebuild = true
+		ctx.ui.need_to_realign = true
 	end,
 	ui_scale_custom = function(ctx, new_scale)
 		ctx.ui.custom_scale = new_scale
@@ -12,6 +45,15 @@ local execute = {
 	settings_tab = function(ctx, data)
 		ctx.state.settings_tab = data.tab
 		ctx.ui.need_to_rebuild = true
+	end,
+	begin_keybind_capture = function(ctx, data)
+		if not data or not data.target_action then
+			return
+		end
+		ctx.state.keybind_capture = {
+			action = data.target_action,
+			pos = data.pos or 1,
+		}
 	end,
 	sub_window_toggle = function(ctx, data)
 		if data.window ~= ctx.state.active_window then
@@ -37,31 +79,31 @@ local execute = {
 
 	-- Gameplay
 	pause_game = function(ctx)
-		local api = SELECT_CONTEXT and SELECT_CONTEXT.gameplayApi
+		local api = ctx.gameplay_api
 		if api and api.loaded then
 			api:pause()
 		end
 	end,
 	resume_game = function(ctx)
-		local api = SELECT_CONTEXT and SELECT_CONTEXT.gameplayApi
+		local api = ctx.gameplay_api
 		if api and api.loaded then
 			api:play()
 		end
 	end,
 	retry = function(ctx)
-		local api = SELECT_CONTEXT and SELECT_CONTEXT.gameplayApi
+		local api = ctx.gameplay_api
 		if api and api.loaded then
 			api:retry()
 		end
 	end,
 	skip_intro = function(ctx)
-		local api = SELECT_CONTEXT and SELECT_CONTEXT.gameplayApi
+		local api = ctx.gameplay_api
 		if api and api.loaded and api:canSkipIntro() then
 			api:skipIntro()
 		end
 	end,
-	increase_play_speed = function(action)
-		local api = SELECT_CONTEXT and SELECT_CONTEXT.gameplayApi
+	increase_play_speed = function(ctx, action)
+		local api = ctx.gameplay_api
 		if api and api.loaded then
 			local dir = action.dir or 1
 			api:increasePlaySpeed(dir)

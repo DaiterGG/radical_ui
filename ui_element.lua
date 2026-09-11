@@ -1,6 +1,7 @@
 local class = require("class")
 local polyline_collision = require("polyline_collision")
 local utils = require("utils")
+local apply_align = require("apply_align")
 -- ui_element(opts)
 -- opts: { display = display_key, widgets = {...}, align = Align(...), polyline = {...} }
 -- display_key: string key from ctx.display_list
@@ -14,11 +15,17 @@ local ui_element = class()
 ui_element.type = "ui_element"
 
 function ui_element:new(opts)
+	opts = opts or {}
 	next_hash = next_hash + 1
 	self.hash_num = next_hash
 	self.display_key = opts.display
 	self.widget = opts.widgets or {}
 	self.align = opts.align
+		or apply_align.Align():absolute({
+			pivot = { x = 0, y = 0 },
+			parent_pivot = { x = 0, y = 0 },
+			size = apply_align.Size({ pc_hor = 100, pc_vert = 100 }),
+		})
 	self.polyline = opts.polyline
 	self.children = {}
 	self.rect = nil

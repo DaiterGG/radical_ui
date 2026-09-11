@@ -32,6 +32,10 @@ function UserInterface:unload()
 end
 
 function UserInterface:receive(event)
+	if self.ctx.ui.scene == "gameplay" and self.ctx.gameplay_api.loaded then
+		self.ctx.gameplay_api:receive(event)
+	end
+
 	if event.name == "framestarted" or event.name == "update" then
 		return
 	end
@@ -40,6 +44,10 @@ end
 
 function UserInterface:update(dt)
 	self.ctx:update(dt)
+
+	if self.ctx.ui.scene == "gameplay" then
+		self.ctx.gameplay_api:update(dt)
+	end
 
 	-- 1) feed this frame's queued events into input_state (pos/buttons/modifiers/delta/scroll)
 	event_handler.process(self.ctx)
