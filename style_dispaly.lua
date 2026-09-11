@@ -266,12 +266,32 @@ local display_list = {
 			-- },
 		},
 	},
-	main_list = { list_view = {} },
+	main_list = { spring_list = {} },
 
 	main_list_button = {
 		button = {
 			bg = glass_bg_tint,
-			-- border = { center = true, radius = 10, width = 1, color = stroke_glass },
+			border = { center = true, radius = 999, width = 1, color = stroke_glass },
+		},
+	},
+	main_list_title = {
+		text = {
+			font = "afacad_bold",
+			size = 30,
+			align_x = "center",
+			align_y = "center",
+			color = main_text,
+			downscale = 0.5,
+		},
+	},
+	main_list_author = {
+		text = {
+			font = "afacad_medium",
+			size = 18,
+			align_x = "center",
+			align_y = "center",
+			color = main_text,
+			downscale = 0.5,
 		},
 	},
 

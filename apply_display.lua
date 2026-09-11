@@ -102,6 +102,7 @@ function apply_display.draw_box_border(x, y, w, h, border, c)
 		bx, by = x + inset, y + inset
 		bw_rect, bh_rect = w - bw, h - bw
 	end
+	radius = math.min(radius, bw_rect / 2, bh_rect / 2)
 
 	love.graphics.setColor(c)
 	love.graphics.setLineWidth(bw)
@@ -114,8 +115,9 @@ function apply_display.corner_radius(x, y, w, h, radius, c)
 	if not c then
 		return
 	end
+	radius = math.min(radius or 0, w / 2, h / 2)
 	love.graphics.setColor(c)
-	love.graphics.rectangle("fill", math.floor(x + 0.5), math.floor(y + 0.5), w, h, radius or 0, radius or 0)
+	love.graphics.rectangle("fill", math.floor(x + 0.5), math.floor(y + 0.5), w, h, radius, radius)
 end
 
 -- draw a filled polygon from points (local coords, offset by x,y)
@@ -394,7 +396,7 @@ function apply_display.draw_background(rect, bg, border, polyline, opts)
 end
 
 -- draw a line of text
-function apply_display.draw_text(x, y, text, font, c)
+function apply_display.draw_text(x, y, text, font, c, scale)
 	if not text then
 		return
 	end
@@ -405,7 +407,7 @@ function apply_display.draw_text(x, y, text, font, c)
 	if c then
 		love.graphics.setColor(c)
 	end
-	love.graphics.print(text, math.floor(x + 0.5), math.floor(y + 0.5))
+	love.graphics.print(text, math.floor(x + 0.5), math.floor(y + 0.5), 0, scale or 1, scale or 1)
 end
 
 -- -- draw an icon: a Font Awesome glyph or multi-char/ligature string

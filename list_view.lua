@@ -24,10 +24,10 @@ end
 local list_view = class()
 list_view.type = "list_view"
 
-function list_view:new(scroll_bar, bar_only)
-	self.registry_key = scroll_bar
-	self.scrollbar_elem = bar_only
-	self.drag_mode = select(3, ...)
+function list_view:new(registry_key, scroll_bar, bar_only)
+	self.registry_key = registry_key
+	self.scrollbar_elem = scroll_bar
+	self.drag_mode = bar_only or false
 
 	self.children = {}
 end
@@ -55,6 +55,11 @@ function list_view:get_data(ctx)
 			bar_thumb_h = 0,
 			bar_hit = nil,
 			scrollbar_align = nil,
+			spring_velocity = 0,
+			springing = false,
+			overscroll = 120,
+			middle_scrolling = false,
+			middle_anchor_y = 0,
 		}
 		ctx.widget_reg:set(self.registry_key, data)
 	end
@@ -98,8 +103,6 @@ function list_view:realign(ctx, elem)
 
 	data.content_height = y - (r.y - data.scroll_y)
 	data.max_scroll_y = math.max(0, data.content_height - r.h)
-	data.scroll_y = clamp(data.scroll_y, 0, data.max_scroll_y)
-
 	if self.scrollbar_elem then
 		self:update_scrollbar(elem, ctx)
 	end
@@ -141,8 +144,8 @@ function list_view:update_scrollbar(elem, ctx)
 
 	-- thumb height: full track when content fits, shrinking as content grows
 	local thumb_h = track_h
-	if self.content_height and self.content_height > r.h then
-		thumb_h = track_h * (r.h / self.content_height)
+	if data.content_height and data.content_height > r.h then
+		thumb_h = track_h * (r.h / data.content_height)
 	end
 	local min_h = math.min(16 * scale, track_h)
 	thumb_h = math.max(thumb_h, min_h)
@@ -164,7 +167,8 @@ function list_view:update_scrollbar(elem, ctx)
 	-- thumb position along the track
 	local y_off = pad
 	if data.max_scroll_y and data.max_scroll_y > 0 then
-		y_off = y_off + (data.scroll_y / data.max_scroll_y) * data.bar_travel
+		local settled_scroll = clamp(data.scroll_y, 0, data.max_scroll_y)
+		y_off = y_off + (settled_scroll / data.max_scroll_y) * data.bar_travel
 	end
 
 	-- absolute align values (parent_pivot/pivot are 0..100 percentages).
@@ -210,6 +214,66 @@ function list_view:update_scroll(elem, ctx)
 	local in_rect = mx >= r.x and mx < r.x + r.w and my >= r.y and my < r.y + r.h
 
 	local old_scroll = data.scroll_y
+	local dt = math.min(ctx.dt or 0, 0.05)
+
+	local function start_spring()
+		if data.scroll_y < 0 or data.scroll_y > data.max_scroll_y then
+			data.springing = true
+		end
+	end
+
+	local function spring_to_limit()
+		if not data.springing then
+			return
+		end
+
+		local target = clamp(data.scroll_y, 0, data.max_scroll_y)
+		local displacement = target - data.scroll_y
+		data.spring_velocity = data.spring_velocity + displacement * 70 * dt
+		data.spring_velocity = data.spring_velocity * math.exp(-14 * dt)
+		data.scroll_y = data.scroll_y + data.spring_velocity * dt
+
+		if math.abs(target - data.scroll_y) < 0.1 and math.abs(data.spring_velocity) < 0.1 then
+			data.scroll_y = target
+			data.spring_velocity = 0
+			data.springing = false
+		end
+	end
+
+	local function set_drag_scroll(value)
+		data.scroll_y = value
+	end
+
+	local middle_held = input.middle == "held" or input.middle == "pressed"
+	if data.middle_scrolling then
+		if middle_held then
+			-- The anchor stays fixed: a larger cursor distance produces a
+			-- faster continuous scroll, even when the cursor stops moving.
+			local distance = my - data.middle_anchor_y
+			local dead_zone = 4
+			if math.abs(distance) > dead_zone then
+				local direction = distance < 0 and -1 or 1
+				local speed = (math.abs(distance) - dead_zone) * 5
+				set_drag_scroll(data.scroll_y + direction * speed * dt)
+			end
+		else
+			data.middle_scrolling = false
+			input.interacting_with = nil
+			if ctx.cursor then
+				ctx.cursor:set_state("idle")
+			end
+			start_spring()
+		end
+	elseif in_rect and input.middle == "pressed" then
+		data.middle_scrolling = true
+		data.middle_anchor_y = my
+		data.springing = false
+		data.spring_velocity = 0
+		if ctx.cursor then
+			ctx.cursor:set_state("scroll")
+		end
+		input.interacting_with = elem
+	end
 
 	-- which drag interactions are enabled (wheel is always on):
 	--   drag_mode: "both" | "only_bar" | "only_drag"
@@ -220,8 +284,9 @@ function list_view:update_scroll(elem, ctx)
 	-- keeps working while a drag is active even if the pointer left the viewport
 	local wheel_active = in_rect
 	if wheel_active and input.scroll_y and input.scroll_y ~= 0 then
-		self.scroll_y = self.scroll_y - input.scroll_y * self.wheel_speed
+		set_drag_scroll(data.scroll_y - input.scroll_y * data.wheel_speed)
 		input.scroll_y = 0
+		start_spring()
 	end
 
 	local held = input.left == "held" or input.left == "pressed"
@@ -237,25 +302,27 @@ function list_view:update_scroll(elem, ctx)
 	if data.bar_dragging then
 		if held then
 			if data.bar_travel > 0 then
-				data.scroll_y = data.bar_drag_scroll_start
-					+ (my - data.bar_drag_start_y) * (data.max_scroll_y / data.bar_travel)
+				set_drag_scroll(
+					data.bar_drag_scroll_start + (my - data.bar_drag_start_y) * (data.max_scroll_y / data.bar_travel)
+				)
 			end
 		else
 			data.bar_dragging = false -- button released -> stop dragging
 			input.interacting_with = nil
+			start_spring()
 		end
 	elseif data.max_scroll_y > 0 and over_bar and input.left == "pressed" then
 		data.bar_dragging = true
 		input.interacting_with = elem
 
 		-- where on the thumb the pointer grabbed it (0..thumb_h)
-		local thumb_top = data.bar_track_top + (data.scroll_y / data.max_scroll_y) * data.bar_travel
+		local settled_scroll = clamp(data.scroll_y, 0, data.max_scroll_y)
+		local thumb_top = data.bar_track_top + (settled_scroll / data.max_scroll_y) * data.bar_travel
 		local grab = clamp(my - thumb_top, 0, data.bar_thumb_h)
 
 		-- place the thumb so the grabbed point stays under the pointer
 		if data.bar_travel > 0 then
-			data.scroll_y =
-				clamp(((my - grab - data.bar_track_top) / data.bar_travel) * data.max_scroll_y, 0, data.max_scroll_y)
+			set_drag_scroll(((my - grab - data.bar_track_top) / data.bar_travel) * data.max_scroll_y)
 		end
 		data.bar_drag_start_y = my
 		data.bar_drag_scroll_start = data.scroll_y
@@ -265,12 +332,13 @@ function list_view:update_scroll(elem, ctx)
 	if not data.bar_dragging then
 		if data.is_dragging then
 			if held then
-				data.scroll_y = data.drag_scroll_start_y - (my - data.drag_start_y)
+				set_drag_scroll(data.drag_scroll_start_y - (my - data.drag_start_y))
 			else
 				data.is_dragging = false -- button released -> stop dragging
 				input.interacting_with = nil
+				start_spring()
 			end
-		elseif allow_drag and in_rect and not over_bar and input.left == "pressed" then
+		elseif not data.middle_scrolling and allow_drag and in_rect and not over_bar and input.left == "pressed" then
 			data.is_dragging = true
 			data.drag_start_y = my
 			data.drag_scroll_start_y = data.scroll_y
@@ -278,8 +346,10 @@ function list_view:update_scroll(elem, ctx)
 		end
 	end
 
-	-- clamp, then re-align children only when the scroll position moved
-	data.scroll_y = clamp(data.scroll_y, 0, data.max_scroll_y)
+	if not data.is_dragging and not data.bar_dragging then
+		spring_to_limit()
+	end
+
 	if data.scroll_y ~= old_scroll then
 		return true
 	end
@@ -302,7 +372,9 @@ function list_view:pointer_collision(elem, ctx, hit)
 	local active = interacting
 		or data.is_dragging
 		or data.bar_dragging
-		or (hit and (input.left == "pressed" or input.scroll_y ~= 0))
+		or data.middle_scrolling
+		or data.springing
+		or (hit and (input.left == "pressed" or input.middle == "pressed" or input.scroll_y ~= 0))
 	if active then
 		if self:update_scroll(elem, ctx) then
 			self:realign(ctx, elem)
@@ -335,7 +407,7 @@ function list_view:draw(elem, ctx, widget_data, display_data)
 		love.graphics.push("all")
 
 		love.graphics.stencil(function()
-			love.graphics.rectangle("fill", math.floor(r.x + 0.5), math.floor(r.y + 0.5), r.w, r.h)
+			love.graphics.rectangle("fill", math.floor(r.x + 0.5), math.floor(r.y + 0.5), r.w + 1, r.h)
 		end, "replace", 1)
 		love.graphics.setStencilTest("greater", 0)
 

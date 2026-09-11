@@ -105,8 +105,4 @@ function beatmaps:set_grouping(enabled)
 	self.select_model:noDebouncePullNoteChartSet()
 end
 
-function beatmaps.init(game)
-	return beatmaps(game)
-end
-
 return beatmaps

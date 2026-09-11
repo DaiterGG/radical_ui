@@ -11,6 +11,24 @@ text.type = "text"
 
 local default_line_gap = 4
 
+local function clamp_line(line, font, max_width)
+	if font:getWidth(line) <= max_width then
+		return line
+	end
+
+	local suffix = "..."
+	if font:getWidth(suffix) > max_width then
+		return ""
+	end
+
+	line = line:sub(1, -2)
+	while line ~= "" and font:getWidth(line .. suffix) > max_width do
+		line = line:sub(1, -2)
+	end
+
+	return line .. suffix
+end
+
 function text:new(str, display_data)
 	self.text = str or ""
 	self.display_data = display_data
@@ -46,7 +64,23 @@ function text:draw(elem, ctx, widget_data, display_data)
 		lines[#lines + 1] = line
 	end
 
-	local font_height = love.graphics.getFont():getHeight()
+	local font_scale = 1
+	local downscale = tonumber(widget_data.downscale)
+	if downscale and downscale > 0 and downscale < 1 then
+		local widest_line = 0
+		for _, line in ipairs(lines) do
+			widest_line = math.max(widest_line, font:getWidth(line))
+		end
+		if widest_line > r.w then
+			font_scale = math.max(downscale, r.w / widest_line)
+		end
+	end
+
+	for i, line in ipairs(lines) do
+		lines[i] = clamp_line(line, font, r.w / font_scale)
+	end
+
+	local font_height = love.graphics.getFont():getHeight() * font_scale
 	local line_gap = (widget_data.line_gap or default_line_gap) * (ui_scale or 1)
 	local line_height = font_height + line_gap
 	local block_height = font_height + (#lines - 1) * line_height
@@ -61,7 +95,7 @@ function text:draw(elem, ctx, widget_data, display_data)
 	end
 
 	for _, line in ipairs(lines) do
-		local tw = love.graphics.getFont():getWidth(line)
+		local tw = love.graphics.getFont():getWidth(line) * font_scale
 		local x
 		if align_x == "right" then
 			x = r.x + r.w - tw
@@ -71,7 +105,7 @@ function text:draw(elem, ctx, widget_data, display_data)
 			x = r.x
 		end
 
-		apply_display.draw_text(x, y, line, font, widget_data.color)
+		apply_display.draw_text(x, y, line, font, widget_data.color, font_scale)
 		y = y + line_height
 	end
 end

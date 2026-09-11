@@ -26,6 +26,8 @@ function UserInterface:load()
 end
 
 function UserInterface:unload()
+	love.mouse.setVisible(true)
+	love.mouse.setCursor()
 	self.ctx = nil
 end
 

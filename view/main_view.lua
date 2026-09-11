@@ -10,7 +10,7 @@ local text = require("text")
 local icons = require("icons")
 local checkbox = require("checkbox")
 local align_mod = require("apply_align")
-local list_view = require("list_view")
+local spring_list = require("spring_list")
 local ui_manager = require("ui_manager")
 local ui_element = require("ui_element")
 local utils = require("utils")
@@ -30,7 +30,8 @@ local function add_beatmap_rows(ctx, list, song_h_full, song_h)
 	local beatmap_items = ctx.beatmaps:request_range(1, count)
 
 	for _, beatmap in ipairs(beatmap_items) do
-		local name = beatmap.name or beatmap.title or beatmap.chartfile_name or "Unnamed beatmap"
+		local name = beatmap.title or beatmap.name or beatmap.chartfile_name or "Unnamed beatmap"
+		local author = beatmap.artist or beatmap.creator or "Unknown artist"
 		local padding = ui_element({
 			align = absolute({
 				pivot = { x = 0, y = 0 },
@@ -38,13 +39,30 @@ local function add_beatmap_rows(ctx, list, song_h_full, song_h)
 				size = Size({ per_hor = 100, px_vert = song_h_full }),
 			}),
 		})
-		local label = ui_element({
-			display = "right_footer_text",
+		local title = ui_element({
+			display = "main_list_title",
 			widgets = { text(name) },
+			align = absolute({
+				pivot = { x = 50, y = 50 },
+				parent_pivot = { x = 50, y = 42 },
+				size = Size({ per_hor = 80, px_vert = 42 }),
+			}),
 		})
+		local artist = ui_element({
+			display = "main_list_author",
+			widgets = { text(author) },
+			align = absolute({
+				pivot = { x = 50, y = 100 },
+				parent_pivot = { x = 50, y = 90 },
+				size = Size({ per_hor = 80, px_vert = 24 }),
+			}),
+		})
+		local content = ui_element({})
+		content:push_child(title)
+		content:push_child(artist)
 		local list_button = ui_element({
 			display = "main_list_button",
-			widgets = { button(label) },
+			widgets = { button(content) },
 			align = absolute({
 				pivot = { x = 50, y = 50 },
 				parent_pivot = { x = 50, y = 50 },
@@ -475,10 +493,10 @@ return function(ctx)
 	up_header:push_child(first_header_b)
 
 	-- NOTE: RIGHT SCROLL
-	local song_h_full = 100
-	local song_h = 80
+	local song_h_full = (1080 - header_h - right_header_h * 2) / 7
+	local song_h = song_h_full - 10
 
-	local main_list_w = list_view("main_list")
+	local main_list_w = spring_list()
 	add_beatmap_rows(ctx, main_list_w, song_h_full, song_h)
 
 	local main_list = ui_element({
@@ -664,7 +682,7 @@ return function(ctx)
 	-- local bar = ui_element({ display = "scrollable_list_scroll_bar", widgets = { box() } })
 	-- local ch = ui_element({ display = "header", widgets = { box() }, align = block(Direction.Up, "50") })
 	-- bar:push_child(ch)
-	-- local lv = list_view(bar)
+	-- local lv = spring_list()
 
 	-- local item_height = 48
 	-- for _, title in ipairs(songs) do

@@ -22,13 +22,40 @@ function button:new(child, opts)
 	self.child = child
 end
 
+local function button_window(elem)
+	local r = elem.rect
+	return { x = r.x, y = r.y, w = r.w, h = r.h }
+end
+
+local function set_child_states(elem, states)
+	elem.states = states
+	for _, child in ipairs(elem.children) do
+		set_child_states(child, states)
+	end
+end
+
+function button:align(elem, ctx)
+	if not self.child then
+		return
+	end
+
+	local window = button_window(elem)
+	if self.child.align then
+		self.child:align_rec(window, ctx)
+	else
+		self.child.rect = window
+		for _, child in ipairs(self.child.children) do
+			child:align_rec(button_window(self.child), ctx)
+		end
+	end
+end
+
 function button:pointer_collision(elem, ctx, hit)
 	local input = ctx.input_state
 	local hash = elem.hash_num
 
 	if hit and input.left == "pressed" then
 		input.interacting_with = hash
-		return
 	end
 end
 
@@ -76,9 +103,9 @@ function button:draw(elem, ctx, widget_data, all_data)
 
 	-- draw the owned child (text/icon) on top; its state mirrors the button's
 	if self.child then
-		self.child.rect = { x = r.x, y = r.y, w = r.w, h = r.h }
-		self.child.states = elem.states
-		self.child:draw(ctx)
+		self.child.rect = button_window(elem)
+		set_child_states(self.child, elem.states)
+		self.child:draw_rec(ctx)
 	end
 end
 
