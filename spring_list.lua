@@ -45,6 +45,133 @@ local function horizontal_influence(rect, item_y, item_h)
 	return linear * linear * (3 - 2 * linear)
 end
 
+local function snap_position(data, elem_h, value)
+	if elem_h <= 0 then
+		return clamp(value, 0, data.max_scroll_y)
+	end
+	local snapped = math.floor(value / elem_h + SNAP_ROUNDING_OFFSET) * elem_h
+	return clamp(snapped, 0, data.max_scroll_y)
+end
+
+local function start_snap(data, elem_h)
+	data.snap_target = snap_position(data, elem_h, data.scroll_y)
+	data.snapping = true
+end
+
+local function start_directional_snap(data, elem_h, direction)
+	if elem_h <= 0 then
+		start_snap(data, elem_h)
+		return
+	end
+
+	local base_position = data.snapping and data.snap_target or data.scroll_y
+	local current_index = math.floor(base_position / elem_h + SNAP_ROUNDING_OFFSET)
+	local target_index = current_index + (direction > 0 and 1 or -1)
+	data.snap_target = clamp(target_index * elem_h, 0, data.max_scroll_y)
+	data.snapping = true
+end
+
+local function start_wheel_snap(data, elem_h, direction)
+	if elem_h <= 0 then
+		start_snap(data, elem_h)
+		return
+	end
+
+	local base_position = data.snapping and data.snap_target or data.scroll_y
+	local current_index = math.floor(base_position / elem_h + SNAP_ROUNDING_OFFSET)
+	local target = (current_index + (direction > 0 and 1 or -1)) * elem_h
+
+	data.velocity = 0
+	if target < 0 or target > data.max_scroll_y then
+		data.scroll_y = target
+		data.snap_target = clamp(target, 0, data.max_scroll_y)
+	else
+		data.snap_target = target
+	end
+	data.snapping = true
+end
+
+local function stop_motion(data)
+	data.velocity = 0
+	data.acceleration = 0
+	data.snapping = false
+end
+
+local function update_motion(data, dt, elem_h)
+	local out_of_bounds = data.scroll_y < 0 or data.scroll_y > data.max_scroll_y
+	if out_of_bounds then
+		data.snap_target = clamp(data.scroll_y, 0, data.max_scroll_y)
+		data.snapping = true
+	end
+
+	if data.snapping then
+		local displacement = data.snap_target - data.scroll_y
+		local stiffness = out_of_bounds and OVERSCROLL_STIFFNESS or SNAP_STIFFNESS
+		local damping = out_of_bounds and OVERSCROLL_DAMPING or SNAP_DAMPING
+		data.acceleration = displacement * stiffness - data.velocity * damping
+		data.velocity = data.velocity + data.acceleration * dt
+		data.scroll_y = data.scroll_y + data.velocity * dt
+		if math.abs(displacement) < SNAP_POSITION_EPSILON and math.abs(data.velocity) < SNAP_VELOCITY_EPSILON then
+			data.scroll_y = data.snap_target
+			stop_motion(data)
+		end
+		return
+	end
+
+	-- High air friction makes a released drag lose speed quickly.
+	data.acceleration = -data.velocity * AIR_FRICTION
+	data.velocity = data.velocity + data.acceleration * dt
+	data.scroll_y = data.scroll_y + data.velocity * dt
+
+	if math.abs(data.velocity) < SNAP_VELOCITY_THRESHOLD then
+		start_snap(data, elem_h)
+	end
+end
+
+local function update_horizontal_motion(data, dt)
+	if data.is_dragging then
+		return
+	end
+	data.horizontal_acceleration = -data.horizontal_offset * HORIZONTAL_SPRING_STIFFNESS
+		- data.horizontal_velocity * HORIZONTAL_SPRING_DAMPING
+	data.horizontal_velocity = data.horizontal_velocity + data.horizontal_acceleration * dt
+	data.horizontal_offset = data.horizontal_offset + data.horizontal_velocity * dt
+	if
+		math.abs(data.horizontal_offset) < HORIZONTAL_ACTIVE_VELOCITY_EPSILON
+		and math.abs(data.horizontal_velocity) < HORIZONTAL_ACTIVE_VELOCITY_EPSILON
+	then
+		data.horizontal_offset = 0
+		data.horizontal_velocity = 0
+		data.horizontal_acceleration = 0
+	end
+end
+
+local function horizontal_drag_target(rect, mouse_x, res_w)
+	local start_distance = rect.w * HORIZONTAL_START_OUTSIDE_RATIO
+	local left_start = math.max(0, rect.x - start_distance)
+	local right_start = rect.x + rect.w + start_distance
+	local progress
+
+	if mouse_x < left_start then
+		local available_width = math.max(1, left_start)
+		progress = clamp((left_start - mouse_x) / available_width, 0, 1)
+		return -rect.w * progress
+	elseif mouse_x > right_start then
+		local available_width = math.max(1, res_w - right_start)
+		progress = clamp((mouse_x - right_start) / available_width, 0, 1)
+		return rect.w * progress
+	else
+		return 0
+	end
+end
+
+local function vertical_scroll_factor(rect, horizontal_offset)
+	local lock_distance = math.max(1, rect.w * HORIZONTAL_SCROLL_LOCK_RATIO)
+	local progress = clamp(math.abs(horizontal_offset) / lock_distance, 0, 1)
+	local remaining = 1 - progress
+	return remaining * remaining
+end
+
 local spring_list = class()
 spring_list.type = "spring_list"
 
@@ -177,133 +304,6 @@ function spring_list:update_scroll(elem, ctx)
 	data.max_scroll_y = math.max(0, data.content_height - rect.h)
 	local elem_h = rect.h / ROW_COUNT
 
-	local function snap_position(value)
-		if elem_h <= 0 then
-			return clamp(value, 0, data.max_scroll_y)
-		end
-		local snapped = math.floor(value / elem_h + SNAP_ROUNDING_OFFSET) * elem_h
-		return clamp(snapped, 0, data.max_scroll_y)
-	end
-
-	local function start_snap()
-		data.snap_target = snap_position(data.scroll_y)
-		data.snapping = true
-	end
-
-	local function start_directional_snap(direction)
-		if elem_h <= 0 then
-			start_snap()
-			return
-		end
-
-		local base_position = data.snapping and data.snap_target or data.scroll_y
-		local current_index = math.floor(base_position / elem_h + SNAP_ROUNDING_OFFSET)
-		local target_index = current_index + (direction > 0 and 1 or -1)
-		data.snap_target = clamp(target_index * elem_h, 0, data.max_scroll_y)
-		data.snapping = true
-	end
-
-	local function start_wheel_snap(direction)
-		if elem_h <= 0 then
-			start_snap()
-			return
-		end
-
-		local base_position = data.snapping and data.snap_target or data.scroll_y
-		local current_index = math.floor(base_position / elem_h + SNAP_ROUNDING_OFFSET)
-		local target = (current_index + (direction > 0 and 1 or -1)) * elem_h
-
-		data.velocity = 0
-		if target < 0 or target > data.max_scroll_y then
-			data.scroll_y = target
-			data.snap_target = clamp(target, 0, data.max_scroll_y)
-		else
-			data.snap_target = target
-		end
-		data.snapping = true
-	end
-
-	local function stop_motion()
-		data.velocity = 0
-		data.acceleration = 0
-		data.snapping = false
-	end
-
-	local function update_motion()
-		local out_of_bounds = data.scroll_y < 0 or data.scroll_y > data.max_scroll_y
-		if out_of_bounds then
-			data.snap_target = clamp(data.scroll_y, 0, data.max_scroll_y)
-			data.snapping = true
-		end
-
-		if data.snapping then
-			local displacement = data.snap_target - data.scroll_y
-			local stiffness = out_of_bounds and OVERSCROLL_STIFFNESS or SNAP_STIFFNESS
-			local damping = out_of_bounds and OVERSCROLL_DAMPING or SNAP_DAMPING
-			data.acceleration = displacement * stiffness - data.velocity * damping
-			data.velocity = data.velocity + data.acceleration * dt
-			data.scroll_y = data.scroll_y + data.velocity * dt
-			if math.abs(displacement) < SNAP_POSITION_EPSILON and math.abs(data.velocity) < SNAP_VELOCITY_EPSILON then
-				data.scroll_y = data.snap_target
-				stop_motion()
-			end
-			return
-		end
-
-		-- High air friction makes a released drag lose speed quickly.
-		data.acceleration = -data.velocity * AIR_FRICTION
-		data.velocity = data.velocity + data.acceleration * dt
-		data.scroll_y = data.scroll_y + data.velocity * dt
-
-		if math.abs(data.velocity) < SNAP_VELOCITY_THRESHOLD then
-			start_snap()
-		end
-	end
-
-	local function update_horizontal_motion()
-		if data.is_dragging then
-			return
-		end
-		data.horizontal_acceleration = -data.horizontal_offset * HORIZONTAL_SPRING_STIFFNESS
-			- data.horizontal_velocity * HORIZONTAL_SPRING_DAMPING
-		data.horizontal_velocity = data.horizontal_velocity + data.horizontal_acceleration * dt
-		data.horizontal_offset = data.horizontal_offset + data.horizontal_velocity * dt
-		if
-			math.abs(data.horizontal_offset) < HORIZONTAL_ACTIVE_VELOCITY_EPSILON
-			and math.abs(data.horizontal_velocity) < HORIZONTAL_ACTIVE_VELOCITY_EPSILON
-		then
-			data.horizontal_offset = 0
-			data.horizontal_velocity = 0
-			data.horizontal_acceleration = 0
-		end
-	end
-
-	local function horizontal_drag_target(x)
-		local start_distance = rect.w * HORIZONTAL_START_OUTSIDE_RATIO
-		local left_start = math.max(0, rect.x - start_distance)
-		local right_start = rect.x + rect.w + start_distance
-		local progress
-
-		if x < left_start then
-			local available_width = math.max(1, left_start)
-			progress = clamp((left_start - x) / available_width, 0, 1)
-			return -rect.w * progress
-		-- elseif x > right_start then
-		else
-			local available_width = math.max(1, ctx.res.w - right_start)
-			progress = clamp((x - right_start) / available_width, 0, 1)
-			return rect.w * progress
-			-- return 0
-		end
-	end
-
-	local function vertical_scroll_factor(horizontal_offset)
-		local lock_distance = math.max(1, rect.w * HORIZONTAL_SCROLL_LOCK_RATIO)
-		local progress = clamp(math.abs(horizontal_offset) / lock_distance, 0, 1)
-		local remaining = 1 - progress
-		return remaining * remaining
-	end
-
 	local middle_held = input.middle == "held" or input.middle == "pressed"
 	if data.middle_scrolling then
 		if middle_held then
@@ -313,7 +313,8 @@ function spring_list:update_scroll(elem, ctx)
 				local target_velocity = direction * (math.abs(distance) - MIDDLE_DEAD_ZONE) * MIDDLE_SCROLL_SPEED
 				data.acceleration = (target_velocity - data.velocity) * MIDDLE_SCROLL_ACCELERATION
 				data.velocity = data.velocity + data.acceleration * dt
-				data.scroll_y = data.scroll_y + data.velocity * dt * vertical_scroll_factor(data.horizontal_offset)
+				data.scroll_y = data.scroll_y
+					+ data.velocity * dt * vertical_scroll_factor(rect, data.horizontal_offset)
 			end
 		else
 			data.middle_scrolling = false
@@ -325,7 +326,7 @@ function spring_list:update_scroll(elem, ctx)
 	elseif inside and input.middle == "pressed" then
 		data.middle_scrolling = true
 		data.middle_anchor_y = mouse_y
-		stop_motion()
+		stop_motion(data)
 		if ctx.cursor then
 			ctx.cursor:set_state("scroll")
 		end
@@ -346,7 +347,7 @@ function spring_list:update_scroll(elem, ctx)
 		end
 	elseif inside and input.right == "pressed" then
 		data.right_scrolling = true
-		stop_motion()
+		stop_motion(data)
 		local progress = clamp((mouse_y - rect.y) / rect.h, 0, 1)
 		data.scroll_y = progress * data.max_scroll_y
 		input.interacting_with = elem
@@ -356,7 +357,7 @@ function spring_list:update_scroll(elem, ctx)
 		local wheel_delta = input.scroll_y > 0 and -1 or 1
 		data.acceleration = 0
 		if math.abs(data.horizontal_offset) < rect.w * HORIZONTAL_FULL_STRETCH_EPSILON then
-			start_wheel_snap(wheel_delta)
+			start_wheel_snap(data, elem_h, wheel_delta)
 		end
 		input.scroll_y = 0
 	end
@@ -365,21 +366,20 @@ function spring_list:update_scroll(elem, ctx)
 	if data.is_dragging then
 		if held then
 			local previous_drag_cursor_y = data.drag_cursor_y
-			if mouse_x <= 0 or mouse_x >= ctx.res.w then
+			local outside_window = mouse_x <= 0 or mouse_x >= ctx.res.w
+			if outside_window then
 				data.drag_cursor_x = data.drag_cursor_x + input.delta.x
 			else
 				data.drag_cursor_x = mouse_x
 			end
-			if mouse_x == 0 then
+			if outside_window then
 				data.drag_cursor_y = data.drag_cursor_y + input.delta.y
 			else
 				data.drag_cursor_y = mouse_y
 			end
 			local drag_delta_y = data.drag_cursor_y - previous_drag_cursor_y
-			local saved_mouse_x = mouse_x
-			local next_horizontal_offset = horizontal_drag_target(data.drag_cursor_x)
-			print(next_horizontal_offset, data.drag_cursor_x)
-			local scroll_factor = vertical_scroll_factor(next_horizontal_offset)
+			local next_horizontal_offset = horizontal_drag_target(rect, data.drag_cursor_x, ctx.res.w)
+			local scroll_factor = outside_window and 1 or vertical_scroll_factor(rect, next_horizontal_offset)
 			local next_scroll = data.scroll_y - drag_delta_y * scroll_factor
 			if dt > 0 then
 				local measured_velocity = (next_scroll - data.scroll_y) / dt
@@ -393,20 +393,20 @@ function spring_list:update_scroll(elem, ctx)
 			if next_scroll ~= data.scroll_y then
 				data.drag_direction = next_scroll > data.scroll_y and 1 or -1
 			end
-			data.scroll_y = next_scroll
+			data.scroll_y = next_scroll * (outside_window and 0.1 or 1) -- TODO:
 			data.horizontal_offset = next_horizontal_offset
 		else
 			data.is_dragging = false
 			input.interacting_with = nil
 			data.horizontal_velocity = data.horizontal_velocity - data.horizontal_offset * HORIZONTAL_RELEASE_FORCE
-			local release_cursor_y = mouse_x == 0 and data.drag_cursor_y or mouse_y
+			local release_cursor_y = (mouse_x <= 0 or mouse_x >= ctx.res.w) and data.drag_cursor_y or mouse_y
 			local drag_distance = data.drag_start_y - release_cursor_y
 			if drag_distance ~= 0 then
 				data.drag_direction = drag_distance > 0 and 1 or -1
 			end
 			if math.abs(drag_distance) < elem_h and data.drag_direction ~= 0 then
 				data.velocity = 0
-				start_directional_snap(data.drag_direction)
+				start_directional_snap(data, elem_h, data.drag_direction)
 			end
 		end
 	elseif not data.middle_scrolling and inside and input.left == "pressed" then
@@ -416,7 +416,7 @@ function spring_list:update_scroll(elem, ctx)
 		data.drag_cursor_y = mouse_y
 		data.drag_scroll_start_y = data.scroll_y
 		data.drag_direction = 0
-		stop_motion()
+		stop_motion(data)
 		input.interacting_with = elem
 	end
 
@@ -430,9 +430,9 @@ function spring_list:update_scroll(elem, ctx)
 			data.acceleration = 0
 		end
 	elseif not data.is_dragging and not data.middle_scrolling and not data.right_scrolling then
-		update_motion()
+		update_motion(data, dt, elem_h)
 	end
-	update_horizontal_motion()
+	update_horizontal_motion(data, dt)
 	return data.scroll_y ~= old_scroll or data.horizontal_offset ~= old_horizontal_offset
 end
 
