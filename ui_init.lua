@@ -19,6 +19,10 @@ end
 function UserInterface:load()
 	-- apply default keybindings (runs once by the host after the UI is created)
 	keybind_load(self.ctx)
+	self.ctx.anim_reg:update("test_animation", "in", true)
+
+	-- view(self.ctx)
+	-- ui_manager.align(self.ctx)
 end
 
 function UserInterface:unload()

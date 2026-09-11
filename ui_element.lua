@@ -1,4 +1,5 @@
 local class = require("class")
+local polyline_collision = require("polyline_collision")
 local utils = require("utils")
 -- ui_element(opts)
 -- opts: { display = display_key, widgets = {...}, align = Align(...), polyline = {...} }
@@ -48,8 +49,7 @@ function ui_element:draw_widget(w, ctx, widget_data, display_data)
 		return
 	end
 	if not widget_data then
-		print("widget_data is not set: ", self.display_key)
-		return
+		-- print("widget_data is not set: ", self.display_key)
 	end
 	if not (widget_data and type(widget_data.idle) == "table") then
 		w:draw(self, ctx, widget_data, display_data)
@@ -77,10 +77,14 @@ end
 -- set this element's rect from its align + window, hand each child a fresh
 -- window clipped to this rect, and recurse
 function ui_element:align_rec(window, ctx)
-	if self.align then
-		local rect = self.align:apply(window, ctx.ui_scale)
-		self.rect = rect
-		window = { x = rect.x, y = rect.y, w = rect.w, h = rect.h }
+	local rect = self.align:apply(window, ctx.ui_scale, ctx)
+	self.rect = rect
+	window = { x = rect.x, y = rect.y, w = rect.w, h = rect.h }
+
+	for _, w in ipairs(self.widget) do
+		if w.align then
+			w:align(self, ctx)
+		end
 	end
 	for _, child in ipairs(self.children) do
 		child:align_rec(window, ctx)
@@ -99,19 +103,37 @@ end
 -- children only react when an ancestor is hit
 function ui_element:pointer_collision_rec(ctx, parent_hit)
 	local hit = self:pointer_collision(ctx, parent_hit)
+	local any_hits = false
 	for _, child in ipairs(self.children) do
-		child:pointer_collision_rec(ctx, hit)
+		local child_hit = child:pointer_collision_rec(ctx, hit)
+		any_hits = child_hit or any_hits
 	end
+	self:pointer_collision_after(ctx, hit, any_hits)
+	return hit
 end
 
 function ui_element:pointer_collision(ctx, parent_hit)
 	local rect = self.rect
-	local hit = parent_hit
-		and rect ~= nil
-		and ctx.input_state.pos.x >= rect.x
-		and ctx.input_state.pos.x < rect.x + rect.w
-		and ctx.input_state.pos.y >= rect.y
-		and ctx.input_state.pos.y < rect.y + rect.h
+	local hit = rect ~= nil
+	if hit then
+		if self.polyline then
+			hit = polyline_collision.contains(
+				self.polyline,
+				rect.x,
+				rect.y,
+				ctx.input_state.pos.x,
+				ctx.input_state.pos.y,
+				ctx.ui_scale or 1
+			)
+		elseif parent_hit then
+			hit = ctx.input_state.pos.x >= rect.x
+				and ctx.input_state.pos.x < rect.x + rect.w
+				and ctx.input_state.pos.y >= rect.y
+				and ctx.input_state.pos.y < rect.y + rect.h
+		else
+			hit = false
+		end
+	end
 
 	-- update display states (idle stays active as the base)
 	self.states.hovered = hit
@@ -126,7 +148,18 @@ function ui_element:pointer_collision(ctx, parent_hit)
 		end
 	end
 
+	-- if ctx.input_state.left == "pressed" then
+	-- 	print(hit)
+	-- end
 	return hit
+end
+function ui_element:pointer_collision_after(ctx, hit, children_hit)
+	local rect = self.rect
+	for _, w in ipairs(self.widget) do
+		if w.pointer_collision_after then
+			w:pointer_collision_after(self, ctx, hit, children_hit)
+		end
+	end
 end
 
 return ui_element

@@ -5,6 +5,9 @@ local input_state = require("input_state")
 local keybinding = require("keybinding")
 local fonts = require("fonts")
 local class = require("class")
+local animation_registry = require("animation_registry")
+local widget_registry = require("widget_registry")
+local beatmaps = require("beatmaps")
 
 local ctx = class()
 
@@ -13,6 +16,7 @@ function ctx:new(game, mount_path)
 	local res = { w = w, h = h }
 	self.game = game
 	self.mountPath = mount_path
+	self.beatmaps = beatmaps.init(game)
 	self.action_queue = actions()
 	self.event_queue = {} -- game events queued by receive(), drained each update
 	self.res = res
@@ -27,12 +31,11 @@ function ctx:new(game, mount_path)
 		need_to_realign = true,
 		root_elements = {},
 	}
+	self.anim_reg = animation_registry.new()
+	self.widget_reg = widget_registry.new()
 	self.state = {
 		active_window = "Settings",
-		settings_tab = "Graphics",
-		animation_state = {
-			test_animation = { start_in = 0, start_from = love.timer.getTime() },
-		},
+		settings_tab = "Gameplay",
 	}
 	self.last_delta = 0.1
 

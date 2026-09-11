@@ -9,11 +9,8 @@ widgest:
 
 later
 
-
-@main_view.lua animation todo api, @ctx.lua animation registry,
-apply_align.lua should register absolute:animation(...) and then check every align if animation_data and ctx.registry[data.key].start_in/from - data.length to trigger the code;
-code should calculate lerp for scale and pos, if only in or from is in ragne it's easy, if both then calculate earlier one -> then later one -> then sum earler + later * 2 -> ease_fn; at least I think that should work; apply to rect and set needs realign so next frame we align it again; crate a test action that sets test animation registry to time
-
+input screen in figma
+mods screen in escali
 
 do love switch font back to fonts.init at the end of draw call
 

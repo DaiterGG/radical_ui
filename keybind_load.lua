@@ -6,4 +6,5 @@ return function(ctx)
 
   -- Esc quits the game (the game loop polls love.event for "quit")
   kb.keys["escape"] = "quit"
+  kb.keys["t"] = "test_animation"
 end

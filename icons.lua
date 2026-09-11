@@ -2,6 +2,18 @@
 -- names preserved from figma_export.xml Vector names
 local icons = {
 	-- header row icons (top-row)
+	["gameplay1"] = 0x0001,
+	["gameplay2"] = 0x0002,
+	["select1"] = 0x0003,
+	["select2"] = 0x0004,
+	["graphics1"] = 0x0005,
+	["graphics2"] = 0x0006,
+	["audio1"] = 0x0007,
+	["audio2"] = 0x0008,
+	["offsets1"] = 0x0009,
+	["offsets2"] = 0x000B,
+	["other1"] = 0x000B,
+	["other2"] = 0x000C,
 	["back1"] = 0x0023,
 	["back2"] = 0x004A,
 	["input1"] = 0x0052,

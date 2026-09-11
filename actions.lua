@@ -8,7 +8,6 @@ end
 
 function actions:register(data)
 	self.actions[#self.actions + 1] = data
-	return entry
 end
 
 function actions:pop()

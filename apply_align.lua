@@ -74,6 +74,12 @@ function Align:absolute(opts)
 	return self
 end
 
+function Align:animation(opts)
+	opts = opts or {}
+	self.animation_data = opts
+	return self
+end
+
 function Align:gap(new_gap)
 	if self.kind == "Block" then
 		self.gap = new_gap.pc or new_gap.px
@@ -137,7 +143,120 @@ function Align:split_window(window, ui_scale)
 	return block
 end
 
-function Align:apply(window, ui_scale)
+local function clamp(value, min_value, max_value)
+	return math.max(min_value, math.min(max_value, value))
+end
+
+local function ease(value, ease_fn)
+	if type(ease_fn) == "function" then
+		return ease_fn(value)
+	elseif ease_fn == "in" then
+		return value * value
+	elseif ease_fn == "out" then
+		return 1 - (1 - value) * (1 - value)
+	elseif ease_fn == "in_out" then
+		if value < 0.5 then
+			return 2 * value * value
+		end
+		return 1 - ((-2 * value + 2) ^ 2) / 2
+	end
+	return value
+end
+
+local function mirror_ease(ease_fn)
+	if ease_fn == "in" then
+		return "out"
+	elseif ease_fn == "out" then
+		return "in"
+	end
+	return ease_fn
+end
+
+local function animation_ease(data, direction)
+	local config = data.ease
+	if type(config) == "table" then
+		local selected = config[direction]
+		if selected ~= nil then
+			return selected
+		end
+		local other = direction == "in" and config.from or config["in"]
+		return mirror_ease(other)
+	end
+
+	local selected = config or data.ease_fn
+	if direction == "from" then
+		return mirror_ease(selected)
+	end
+	return selected
+end
+
+local function apply_delta(rect, delta_pos, delta_size, amount, ui_scale)
+	ui_scale = ui_scale or 1
+	if delta_pos then
+		rect.x = rect.x + (delta_pos.x or 0) * ui_scale * amount
+		rect.y = rect.y + (delta_pos.y or 0) * ui_scale * amount
+	end
+	if delta_size then
+		rect.w = rect.w + (delta_size.w or delta_size.x or 0) * ui_scale * amount
+		rect.h = rect.h + (delta_size.h or delta_size.y or 0) * ui_scale * amount
+	end
+end
+
+function Align:apply_animation(rect, ctx)
+	local data = self.animation_data
+	if not data or not ctx or not ctx.anim_reg then
+		return rect
+	end
+
+	local registry = ctx.anim_reg[data.key]
+	if not registry then
+		return rect
+	end
+	registry.progress = registry.progress or 0
+
+	local length = (data.length_ms or data.length or 0) / (data.length_ms and 1000 or 1)
+	if length <= 0 then
+		return rect
+	end
+
+	local now = love.timer.getTime()
+	local in_stamp = registry["in"] or 0
+	local from_stamp = registry["from"] or 0
+	if in_stamp <= 0 and from_stamp <= 0 then
+		return rect
+	end
+
+	local direction
+	local stamp
+	if from_stamp > in_stamp then
+		direction = "from"
+		stamp = from_stamp
+	else
+		direction = "in"
+		stamp = in_stamp
+	end
+
+	if stamp ~= registry.transition_stamp then
+		registry.transition_stamp = stamp
+		registry.transition_progress = registry.progress
+	end
+
+	local target = direction == "from" and 1 or 0
+	local distance = math.abs(target - registry.transition_progress)
+	local animation_length = length * distance
+	local elapsed = animation_length > 0 and clamp((now - registry.transition_stamp) / animation_length, 0, 1) or 1
+	registry.progress = registry.transition_progress
+		+ (target - registry.transition_progress) * ease(elapsed, animation_ease(data, direction))
+
+	if elapsed < 1 then
+		ctx.ui.need_to_realign = true
+	end
+	apply_delta(rect, data.delta_pos, data.delta_size, registry.progress, ctx.ui_scale)
+
+	return rect
+end
+
+function Align:apply(window, ui_scale, ctx)
 	ui_scale = ui_scale or 1.0
 
 	if self.kind == "Block" then
@@ -153,7 +272,7 @@ function Align:apply(window, ui_scale)
 		local pivot_y = (abs_size.h * self.pivot.y) / 100
 		local new_y = window.y + align_y - pivot_y
 
-		return { x = new_x, y = new_y, w = abs_size.w, h = abs_size.h }
+		return self:apply_animation({ x = new_x, y = new_y, w = abs_size.w, h = abs_size.h }, ctx)
 	end
 
 	error("unknown Align kind: " .. tostring(self.kind))

@@ -13,6 +13,27 @@ local execute = {
 		ctx.state.settings_tab = data.tab
 		ctx.ui.need_to_rebuild = true
 	end,
+	sub_window_toggle = function(ctx, data)
+		if data.window ~= ctx.state.active_window then
+			ctx.state.active_window = data.window
+			ctx.anim_reg:update("test_animation", "from")
+		else
+			ctx.state.active_window = nil
+			ctx.anim_reg:update("test_animation", "in")
+		end
+		ctx.ui.need_to_rebuild = true
+	end,
+	sub_window_open = function(ctx, data)
+		print("hasokehu")
+		if data.window then
+			ctx.state.active_window = data.window
+			ctx.anim_reg:update("test_animation", "from")
+		else
+			ctx.state.active_window = nil
+			ctx.anim_reg:update("test_animation", "in")
+		end
+		ctx.ui.need_to_rebuild = true
+	end,
 
 	-- Gameplay
 	pause_game = function(ctx)

@@ -29,7 +29,8 @@ function input_state:new()
 
 	self.scroll_y = 0 -- vertical wheel delta this frame (fed by wheelmoved via event_handler)
 
-	self.interacting_with = {} -- [hash_num] = element being interacted with; per-element managed
+	self.interacting_with = nil -- ui_element.hash_num
+	-- self.interacting_with = {} -- [hash_num] = element being interacted with; per-element managed
 end
 
 function input_state:reset()
