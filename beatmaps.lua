@@ -1,4 +1,7 @@
 local class = require("class")
+local profiler = require("profiler")
+
+local PREVIEW_DELAY = 0.3
 
 local beatmaps = class()
 
@@ -11,6 +14,8 @@ function beatmaps:new(game)
 	self.controller_loaded = false
 	self.selected_index = nil
 	self.spring_list_data = nil
+	self.cache = {}
+	self.preview_timer = nil
 end
 
 function beatmaps:ensure_loaded()
@@ -22,13 +27,21 @@ function beatmaps:ensure_loaded()
 	self.controller_loaded = true
 end
 
-function beatmaps:update()
+function beatmaps:update(dt)
 	self:ensure_loaded()
 	if self.selected_index == nil then
 		self.selected_index = self.select_model.chartview_set_index or 1
 		self.spring_list_data = { scroll_to = self.selected_index }
 	end
 	self.select_controller:update()
+
+	if self.preview_timer ~= nil then
+		self.preview_timer = self.preview_timer - dt
+		if self.preview_timer <= 0 then
+			self.preview_timer = nil
+			self.game.previewModel:loadPreview()
+		end
+	end
 end
 
 ---@param first integer
@@ -45,7 +58,13 @@ function beatmaps:request_range(first, last)
 	local library = assert(self.select_model.noteChartSetLibrary, "noteChartSetLibrary is required")
 	local items = library.items or {}
 
-	return items
+	for ind = first, last do
+		if self.cache[ind] == nil then
+			self.cache[ind] = items[ind] --library has native caching but it's broken or I don't understand it
+		end
+	end
+
+	return self.cache
 end
 
 ---@return integer
@@ -137,11 +156,11 @@ function beatmaps:reselect(beatmap_index, difficulty_index)
 end
 
 function beatmaps:play_preview()
-	self:ensure_loaded()
-	self.game.previewModel:loadPreview()
+	self.preview_timer = PREVIEW_DELAY
 end
 
 function beatmaps:stop_preview()
+	self.preview_timer = nil
 	self.game.previewModel:stop()
 end
 

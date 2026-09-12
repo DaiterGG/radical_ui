@@ -14,9 +14,9 @@ local SNAP_VELOCITY_EPSILON = 0.1
 local ACTIVE_VELOCITY_EPSILON = 0.1
 local SNAP_ROUNDING_OFFSET = 0.5
 local MIDDLE_DEAD_ZONE = 4
-local MIDDLE_SCROLL_SPEED = 5
-local MIDDLE_SCROLL_ACCELERATION = 20
-local SCROLL_TO_BASE_SPEED = 2000
+local MIDDLE_SCROLL_SPEED = 10
+local MIDDLE_SCROLL_ACCELERATION = 100
+local SCROLL_TO_BASE_SPEED = 100
 local SCROLL_TO_DISTANCE_SPEED = 6
 local DRAG_ACCELERATION = 24
 local DRAG_DEAD_ZONE = 10
@@ -35,7 +35,6 @@ local HORIZONTAL_FULL_STRETCH_EPSILON = 0.999
 local VERTICAL_CURSOR_FOLLOW_START_RATIO = 0.5
 local VERTICAL_CURSOR_FOLLOW_MAX_RATIO = 0.1
 local VIRTUAL_ROW_COUNT = 9
-local SCROLL_TO_RANGE_PADDING = 5
 
 local INTERACTION_IDLE = "idle"
 local INTERACTION_DRAG_PENDING = "drag_pending"
@@ -238,10 +237,12 @@ function spring_list:get_data(ctx)
 	data.right_scrolling = nil
 	data.snapping = nil
 	data.drag_start_x = data.drag_start_x or 0
+  data.drag_start_y = data.drag_start_y or 0
 	data.drag_pointer_x = data.drag_pointer_x or 0
 	data.drag_pointer_y = data.drag_pointer_y or 0
 	data.drag_cursor_y = data.drag_cursor_y or 0
 	data.drag_cursor_x = data.drag_cursor_x or 0
+
 
 	data.horizontal_offset = data.horizontal_offset or 0
 	data.horizontal_velocity = data.horizontal_velocity or 0
@@ -404,13 +405,14 @@ function spring_list:update_scroll(elem, ctx)
 		if data.item_count > 0 and math.abs(data.horizontal_offset) < rect.w * HORIZONTAL_FULL_STRETCH_EPSILON then
 			local item_height = data.content_height / data.item_count
 			local current_index = data.scroll_to
-				or math.floor(data.scroll_y / math.max(1, item_height) + SNAP_ROUNDING_OFFSET) + 1
+				or math.floor((data.scroll_y + rect.h / 2) / math.max(1, item_height)) + 1
 			data.scroll_to = clamp(current_index + wheel_delta * wheel_distance, 1, data.item_count)
 		end
 		input.scroll_y = 0
 		user_scrolled = true
 	end
 
+  print(data.scroll_to)
 	local held = input.left == "held" or input.left == "pressed"
 	if data.interaction_state == INTERACTION_DRAG_PENDING or data.interaction_state == INTERACTION_DRAGGING then
 		if held then
@@ -477,7 +479,6 @@ function spring_list:update_scroll(elem, ctx)
 		end
 	elseif
 		data.interaction_state == INTERACTION_IDLE
-		and data.scroll_to == nil
 		and inside
 		and input.left == "pressed"
 	then
@@ -490,7 +491,7 @@ function spring_list:update_scroll(elem, ctx)
 		data.drag_cursor_y = mouse_y
 		data.drag_scroll_start_y = data.scroll_y
 		data.drag_direction = 0
-		stop_motion(data)
+		-- stop_motion(data)
 	end
 
 	local fully_stretched = math.abs(data.horizontal_offset) >= rect.w * HORIZONTAL_FULL_STRETCH_EPSILON

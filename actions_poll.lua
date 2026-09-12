@@ -1,3 +1,4 @@
+local profiler = require("profiler")
 local execute
 execute = {
 	quit = function(ctx)
@@ -18,6 +19,7 @@ execute = {
 		spring_list_data.scroll_to = data.index
 		ctx.beatmaps.spring_list_data = spring_list_data
 		local list_data = ctx.widget_reg:get("main_down_list")
+
 		if list_data then
 			local difficulty_count = #ctx.beatmaps:get_difficulties()
 			local content_height = difficulty_count * list_data.child_height
@@ -28,6 +30,7 @@ execute = {
 			list_data.spring_velocity = 0
 			list_data.springing = false
 		end
+
 		ctx.beatmaps:play_preview()
 		ctx.ui.need_to_rebuild = true
 	end,

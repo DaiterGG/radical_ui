@@ -54,7 +54,7 @@ function UserInterface:update(dt)
 	if self.ctx.ui.scene == "gameplay" then
 		self.ctx.gameplay_api:update(dt)
 	else
-		self.ctx.beatmaps:update()
+		self.ctx.beatmaps:update(dt)
 	end
 	profiler.checkpoint("update", "after beatmaps_update")
 	-- 1) feed this frame's queued events into input_state (pos/buttons/modifiers/delta/scroll)
@@ -74,7 +74,11 @@ function UserInterface:update(dt)
 	-- 2) reset stored per-frame deltas and drive the button state machines
 	self.ctx.input_state:reset()
 	profiler.checkpoint("update", "after input reset")
-	profiler.finish({ "update", "main_view" })
+	profiler.finish(1, {
+		-- "update" ,
+		-- "main_view",
+		-- "actions",
+	})
 end
 
 function UserInterface:draw()

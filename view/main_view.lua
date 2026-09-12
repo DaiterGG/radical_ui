@@ -125,11 +125,11 @@ local function add_beatmap_rows(ctx, list, song_h_full, song_h)
 	end
 	profiler.checkpoint("main_view", "setup beatmaps top spacer")
 
-	local beatmap_items = ctx.beatmaps:request_range(range_start, range_end)
+	local beatmap_range = ctx.beatmaps:request_range(range_start, range_end)
 	profiler.checkpoint("main_view", "setup beatmaps request range")
 
 	for index = range_start, range_end do
-		local beatmap = beatmap_items[index]
+		local beatmap = beatmap_range[index]
 		local name = beatmap.title or beatmap.name or beatmap.chartfile_name or "Unnamed beatmap"
 		local author = beatmap.artist or beatmap.creator or "Unknown artist"
 		local padding = ui_element({

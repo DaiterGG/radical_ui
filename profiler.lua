@@ -27,13 +27,13 @@ function profiler.checkpoint(group, label)
 	profiler.checkpoint_time = now
 end
 
-function profiler.finish(groups)
-	if not profiler.active then
+function profiler.finish(threshold, groups)
+	if not profiler.active or #groups == 0 then
 		return
 	end
 
 	local total = (love.timer.getTime() - profiler.start_time) * 1000
-	if total > 5 then
+	if total > threshold then
 		local print_groups = {}
 		if groups then
 			for _, group in ipairs(groups) do
