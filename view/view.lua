@@ -28,13 +28,11 @@ return function(ctx)
 	if not ctx.ui.need_to_rebuild then
 		return
 	end
-	local start_time = os.clock()
 	ctx.ui.need_to_rebuild = false
 
 	if ctx.ui.scene == "gameplay" then
 		gameplay_view(ctx)
 	else
-		main_view(ctx)
+		return main_view(ctx)
 	end
-	print(string.format("Full Rebuild in: %.6f ms", (os.clock() - start_time) * 1000))
 end

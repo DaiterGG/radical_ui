@@ -35,7 +35,6 @@ end
 ---@param last integer
 ---@return table[]
 function beatmaps:request_range(first, last)
-	local start_time = os.clock()
 	assert(type(first) == "number" and first % 1 == 0, "first must be an integer")
 	assert(type(last) == "number" and last % 1 == 0, "last must be an integer")
 	assert(first >= 1, "first must be greater than or equal to 1")
@@ -45,15 +44,8 @@ function beatmaps:request_range(first, last)
 
 	local library = assert(self.select_model.noteChartSetLibrary, "noteChartSetLibrary is required")
 	local items = library.items or {}
-	local result = {}
-	local end_index = math.min(last, #items)
 
-	for index = first, end_index do
-		result[#result + 1] = items[index]
-	end
-	-- print(string.format("Rebuild in: %.6f ms", (os.clock() - start_time) * 1000))
-
-	return result
+	return items
 end
 
 ---@return integer

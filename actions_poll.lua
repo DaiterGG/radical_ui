@@ -8,6 +8,10 @@ execute = {
 		love.event.push("quit") -- same as the osu_ui example: the loop polls it and exits
 	end,
 	select_beatmap = function(ctx, data)
+		if ctx.beatmaps.selected_index == data.index then
+			return
+		end
+
 		ctx.beatmaps:select(data.index)
 		ctx.state.dif_selected = ctx.beatmaps:select_middle_difficulty() or 1
 		local spring_list_data = ctx.beatmaps.spring_list_data or {}
@@ -254,13 +258,15 @@ execute = {
 }
 
 local function poll(ctx)
-	local action = ctx.action_queue:pop()
-	if not action then
-		return
-	end
-	local fn = execute[action.action]
-	if fn then
-		fn(ctx, action)
+	while true do
+		local action = ctx.action_queue:pop()
+		if not action then
+			return
+		end
+		local fn = execute[action.action]
+		if fn then
+			fn(ctx, action)
+		end
 	end
 end
 

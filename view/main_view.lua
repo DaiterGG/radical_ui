@@ -15,6 +15,7 @@ local list_view = require("list_view")
 local ui_manager = require("ui_manager")
 local ui_element = require("ui_element")
 local utils = require("utils")
+local profiler = require("profiler")
 
 local Align = align_mod.Align
 local Direction = align_mod.Direction
@@ -106,6 +107,13 @@ local function add_beatmap_rows(ctx, list, song_h_full, song_h)
 	local range_start = math.max(1, math.min(data.range_start or 1, count - range_count + 1))
 	local range_end = data.range_end and data.range_end >= range_start and math.min(data.range_end, count)
 		or range_start + range_count - 1
+	profiler.checkpoint("main_view", string.format(
+		"[main_view] setup beatmaps range: count=%d range=%d-%d",
+		count,
+		range_start,
+		range_end
+	))
+
 	if range_start > 1 then
 		list:add_child(ui_element({
 			align = absolute({
@@ -115,10 +123,13 @@ local function add_beatmap_rows(ctx, list, song_h_full, song_h)
 			}),
 		}))
 	end
+	profiler.checkpoint("main_view", "setup beatmaps top spacer")
 
 	local beatmap_items = ctx.beatmaps:request_range(range_start, range_end)
+	profiler.checkpoint("main_view", "setup beatmaps request range")
 
-	for offset, beatmap in ipairs(beatmap_items) do
+	for index = range_start, range_end do
+		local beatmap = beatmap_items[index]
 		local name = beatmap.title or beatmap.name or beatmap.chartfile_name or "Unnamed beatmap"
 		local author = beatmap.artist or beatmap.creator or "Unknown artist"
 		local padding = ui_element({
@@ -149,7 +160,6 @@ local function add_beatmap_rows(ctx, list, song_h_full, song_h)
 		local content = ui_element({})
 		content:push_child(title)
 		content:push_child(artist)
-		local index = range_start + offset - 1
 		if ctx.beatmaps:is_selected(index) then
 			local left_marker = ui_element({
 				align = absolute({
@@ -203,7 +213,10 @@ local function add_beatmap_rows(ctx, list, song_h_full, song_h)
 
 		padding:push_child(list_button)
 		list:add_child(padding)
+
+		profiler.checkpoint("main_view", "setup beatmap row")
 	end
+	profiler.checkpoint("main_view", "setup beatmaps row loop")
 
 	if range_end < count then
 		list:add_child(ui_element({
@@ -214,18 +227,19 @@ local function add_beatmap_rows(ctx, list, song_h_full, song_h)
 			}),
 		}))
 	end
+	profiler.checkpoint("main_view", "setup beatmaps bottom spacer")
 
 	data.item_count = count
 	data.range_start = range_start
 	data.range_end = range_end
 
 	ctx.beatmaps.spring_list_data = data
+	profiler.checkpoint("main_view", "setup beatmaps finalization")
 end
 
 return function(ctx)
 	local res = ctx.res
 	local ratio = ctx.res.w / ctx.res.h
-	local start_time = os.clock()
 
 	local header_h = 44
 
@@ -382,6 +396,7 @@ return function(ctx)
 		sub_window:push_child(w_main)
 		root_window:push_child(sub_window)
 	end
+	profiler.checkpoint("main_view", "setup sub window")
 
 	-- NOTE: HEADER
 	local header = ui_element({
@@ -440,6 +455,8 @@ return function(ctx)
 
 		header:push_child(header_b)
 	end
+	profiler.checkpoint("main_view", "setup header")
+
 	-- NOTE: LEFT SIDE
 	local nav_h = 122
 
@@ -696,6 +713,8 @@ return function(ctx)
 		}),
 	})
 	down_panel:push_child(down_list)
+	profiler.checkpoint("main_view", "setup left side")
+
 	-- NOTE: RIGHT SIDE
 	local right_width = 638
 	local right_scroll_gap = 40
@@ -785,7 +804,9 @@ return function(ctx)
 
 	local main_list_w = spring_list()
 
+	profiler.checkpoint("main_view", "setup right_header")
 	add_beatmap_rows(ctx, main_list_w, song_h_full, song_h)
+	profiler.checkpoint("main_view", "setup scroll_total")
 
 	local main_list = ui_element({
 		display = "main_list",
@@ -888,6 +909,8 @@ return function(ctx)
 	down_footer:push_child(third_footer_b)
 	down_footer:push_child(second_footer_b)
 	down_footer:push_child(first_footer_b)
+	profiler.checkpoint("main_view", "setup footer")
+
 	-- NOTE: MAIN LAYOUT
 	local left_width = 750
 	local main_anim_length = 300
@@ -1022,4 +1045,5 @@ return function(ctx)
 	end
 
 	ctx.ui.need_to_realign = true
+	profiler.checkpoint("main_view", "setup main layout and finalization")
 end
