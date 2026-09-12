@@ -22,22 +22,110 @@ local absolute = align_mod.Absolute
 local block = align_mod.Block
 local Size = align_mod.Size
 
+local function top_table_row(values, columns, display, text_display, height)
+	local row = ui_element({
+		display = display,
+		widgets = { box() },
+		align = absolute({
+			pivot = { x = 0, y = 0 },
+			parent_pivot = { x = 0, y = 0 },
+			size = Size({ pc_hor = 100, px_vert = height }),
+		}),
+	})
+	local offset = 0
+	for _, column in ipairs(columns) do
+		local cell = ui_element({
+			display = text_display,
+			widgets = { text(values[column.key] or "") },
+			align = absolute({
+				pivot = { x = 0, y = 0 },
+				parent_pivot = { x = offset, y = 0 },
+				size = Size({ pc_hor = column.width, pc_vert = 100 }),
+			}),
+		})
+		row:push_child(cell)
+		offset = offset + column.width
+	end
+	return row
+end
+
+local function format_number(value, format, fallback)
+	if type(value) == "number" then
+		return string.format(format, value)
+	end
+	return value ~= nil and tostring(value) or fallback
+end
+
+local function format_accuracy(value)
+	if type(value) == "number" then
+		return string.format("%.2f%%", value * 100)
+	end
+	return value ~= nil and tostring(value) or ""
+end
+
+local function format_time(value)
+	if type(value) == "number" then
+		return os.date("%d/%m/%Y", value)
+	end
+	return value ~= nil and tostring(value) or ""
+end
+
+local function difficulty_values(item)
+	return {
+		dif_name = item.name or item.difficulty_name or item.chartfile_name or "Unnamed difficulty",
+		dif_author = item.creator or item.artist or "Unknown creator",
+		keymod = tostring(item.inputmode or item.mode or ""),
+		dif = format_number(item.osu_diff or item.difficulty, "%.2f", ""),
+	}
+end
+
+local function score_values(item, index, difficulty)
+	return {
+		number = tostring(index),
+		time = format_time(item.created_at or item.submitted_at),
+		accuracy = format_accuracy(item.accuracy),
+		difficulty = format_number(difficulty and (difficulty.osu_diff or difficulty.difficulty), "%.2f", ""),
+		rating = format_number(item.pp or item.rating, "%.2f", ""),
+		rate = format_number(item.rate, "%.2fx", ""),
+		score = format_number(item.score, "%.0f", ""),
+		misses = format_number(item.misses or item.miss_count, "%.0f", ""),
+		mode = tostring(item.inputmode or item.mode or ""),
+	}
+end
+
+local VIRTUAL_ROW_COUNT = 9
+
 local function add_beatmap_rows(ctx, list, song_h_full, song_h)
 	local count = ctx.beatmaps:len()
 	if count == 0 then
 		return
 	end
 
-	local beatmap_items = ctx.beatmaps:request_range(1, count)
+	local data = ctx.beatmaps.spring_list_data or { scroll_y = 0 }
+	local range_count = math.min(VIRTUAL_ROW_COUNT, count)
+	local range_start = math.max(1, math.min(data.range_start or 1, count - range_count + 1))
+	local range_end = data.range_end and data.range_end >= range_start and math.min(data.range_end, count)
+		or range_start + range_count - 1
+	if range_start > 1 then
+		list:add_child(ui_element({
+			align = absolute({
+				pivot = { x = 0, y = 0 },
+				parent_pivot = { x = 0, y = 0 },
+				size = Size({ pc_hor = 100, px_vert = (range_start - 1) * song_h_full }),
+			}),
+		}))
+	end
 
-	for _, beatmap in ipairs(beatmap_items) do
+	local beatmap_items = ctx.beatmaps:request_range(range_start, range_end)
+
+	for offset, beatmap in ipairs(beatmap_items) do
 		local name = beatmap.title or beatmap.name or beatmap.chartfile_name or "Unnamed beatmap"
 		local author = beatmap.artist or beatmap.creator or "Unknown artist"
 		local padding = ui_element({
 			align = absolute({
 				pivot = { x = 0, y = 0 },
 				parent_pivot = { x = 0, y = 0 },
-				size = Size({ per_hor = 100, px_vert = song_h_full }),
+				size = Size({ pc_hor = 100, px_vert = song_h_full }),
 			}),
 		})
 		local title = ui_element({
@@ -46,7 +134,7 @@ local function add_beatmap_rows(ctx, list, song_h_full, song_h)
 			align = absolute({
 				pivot = { x = 50, y = 50 },
 				parent_pivot = { x = 50, y = 42 },
-				size = Size({ per_hor = 80, px_vert = 42 }),
+				size = Size({ pc_hor = 80, px_vert = 42 }),
 			}),
 		})
 		local artist = ui_element({
@@ -55,39 +143,89 @@ local function add_beatmap_rows(ctx, list, song_h_full, song_h)
 			align = absolute({
 				pivot = { x = 50, y = 100 },
 				parent_pivot = { x = 50, y = 90 },
-				size = Size({ per_hor = 80, px_vert = 24 }),
+				size = Size({ pc_hor = 80, px_vert = 24 }),
 			}),
 		})
 		local content = ui_element({})
 		content:push_child(title)
 		content:push_child(artist)
+		local index = range_start + offset - 1
+		if ctx.beatmaps:is_selected(index) then
+			local left_marker = ui_element({
+				align = absolute({
+					pivot = { x = 0, y = 50 },
+					parent_pivot = { x = 0, y = 50 },
+					size = Size({ px_hor = song_h, px_vert = song_h }),
+				}),
+			})
+			left_marker:push_child(ui_element({
+				display = "main_list_selected",
+				widgets = { box() },
+				align = absolute({
+					pivot = { x = 50, y = 50 },
+					parent_pivot = { x = 50, y = 50 },
+					size = Size({ px = 24 }),
+				}),
+			}))
+			content:push_child(left_marker)
+
+			local right_marker = ui_element({
+				align = absolute({
+					pivot = { x = 100, y = 50 },
+					parent_pivot = { x = 100, y = 50 },
+					size = Size({ px_hor = song_h, px_vert = song_h }),
+				}),
+			})
+			right_marker:push_child(ui_element({
+				display = "main_list_selected",
+				widgets = { box() },
+				align = absolute({
+					pivot = { x = 50, y = 50 },
+					parent_pivot = { x = 50, y = 50 },
+					size = Size({ px = 24 }),
+				}),
+			}))
+			content:push_child(right_marker)
+		end
 		local list_button = ui_element({
 			display = "main_list_button",
 			widgets = {
 				button(content, {
-					on_release = { action = "select_beatmap", index = #list.children + 1 },
+					on_release = { action = "select_beatmap", index = index },
 				}),
 			},
 			align = absolute({
 				pivot = { x = 50, y = 50 },
 				parent_pivot = { x = 50, y = 50 },
-				size = Size({ per_hor = 100, px_vert = song_h }),
+				size = Size({ pc_hor = 100, px_vert = song_h }),
 			}),
 		})
 
 		padding:push_child(list_button)
 		list:add_child(padding)
 	end
+
+	if range_end < count then
+		list:add_child(ui_element({
+			align = absolute({
+				pivot = { x = 0, y = 0 },
+				parent_pivot = { x = 0, y = 0 },
+				size = Size({ pc_hor = 100, px_vert = (count - range_end) * song_h_full }),
+			}),
+		}))
+	end
+
+	data.item_count = count
+	data.range_start = range_start
+	data.range_end = range_end
+
+	ctx.beatmaps.spring_list_data = data
 end
 
 return function(ctx)
-	if not ctx.ui.need_to_rebuild then
-		return
-	end
-	ctx.ui.need_to_rebuild = false
-
 	local res = ctx.res
 	local ratio = ctx.res.w / ctx.res.h
+	local start_time = os.clock()
 
 	local header_h = 44
 
@@ -226,7 +364,7 @@ return function(ctx)
 			align = absolute({
 				pivot = { x = 0, y = 0 },
 				parent_pivot = { x = 0, y = 44 / 1080 * 100 },
-				size = Size({ per_hor = 100, px_vert = 1080 - 44 }),
+				size = Size({ pc_hor = 100, px_vert = 1080 - 44 }),
 			}),
 		})
 		local sub_window = ui_element({
@@ -252,7 +390,7 @@ return function(ctx)
 		align = absolute({
 			pivot = { x = 0, y = 0 },
 			parent_pivot = { x = 0, y = 0 },
-			size = Size({ per_hor = 100, px_vert = header_h }),
+			size = Size({ pc_hor = 100, px_vert = header_h }),
 		}),
 	})
 
@@ -386,6 +524,61 @@ return function(ctx)
 		},
 		align = block(Direction.Up, { pc = 40 }),
 	})
+	local top_columns = {
+		{ key = "number", label = "№", width = 5 },
+		-- { key = "player", label = "Player", width = 18 },
+		{ key = "time", label = "Time", width = 18 },
+		{ key = "accuracy", label = "Accuracy", width = 12 },
+		{ key = "difficulty", label = "Difficulty", width = 14 },
+		{ key = "rating", label = "Rating", width = 10 },
+		{ key = "rate", label = "Rate", width = 10 },
+		{ key = "score", label = "Score", width = 10 },
+		{ key = "misses", label = "Misses", width = 10 },
+		{ key = "mode", label = "Mode", width = 10 },
+	}
+	local difficulties = ctx.beatmaps:get_difficulties()
+	local selected_difficulty_index = ctx.beatmaps:get_selected_difficulty()
+	local selected_difficulty = difficulties[selected_difficulty_index] or difficulties[1]
+	local scores = ctx.beatmaps:get_scores()
+	local top_row_h = 40
+	local top_list_h = 320
+	local top_header_h = panel_h - top_list_h
+	local top_header_values = {}
+	for _, column in ipairs(top_columns) do
+		top_header_values[column.key] = column.label
+	end
+	local top_header =
+		top_table_row(top_header_values, top_columns, "top_table_header", "top_table_header_text", top_header_h)
+	top_header.align = block(Direction.Up, { px = top_header_h })
+	local top_list_w = list_view("main_top_list", nil, false)
+	local top_row_count = math.ceil(top_list_h / top_row_h)
+	for index = 1, top_row_count do
+		local values = scores[index] and score_values(scores[index], index, selected_difficulty) or {}
+		top_list_w:add_child(
+			top_table_row(
+				values,
+				top_columns,
+				index % 2 == 1 and "top_table_row_dark" or "top_table_row_transparent",
+				"top_table_cell_text",
+				top_row_h
+			)
+		)
+	end
+	local top_list = ui_element({
+		display = "top_list",
+		widgets = { top_list_w },
+		align = block(Direction.Down, { pc = 100 }),
+	})
+	local top_table = ui_element({
+		align = absolute({
+			pivot = { x = 0, y = 0 },
+			parent_pivot = { x = 0, y = 0 },
+			size = Size({ px_hor = panel_w - 100, pc_vert = 100 }),
+		}),
+	})
+	top_table:push_child(top_header)
+	top_table:push_child(top_list)
+	up_panel:push_child(top_table)
 	local middle_w = 580
 	local middle_h = 272
 	local middle_panel = ui_element({
@@ -403,7 +596,7 @@ return function(ctx)
 		align = block(Direction.Up, { pc = 50 }),
 	})
 	local down_w = 620
-	local down_h = 273
+	local down_h = 280
 	local down_panel = ui_element({
 		display = "down_panel",
 		widgets = { box() },
@@ -424,27 +617,74 @@ return function(ctx)
 		widgets = { box() },
 	})
 	local down_list_w = list_view("main_down_list", down_list_scrollbar, true)
-	local test_list_data = {
-		"Locations",
-		"Collections",
-		"Direct",
-		"Favorites",
-		"Recently played",
-		"Downloaded",
-		"Unplayed",
-		"All beatmaps",
-	}
-	for _, value in ipairs(test_list_data) do
-		local index = #down_list_w.children + 1
-		down_list_w:add_child(ui_element({
+	local down_row_h = 56
+	for index, difficulty in ipairs(difficulties) do
+		local item = difficulty_values(difficulty)
+		local content = ui_element({
 			display = index % 2 == 1 and "down_list_item_dark" or "down_list_item_transparent",
-			widgets = { box(), text(value) },
+			widgets = { box() },
+		})
+		local row = ui_element({
+			widgets = {
+				button(content, {
+					on_press = { action = "select_difficulty", index = index },
+					on_hield = { action = "select_difficulty", index = index },
+				}),
+			},
 			align = absolute({
 				pivot = { x = 0, y = 0 },
 				parent_pivot = { x = 0, y = 0 },
-				size = Size({ per_hor = 100, px_vert = 56 }),
+				size = Size({ pc_hor = 100, px_vert = down_row_h }),
+			}),
+		})
+		if ctx.state.dif_selected == index then
+			content:push_child(ui_element({
+				display = "down_list_item_selected",
+				widgets = { box() },
+				align = absolute({
+					pivot = { x = 50, y = 50 },
+					parent_pivot = { x = 5, y = 50 },
+					size = Size({ px = 30 }),
+				}),
+			}))
+		end
+		content:push_child(ui_element({
+			display = "down_list_item_name",
+			widgets = { text(item.dif_name) },
+			align = absolute({
+				pivot = { x = 0, y = 0 },
+				parent_pivot = { x = 10, y = 0 },
+				size = Size({ pc_hor = 58, pc_vert = 50 }),
 			}),
 		}))
+		content:push_child(ui_element({
+			display = "down_list_item_author",
+			widgets = { text(item.dif_author) },
+			align = absolute({
+				pivot = { x = 0, y = 100 },
+				parent_pivot = { x = 10, y = 100 },
+				size = Size({ pc_hor = 58, pc_vert = 50 }),
+			}),
+		}))
+		content:push_child(ui_element({
+			display = "down_list_item_keymod",
+			widgets = { text(item.keymod) },
+			align = absolute({
+				pivot = { x = 50, y = 0 },
+				parent_pivot = { x = 90, y = 0 },
+				size = Size({ pc_hor = 24, pc_vert = 50 }),
+			}),
+		}))
+		content:push_child(ui_element({
+			display = "down_list_item_dif",
+			widgets = { text(item.dif) },
+			align = absolute({
+				pivot = { x = 50, y = 100 },
+				parent_pivot = { x = 90, y = 100 },
+				size = Size({ pc_hor = 24, pc_vert = 50 }),
+			}),
+		}))
+		down_list_w:add_child(row)
 	end
 	local down_list = ui_element({
 		display = "down_list",
@@ -452,7 +692,7 @@ return function(ctx)
 		align = absolute({
 			pivot = { x = 0, y = 0 },
 			parent_pivot = { x = 0, y = 0 },
-			size = Size({ px_hor = middle_w - 40, per_vert = 100 }),
+			size = Size({ px_hor = middle_w - 40, pc_vert = 100 }),
 		}),
 	})
 	down_panel:push_child(down_list)
@@ -544,6 +784,7 @@ return function(ctx)
 	local song_h = song_h_full - 10
 
 	local main_list_w = spring_list()
+
 	add_beatmap_rows(ctx, main_list_w, song_h_full, song_h)
 
 	local main_list = ui_element({
@@ -655,7 +896,7 @@ return function(ctx)
 		align = absolute({
 			pivot = { x = 0, y = 50 },
 			parent_pivot = { x = 0, y = 50 },
-			size = Size({ px_hor = left_width, per_vert = 100 }),
+			size = Size({ px_hor = left_width, pc_vert = 100 }),
 		}):animation({
 			key = "test_animation",
 			delta_pos = { x = -left_width + 40, y = 0 },
@@ -673,7 +914,7 @@ return function(ctx)
 		align = absolute({
 			pivot = { x = 100, y = 50 },
 			parent_pivot = { x = 100, y = 50 },
-			size = Size({ px_hor = right_width, per_vert = 100 }),
+			size = Size({ px_hor = right_width, pc_vert = 100 }),
 		}):animation({
 			key = "test_animation",
 			delta_pos = { x = right_width - 70, y = 0 },
@@ -691,7 +932,7 @@ return function(ctx)
 		align = absolute({
 			pivot = { x = 0, y = 0 },
 			parent_pivot = { x = 0, y = 0 },
-			size = Size({ per_hor = 100, per_vert = 100 }),
+			size = Size({ pc_hor = 100, pc_vert = 100 }),
 		}),
 	})
 	local padding = ui_element({
@@ -705,7 +946,7 @@ return function(ctx)
 		right_p.align = absolute({
 			pivot = { x = 50, y = 50 },
 			parent_pivot = { x = 50, y = 50 },
-			size = Size({ px_hor = right_width, per_vert = 100 }),
+			size = Size({ px_hor = right_width, pc_vert = 100 }),
 		})
 		root:push_child(right_p)
 	end
@@ -724,7 +965,7 @@ return function(ctx)
 	-- 	align = absolute({
 	-- 		pivot = { x = 0, y = 100 },
 	-- 		parent_pivot = { x = 0, y = 100 },
-	-- 		size = Size({ per_hor = 20, per_vert = 10 }),
+	-- 		size = Size({ pc_hor = 20, pc_vert = 10 }),
 	-- 	}),
 	-- })
 	-- root:push_child(test_p)
@@ -734,7 +975,6 @@ return function(ctx)
 	-- bar:push_child(ch)
 	-- local lv = spring_list()
 
-	-- local item_height = 48
 	-- for _, title in ipairs(songs) do
 	-- 	local txt = ui_element({ display = "main_text", widgets = { text(title) } })
 	-- 	local item = ui_element({
@@ -743,7 +983,7 @@ return function(ctx)
 	-- 		align = absolute({
 	-- 			pivot = { x = 0, y = 0 },
 	-- 			parent_pivot = { x = 0, y = 0 },
-	-- 			size = Size({ per_hor = 100, px_vert = item_height }),
+	-- 			size = Size({ pc_hor = 100, px_vert = item_height }),
 	-- 		}),
 	-- 	})
 	-- 	lv:add_child(item)

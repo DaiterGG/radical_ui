@@ -67,10 +67,10 @@ function event_handler.process(ctx)
 		elseif event.name == "wheelmoved" then
 			input.scroll_y = input.scroll_y + (event[2] or 0)
 		elseif event.name == "keypressed" then
-			-- UI key event: [2]=key, [3]=isrepeat
+			-- UI key event: [2]=key, [3]=isrepeat (repeats trigger bindings too)
 			local key = event[2]
 			if not ctx.state.keybind_capture and not set_modifier(input.modifiers, key, true) then
-				ctx.keybindings:trigger_key(ctx, key, event[3])
+				ctx.keybindings:trigger_key(ctx, key)
 			end
 		elseif event.name == "inputchanged" then
 			-- game's normalized input: [1]=device, [2]=id, [3]=key, [4]=state (true=press)

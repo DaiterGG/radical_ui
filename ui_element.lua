@@ -21,11 +21,6 @@ function ui_element:new(opts)
 	self.display_key = opts.display
 	self.widget = opts.widgets or {}
 	self.align = opts.align
-		or apply_align.Align():absolute({
-			pivot = { x = 0, y = 0 },
-			parent_pivot = { x = 0, y = 0 },
-			size = apply_align.Size({ pc_hor = 100, pc_vert = 100 }),
-		})
 	self.polyline = opts.polyline
 	self.children = {}
 	self.rect = nil
@@ -35,6 +30,7 @@ function ui_element:new(opts)
 		pressed = false,
 		held = false,
 		released = false,
+		selected = false,
 	}
 end
 

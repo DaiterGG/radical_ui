@@ -9,6 +9,8 @@ function beatmaps:new(game)
 	self.select_model = assert(game.selectModel, "game.selectModel is required")
 	self.select_controller = assert(game.selectController, "game.selectController is required")
 	self.controller_loaded = false
+	self.selected_index = nil
+	self.spring_list_data = nil
 end
 
 function beatmaps:ensure_loaded()
@@ -20,10 +22,20 @@ function beatmaps:ensure_loaded()
 	self.controller_loaded = true
 end
 
+function beatmaps:update()
+	self:ensure_loaded()
+	if self.selected_index == nil then
+		self.selected_index = self.select_model.chartview_set_index or 1
+		self.spring_list_data = { scroll_to = self.selected_index }
+	end
+	self.select_controller:update()
+end
+
 ---@param first integer
 ---@param last integer
 ---@return table[]
 function beatmaps:request_range(first, last)
+	local start_time = os.clock()
 	assert(type(first) == "number" and first % 1 == 0, "first must be an integer")
 	assert(type(last) == "number" and last % 1 == 0, "last must be an integer")
 	assert(first >= 1, "first must be greater than or equal to 1")
@@ -39,6 +51,7 @@ function beatmaps:request_range(first, last)
 	for index = first, end_index do
 		result[#result + 1] = items[index]
 	end
+	-- print(string.format("Rebuild in: %.6f ms", (os.clock() - start_time) * 1000))
 
 	return result
 end
@@ -69,7 +82,97 @@ function beatmaps:select(index)
 	self:ensure_loaded()
 	self.select_model:scrollNoteChartSet(nil, index)
 	self.select_model:scrollNoteChart(nil, 1)
+	self.selected_index = index
+end
+
+---@return integer?
+function beatmaps:select_middle_difficulty()
+	local difficulties = self:get_difficulties()
+	local count = #difficulties
+	if count == 0 then
+		return nil
+	end
+
+	local index = math.floor((count + 1) / 2)
+	self:select_difficulty(index)
+	return index
+end
+
+---@return table?
+function beatmaps:get_selected()
+	self:ensure_loaded()
+
+	local library = assert(self.select_model.noteChartSetLibrary, "noteChartSetLibrary is required")
+	return (library.items or {})[self.selected_index]
+end
+
+---@return table[]
+function beatmaps:get_difficulties()
+	self:ensure_loaded()
+
+	local library = assert(self.select_model.noteChartLibrary, "noteChartLibrary is required")
+	return library.items or {}
+end
+
+---@return integer
+function beatmaps:get_selected_difficulty()
+	self:ensure_loaded()
+	return self.select_model.chartview_index or 1
+end
+
+---@param index integer
+function beatmaps:select_difficulty(index)
+	assert(type(index) == "number" and index % 1 == 0, "index must be an integer")
+	assert(index >= 1, "index must be greater than or equal to 1")
+
+	self:ensure_loaded()
+	self.select_model:scrollNoteChart(nil, index)
+end
+
+---@param beatmap_index integer
+---@param difficulty_index integer
+function beatmaps:reselect(beatmap_index, difficulty_index)
+	assert(type(beatmap_index) == "number" and beatmap_index % 1 == 0, "beatmap_index must be an integer")
+	assert(type(difficulty_index) == "number" and difficulty_index % 1 == 0, "difficulty_index must be an integer")
+	assert(beatmap_index >= 1, "beatmap_index must be greater than or equal to 1")
+	assert(difficulty_index >= 1, "difficulty_index must be greater than or equal to 1")
+
+	self:ensure_loaded()
+	self.select_model:scrollNoteChartSet(nil, beatmap_index)
+	self.select_model:scrollNoteChart(nil, difficulty_index)
 	self.select_model:noDebouncePullNoteChartSet()
+	self.selected_index = beatmap_index
+end
+
+function beatmaps:play_preview()
+	self:ensure_loaded()
+	self.game.previewModel:loadPreview()
+end
+
+function beatmaps:stop_preview()
+	self.game.previewModel:stop()
+end
+
+---@return table[]
+function beatmaps:get_scores()
+	self:ensure_loaded()
+
+	local library = assert(self.select_model.scoreLibrary, "scoreLibrary is required")
+	return library.items or {}
+end
+
+---@param index integer
+function beatmaps:set_selected(index)
+	assert(type(index) == "number" and index % 1 == 0, "index must be an integer")
+	assert(index >= 1, "index must be greater than or equal to 1")
+
+	self.selected_index = index
+end
+
+---@param index integer
+---@return boolean
+function beatmaps:is_selected(index)
+	return self.selected_index == index
 end
 
 ---@param text string

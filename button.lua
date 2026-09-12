@@ -17,9 +17,11 @@ function button:new(child, opts)
 	if opts then
 		self.on_hield = opts.on_hield
 		self.on_press = opts.on_press or self.on_hield
+		self.on_hover = opts.on_hover
 		self.on_release = opts.on_release
 	end
 	self.child = child
+	self.hovered = false
 end
 
 local function button_window(elem)
@@ -56,6 +58,7 @@ function button:pointer_collision(elem, ctx, hit)
 
 	if hit and input.left == "pressed" then
 		input.interacting_with = hash
+		print(elem.hash_num)
 	end
 end
 
@@ -70,9 +73,15 @@ function button:pointer_collision_after(elem, ctx, hit, children_hit)
 	local held = input.left == "held"
 	local released_and_hit = released and true_hit
 
-	-- if input.left == "pressed" and interacting then
-	-- 	print("click:", children_hit)
-	-- end
+	if released and hit then
+		print(released_and_hit, input.interacting_with, elem.hash_num)
+	end
+
+	if true_hit and not self.hovered and self.on_hover then
+		ctx.action_queue:register(self.on_hover)
+		input.interacting_with = elem.hash_num
+	end
+	self.hovered = true_hit
 	if pressed_and_hit and self.on_press then
 		ctx.action_queue:register(self.on_press)
 	end
@@ -85,6 +94,10 @@ function button:pointer_collision_after(elem, ctx, hit, children_hit)
 	end
 	if not true_hit and (released or idle) and interacting then
 		input.interacting_with = nil
+	end
+
+	if input.interacting_with == elem.hash_num then
+		elem.states.selected = true
 	end
 end
 

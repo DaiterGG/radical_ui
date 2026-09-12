@@ -1,6 +1,6 @@
 local actions = require("actions")
 local unils = require("utils")
-local display_list = require("style_dispaly")
+local style = require("style_dispaly")
 local input_state = require("input_state")
 local keybinding = require("keybinding")
 local fonts = require("fonts")
@@ -24,7 +24,8 @@ function ctx:new(game, mount_path)
 	self.event_queue = {} -- game events queued by receive(), drained each update
 	self.res = res
 
-	self.display_list = display_list
+	self.theme = style.theme()
+	self.display_list = style.display_data(self.theme)
 	self.input_state = input_state()
 	self.keybindings = keybinding()
 	self.fonts = fonts.load(love.graphics.getFont(), mount_path)
@@ -42,6 +43,7 @@ function ctx:new(game, mount_path)
 		-- active_window = "Settings",
 		settings_tab = "Gameplay",
 		keybind_capture = nil,
+		dif_selected = 1,
 	}
 	self.last_delta = 0.1
 

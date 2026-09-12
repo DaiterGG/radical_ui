@@ -3,6 +3,10 @@
 local default_bindings = {
 	{ key = "escape", action = "quit" },
 	{ key = "t", action = "test_animation" },
+	{ key = "up", action = "main_list_up" },
+	{ key = "down", action = "main_list_down" },
+	{ key = "ctrl+up", action = "main_list_first" },
+	{ key = "ctrl+down", action = "main_list_last" },
 }
 
 return function(ctx)

@@ -17,9 +17,12 @@ function UserInterface:new(game, mount_path)
 end
 
 function UserInterface:load()
+	love.keyboard.setKeyRepeat(true)
+
 	-- apply default keybindings (runs once by the host after the UI is created)
 	keybind_load(self.ctx)
 	self.ctx.anim_reg:update("test_animation", "in", true)
+	self.ctx.beatmaps:play_preview()
 
 	-- view(self.ctx)
 	-- ui_manager.align(self.ctx)
@@ -47,6 +50,8 @@ function UserInterface:update(dt)
 
 	if self.ctx.ui.scene == "gameplay" then
 		self.ctx.gameplay_api:update(dt)
+	else
+		self.ctx.beatmaps:update()
 	end
 
 	-- 1) feed this frame's queued events into input_state (pos/buttons/modifiers/delta/scroll)
