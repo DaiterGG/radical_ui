@@ -57,7 +57,11 @@ function beatmaps:update_background()
 		return
 	end
 
-	self.background_images = background_model.images or {}
+	local images = background_model.images or {}
+	self.background_images = {}
+	for index, image in ipairs(images) do
+		self.background_images[index] = image
+	end
 	self.background_image_path = background_model.path
 	self.background_alpha = background_model.alpha or 1
 end
