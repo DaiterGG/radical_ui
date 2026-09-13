@@ -15,7 +15,8 @@ function box:new() end
 --   -- TODO: per-type interaction state
 -- end
 
-function box:draw(elem, ctx, widget_data, all_data)
+function box:draw(elem, ctx, widget_display_data, display_data)
+	local widget_data = widget_display_data
 	local r = elem.rect
 	if not widget_data or not r then
 		return

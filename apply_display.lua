@@ -376,6 +376,16 @@ function apply_display.draw_background(rect, bg, border, polyline, opts)
 
 	if polyline then
 		local pts = apply_display.scale_points(polyline, scale)
+		if opts.blur and opts.source then
+			love.graphics.push("all")
+			love.graphics.stencil(function()
+				apply_display.draw_polygon(x, y, pts, { 1, 1, 1, 1 })
+			end, "replace", 1)
+			love.graphics.setStencilTest("greater", 0)
+			apply_display.blur(opts.source, x, y, w, h, opts.blur)
+			love.graphics.setStencilTest()
+			love.graphics.pop()
+		end
 		apply_display.draw_polygon(x, y, pts, bg)
 		if border and border.color then
 			apply_display.draw_polyline(x, y, pts, border.width, border.color)
@@ -385,10 +395,14 @@ function apply_display.draw_background(rect, bg, border, polyline, opts)
 
 	local radius = border and border.radius or 0
 	if opts.blur and opts.source then
-		apply_display.blur(opts.source, x, y, w, h, opts.blur)
-	else
-		apply_display.corner_radius(x, y, w, h, radius, bg)
+		local blur = {}
+		for key, value in pairs(opts.blur) do
+			blur[key] = value
+		end
+		blur.cornerRadius = radius
+		apply_display.blur(opts.source, x, y, w, h, blur)
 	end
+	apply_display.corner_radius(x, y, w, h, radius, bg)
 
 	if border and (border.color or border.up or border.down or border.left or border.right) then
 		apply_display.draw_box_border(x, y, w, h, border, border.color)
@@ -429,40 +443,119 @@ function apply_display.draw(elem, ctx)
 	end
 end
 
--- gaussian blur shader (single-pass, 3x3 kernel)
-local blur_shader = love.graphics.newShader([[
-  extern number blurSize;
-  extern number texW;
-  extern number texH;
+local function create_blur_shader(kernel_size)
+	local center = (kernel_size - 1) / 2
+	local sigma = kernel_size / 2
+	local weights = {}
+	local weight_total = 0
 
-  vec4 effect(vec4 color, Image tex, vec2 uv, vec2 screen_coords) {
-    number dx = blurSize / texW;
-    number dy = blurSize / texH;
-    vec2 c = uv;
-    vec4 sum = vec4(0.0);
-    sum += Texel(tex, c + vec2(-dx, -dy)) * 0.0947416;
-    sum += Texel(tex, c + vec2( 0.0, -dy)) * 0.118318;
-    sum += Texel(tex, c + vec2( dx, -dy)) * 0.0947416;
-    sum += Texel(tex, c + vec2(-dx,  0.0)) * 0.118318;
-    sum += Texel(tex, c)                   * 0.147761;
-    sum += Texel(tex, c + vec2( dx,  0.0)) * 0.118318;
-    sum += Texel(tex, c + vec2(-dx,  dy)) * 0.0947416;
-    sum += Texel(tex, c + vec2( 0.0,  dy)) * 0.118318;
-    sum += Texel(tex, c + vec2( dx,  dy)) * 0.0947416;
-    return sum * color;
-  }
-]])
+	for row = 0, kernel_size - 1 do
+		for column = 0, kernel_size - 1 do
+			local offset_x = column - center
+			local offset_y = row - center
+			local weight = math.exp(-(offset_x * offset_x + offset_y * offset_y) / (2 * sigma * sigma))
+			weights[#weights + 1] = {
+				offset_x = offset_x,
+				offset_y = offset_y,
+				weight = weight,
+			}
+			weight_total = weight_total + weight
+		end
+	end
+
+	local shader_lines = {
+		"  extern number blurSize;",
+		"  extern number texW;",
+		"  extern number texH;",
+		"  extern number shapeW;",
+		"  extern number shapeH;",
+		"  extern number cornerRadius;",
+		"",
+		"  vec4 sampleBlur(Image tex, vec2 uv, vec2 offset, number weight) {",
+		"    return Texel(tex, uv + offset) * weight;",
+		"  }",
+		"",
+		"  vec4 effect(vec4 color, Image tex, vec2 uv, vec2 screen_coords) {",
+		"    number radius = min(cornerRadius, min(shapeW, shapeH) * 0.5);",
+		"    vec2 point = screen_coords;",
+		"    if (radius > 0.0) {",
+		"      if (point.x < radius && point.y < radius",
+		"          && distance(point, vec2(radius, radius)) > radius) {",
+		"        discard;",
+		"      }",
+		"      if (point.x > shapeW - radius && point.y < radius",
+		"          && distance(point, vec2(shapeW - radius, radius)) > radius) {",
+		"        discard;",
+		"      }",
+		"      if (point.x < radius && point.y > shapeH - radius",
+		"          && distance(point, vec2(radius, shapeH - radius)) > radius) {",
+		"        discard;",
+		"      }",
+		"      if (point.x > shapeW - radius && point.y > shapeH - radius",
+		"          && distance(point, vec2(shapeW - radius, shapeH - radius)) > radius) {",
+		"        discard;",
+		"      }",
+		"    }",
+		"",
+		"    number dx = blurSize / texW;",
+		"    number dy = blurSize / texH;",
+		"    vec4 sum = vec4(0.0);",
+	}
+
+	for _, sample in ipairs(weights) do
+		shader_lines[#shader_lines + 1] = string.format(
+			"    sum += sampleBlur(tex, uv, vec2(%0.9f * dx, %0.9f * dy), %0.9f);",
+			sample.offset_x,
+			sample.offset_y,
+			sample.weight / weight_total
+		)
+	end
+
+	shader_lines[#shader_lines + 1] = ""
+	shader_lines[#shader_lines + 1] = "    return sum * color;"
+	shader_lines[#shader_lines + 1] = "  }"
+
+	return love.graphics.newShader(table.concat(shader_lines, "\n"))
+end
+
+local blur_shaders = {}
+
+local function resolve_kernel_size(value)
+	if type(value) == "string" then
+		local width, height = value:match("^%s*(%d+)%s*[xX]%s*(%d+)%s*$")
+		if not width or width ~= height then
+			error("blur dimensions must be a square size such as 3x3", 3)
+		end
+		value = tonumber(width)
+	end
+	return value
+end
+
+local function get_blur_shader(kernel_size)
+	kernel_size = resolve_kernel_size(kernel_size)
+	if type(kernel_size) ~= "number" or kernel_size < 1 or kernel_size ~= math.floor(kernel_size) then
+		error("blur kernelSize must be a positive integer", 2)
+	end
+	if not blur_shaders[kernel_size] then
+		blur_shaders[kernel_size] = create_blur_shader(kernel_size)
+	end
+	return blur_shaders[kernel_size]
+end
 
 -- low-res canvases cached by size, so we don't re-create them every frame
 local lowres_cache = {}
 
 -- blur the source (canvas/image) region (x, y, w, h) using a low-res
 -- canvas + gaussian shader, then draw it back scaled up (like ui.Blur).
--- opts: percent (low-res scale, default 0.2), blurSize (pixels, default 1.5)
+-- opts: percent (low-res scale, default 0.2), blurSize (pixels, default 1.5),
+-- kernelSize (square shader kernel, default 3; e.g. 3 = 3x3, 4 = 4x4)
 function apply_display.blur(source, x, y, w, h, opts)
 	opts = opts or {}
 	local percent = opts.percent or 0.2
 	local blur_size = opts.blurSize or 1.5
+	local kernel_size = opts.kernelSize or opts.dimensions or 8
+	local opacity = opts.opacity or 1
+	local blur_shader = get_blur_shader(kernel_size)
 
 	local cw = math.max(1, math.ceil(w * percent))
 	local ch = math.max(1, math.ceil(h * percent))
@@ -477,6 +570,7 @@ function apply_display.blur(source, x, y, w, h, opts)
 	local sw, sh = source:getDimensions()
 
 	love.graphics.push("all")
+	love.graphics.setColor(1, 1, 1, 1)
 	love.graphics.setCanvas(canvas)
 	love.graphics.origin()
 	love.graphics.clear()
@@ -484,12 +578,16 @@ function apply_display.blur(source, x, y, w, h, opts)
 	blur_shader:send("blurSize", blur_size)
 	blur_shader:send("texW", sw)
 	blur_shader:send("texH", sh)
+	blur_shader:send("shapeW", cw)
+	blur_shader:send("shapeH", ch)
+	blur_shader:send("cornerRadius", (opts.cornerRadius or 0) * percent)
 	-- map the source rect (x,y,w,h) into the low-res canvas (0,0,cw,ch)
 	love.graphics.draw(source, 0, 0, 0, cw / w, ch / h, x, y)
 	love.graphics.setShader()
 	love.graphics.pop()
 
 	-- draw the low-res canvas back, scaled up to the original rect
+	love.graphics.setColor(1, 1, 1, opacity)
 	love.graphics.draw(canvas, x, y, 0, w / cw, h / ch)
 end
 

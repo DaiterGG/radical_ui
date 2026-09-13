@@ -38,7 +38,8 @@ end
 --   -- not interactive
 -- end
 
-function text:draw(elem, ctx, widget_data, display_data)
+function text:draw(elem, ctx, widget_display_data, display_data)
+	local widget_data = widget_display_data
 	local r = elem.rect
 	widget_data = widget_data
 		or (display_data and display_data.font and display_data)

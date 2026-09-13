@@ -31,6 +31,8 @@ function input_state:new()
 
 	self.interacting_with = nil -- ui_element.hash_num
 	-- self.interacting_with = {} -- [hash_num] = element being interacted with; per-element managed
+
+	self.input_key = nil
 end
 
 function input_state:reset()

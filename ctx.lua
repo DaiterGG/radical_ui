@@ -23,6 +23,10 @@ function ctx:new(game, mount_path)
 	self.action_queue = actions()
 	self.event_queue = {} -- game events queued by receive(), drained each update
 	self.res = res
+	self.settings = {
+		blur = true,
+		background = true,
+	}
 
 	self.theme = style.theme()
 	self.display_list = style.display_data(self.theme)

@@ -4,6 +4,9 @@ local function theme()
 	return {
 		main_hover_c = color("#000000", 10),
 		main_text = color("#cccccc"),
+		glass_text = color("#FFFFFF"),
+		main_font = "afacad_medium",
+		international_font = "afacad_medium",
 		main_accent = color("#26FF88"),
 		main_panel = color("#25232E"),
 		main_panel_br = color("#292733"),
@@ -18,6 +21,8 @@ local function theme()
 		glass_table_header_fill = color("#000000", 15),
 		separator_header = color("#0E0E12"),
 		glass_bg_tint = color("#3E3E46", 58),
+		glass_blur = { percent = 1, blurSize = 4 },
+		glass_list_blur = { percent = 0.2, blurSize = 2, opacity = 0.35 },
 		root_bg = color("#333333"),
 		header_bg = color("#1e1d26"),
 	}
@@ -73,6 +78,20 @@ local function display_data(theme)
 				},
 			},
 		},
+		header_input = {
+			text_input = {
+				bg = theme.header_bg,
+				selected_bg = theme.header_bg,
+				border = { center = true, width = 1, color = theme.separator_header, radius = 4 },
+				bg_focused = theme.header_bg,
+				border_focused = { center = true, width = 1, color = theme.separator_header, radius = 4 },
+				font = theme.main_font,
+				size = 18,
+				text_color = theme.main_text,
+				placeholder_color = theme.glass_icons,
+				align_x = "center",
+			},
+		},
 		test_p = {
 			button = {
 				idle = {
@@ -104,12 +123,12 @@ local function display_data(theme)
 		first_b_text = {
 			text = {
 				idle = {
-					font = "afacad_bold",
+					font = theme.main_font,
 					size = 45,
 					color = theme.main_text,
 				},
 				held = {
-					font = "afacad_bold",
+					font = theme.main_font,
 					size = 45,
 					color = theme.main_accent,
 				},
@@ -118,12 +137,12 @@ local function display_data(theme)
 		second_b_text = {
 			text = {
 				idle = {
-					font = "afacad_bold",
+					font = theme.main_font,
 					size = 60,
 					color = theme.main_text,
 				},
 				held = {
-					font = "afacad_bold",
+					font = theme.main_font,
 					size = 60,
 					color = theme.main_accent,
 				},
@@ -226,7 +245,7 @@ local function display_data(theme)
 		},
 		w_settings_active_tab_text = {
 			text = {
-				font = "afacad_medium",
+				font = theme.main_font,
 				size = 50,
 				color = theme.main_text,
 			},
@@ -234,12 +253,14 @@ local function display_data(theme)
 		w_settings_active_tab = {
 			box = {
 				bg = theme.glass_bg_tint,
+				blur = theme.glass_blur,
 				border = { width = 1, color = theme.glass_stroke },
 			},
 		},
 		w_header_dis = {
 			box = {
 				bg = theme.glass_bg_tint,
+				blur = theme.glass_blur,
 				border = { width = 1, color = theme.glass_stroke },
 			},
 		},
@@ -252,6 +273,7 @@ local function display_data(theme)
 		w_footer = {
 			box = {
 				bg = theme.glass_bg_tint,
+				blur = theme.glass_blur,
 				border = { width = 1, color = theme.glass_stroke },
 			},
 		},
@@ -276,10 +298,14 @@ local function display_data(theme)
 				-- },
 			},
 		},
-		main_list = { spring_list = {} },
+		main_list = {
+			spring_list = {
+			},
+		},
 
 		main_list_button = {
 			button = {
+        blur = theme.glass_blur,
 				bg = theme.glass_bg_tint,
 				border = { center = true, radius = 999, width = 1, color = theme.glass_stroke },
 			},
@@ -292,21 +318,21 @@ local function display_data(theme)
 		},
 		main_list_title = {
 			text = {
-				font = "afacad_bold",
+				font = theme.main_font,
 				size = 30,
 				align_x = "center",
 				align_y = "center",
-				color = theme.main_text,
+				color = theme.glass_text,
 				downscale = 0.5,
 			},
 		},
 		main_list_author = {
 			text = {
-				font = "afacad_medium",
+				font = theme.international_font,
 				size = 18,
 				align_x = "center",
 				align_y = "center",
-				color = theme.main_text,
+				color = theme.glass_text,
 				downscale = 0.5,
 			},
 		},
@@ -314,13 +340,13 @@ local function display_data(theme)
 		right_footer_text = {
 			text = {
 				idle = {
-					font = "afacad_bold",
+					font = theme.main_font,
 					size = 25,
 					color = theme.main_text,
 					line_gap = -5,
 				},
 				held = {
-					font = "afacad_bold",
+					font = theme.main_font,
 					size = 25,
 					line_gap = -5,
 					color = theme.main_accent,
@@ -345,12 +371,14 @@ local function display_data(theme)
 		up_panel = {
 			box = {
 				bg = theme.glass_bg_tint,
+				blur = theme.glass_blur,
 				border = { center = true, width = 1, color = theme.glass_stroke },
 			},
 		},
 		top_list = {
 			list_view = {
 				bg = theme.glass_list_bg,
+				blur = theme.glass_list_blur,
 				scroll_speed = 0.4,
 			},
 		},
@@ -371,39 +399,42 @@ local function display_data(theme)
 		},
 		top_table_header_text = {
 			text = {
-				font = "afacad_medium",
+				font = theme.international_font,
 				size = 18,
 				align_x = "center",
 				align_y = "center",
-				color = theme.main_text,
+				color = theme.glass_text,
 				-- downscale = 0.5,
 			},
 		},
 		top_table_cell_text = {
 			text = {
-				font = "afacad_medium",
+				font = theme.international_font,
 				size = 18,
 				align_x = "center",
 				align_y = "center",
-				color = theme.main_text,
+				color = theme.glass_text,
 				-- downscale = 0.5,
 			},
 		},
 		middle_panel = {
 			box = {
 				bg = theme.glass_bg_tint,
+				blur = theme.glass_blur,
 				border = { center = true, width = 1, color = theme.glass_stroke },
 			},
 		},
 		down_panel = {
 			box = {
 				bg = theme.glass_bg_tint,
+				blur = theme.glass_blur,
 				border = { center = true, width = 1, color = theme.glass_stroke },
 			},
 		},
 		down_list = {
 			list_view = {
 				bg = theme.glass_list_bg,
+				blur = theme.glass_list_blur,
 				scroll_speed = 0.4,
 				scroll_bar = {
 					width = 16,
@@ -416,11 +447,11 @@ local function display_data(theme)
 				bg = theme.glass_list_element_dark,
 			},
 			text = {
-				font = "afacad_medium",
+				font = theme.international_font,
 				size = 28,
 				align_x = "left",
 				align_y = "center",
-				color = theme.main_text,
+				color = theme.glass_text,
 			},
 		},
 		down_list_item_transparent = {
@@ -428,49 +459,49 @@ local function display_data(theme)
 				bg = theme.glass_list_element_transparent,
 			},
 			text = {
-				font = "afacad_medium",
+				font = theme.international_font,
 				size = 28,
 				align_x = "left",
 				align_y = "center",
-				color = theme.main_text,
+				color = theme.glass_text,
 			},
 		},
 		down_list_item_name = {
 			text = {
-				font = "afacad_medium",
+				font = theme.international_font,
 				size = 28,
 				align_x = "left",
 				align_y = "center",
-				color = theme.main_text,
+				color = theme.glass_text,
 				downscale = 0.5,
 			},
 		},
 		down_list_item_author = {
 			text = {
-				font = "afacad_medium",
+				font = theme.international_font,
 				size = 18,
 				align_x = "left",
 				align_y = "bottom",
-				color = theme.main_text,
+				color = theme.glass_text,
 				downscale = 0.5,
 			},
 		},
 		down_list_item_keymod = {
 			text = {
-				font = "afacad_medium",
+				font = theme.international_font,
 				size = 22,
 				align_x = "center",
 				align_y = "top",
-				color = theme.main_text,
+				color = theme.glass_text,
 			},
 		},
 		down_list_item_dif = {
 			text = {
-				font = "afacad_medium",
+				font = theme.main_font,
 				size = 22,
 				align_x = "center",
 				align_y = "bottom",
-				color = theme.main_text,
+				color = theme.glass_text,
 			},
 		},
 		down_list_item_selected = {

@@ -22,14 +22,18 @@ local function draw_cover(image, x, y, w, h)
 	love.graphics.draw(image, x + w / 2, y + h / 2, 0, scale, scale, iw / 2, ih / 2)
 end
 
-function background:draw(elem, ctx)
+function background:draw(elem, ctx, widget_display_data, display_data)
 	local r = elem.rect
 	if not r then
 		return
 	end
 
-	local bm = ctx.game and ctx.game.backgroundModel
-	local has_bg = bm and bm.images and bm.images[1]
+	local images = {}
+	local alpha = 1
+	if ctx.beatmaps then
+		images = ctx.beatmaps:get_background_images()
+		alpha = ctx.beatmaps:get_background_alpha()
+	end
 
 	-- (re)create the shared background canvas to match the element size
 	local canvas = ctx.ui.background_canvas
@@ -46,13 +50,12 @@ function background:draw(elem, ctx)
 	-- start with white so leaked setColor can't tint the canvas content
 	love.graphics.setColor(1, 1, 1, 1)
 
-	if bm.images[1] then
-		draw_cover(bm.images[1], 0, 0, r.w, r.h)
+	if ctx.settings.background and images[1] then
+		draw_cover(images[1], 0, 0, r.w, r.h)
 	end
-	if bm.images[2] then
-		local alpha = bm.alpha or 1
+	if ctx.settings.background and images[2] then
 		love.graphics.setColor(1, 1, 1, alpha)
-		draw_cover(bm.images[2], 0, 0, r.w, r.h)
+		draw_cover(images[2], 0, 0, r.w, r.h)
 		love.graphics.setColor(1, 1, 1, 1)
 	end
 

@@ -6,13 +6,14 @@ local cursor = class()
 function cursor:new(fonts)
 	self.fonts = assert(fonts, "cursor requires the loaded font registry")
 	self.state = "idle"
-	self.size = 32
+	self.size = 28
 	self.color = { 0.8, 0.8, 0.8, 1 }
+	self.color_outline = { 0, 0, 0, 1 }
 	self.icons = {
-		idle = icons.idle,
+		idle = {icons.idle2, icons.idle1},
+		scroll = {icons.scroll2, icons.scroll1},
 		hover = icons.hover,
 		pressed = icons.press,
-		scroll = icons.press,
 	}
 	self.cursors = {}
 
@@ -27,6 +28,14 @@ function cursor:set_state(state)
 	return self
 end
 
+function cursor:draw_glyph(font, glyph, color)
+	love.graphics.setColor(color)
+
+	local width = font:getWidth(glyph)
+	local height = font:getHeight()
+	love.graphics.print(glyph, (self.size - width) / 2, (self.size - height) / 2)
+end
+
 function cursor:buffer_cursor(glyph)
 	local font = assert(self.fonts:get("custom", self.size), "icons font is unavailable")
 	local canvas = love.graphics.newCanvas(self.size, self.size)
@@ -34,12 +43,16 @@ function cursor:buffer_cursor(glyph)
 	love.graphics.push("all")
 	love.graphics.setCanvas(canvas)
 	love.graphics.clear(0, 0, 0, 0)
-	love.graphics.setColor(self.color)
 	love.graphics.setFont(font)
 
-	local width = font:getWidth(glyph)
-	local height = font:getHeight()
-	love.graphics.print(glyph, (self.size - width) / 2, (self.size - height) / 2)
+	if type(glyph) == "table" then
+		for index, layer in ipairs(glyph) do
+			local layer_color = index == 1 and self.color_outline or self.color
+			self:draw_glyph(font, layer, layer_color)
+		end
+	else
+		self:draw_glyph(font, glyph, self.color)
+	end
 
 	love.graphics.setCanvas()
 	love.graphics.pop()

@@ -1,23 +1,17 @@
----@module
----@author
----@license
-
-local background = require("background")
-local icons = require("icons")
 local box = require("box")
+local background  = require("background")
 local button = require("button")
 local text = require("text")
 local icons = require("icons")
 local checkbox = require("checkbox")
+local text_input = require("text_input")
 local align_mod = require("apply_align")
 local spring_list = require("spring_list")
 local list_view = require("list_view")
-local ui_manager = require("ui_manager")
 local ui_element = require("ui_element")
 local utils = require("utils")
 local profiler = require("profiler")
 
-local Align = align_mod.Align
 local Direction = align_mod.Direction
 local absolute = align_mod.Absolute
 local block = align_mod.Block
@@ -200,8 +194,9 @@ local function add_beatmap_rows(ctx, list, song_h_full, song_h)
 		local list_button = ui_element({
 			display = "main_list_button",
 			widgets = {
+        box(),
 				button(content, {
-					on_release = { action = "select_beatmap", index = index },
+					on_any_release = { action = "select_beatmap", index = index },
 				}),
 			},
 			align = absolute({
@@ -242,6 +237,16 @@ return function(ctx)
 	local ratio = ctx.res.w / ctx.res.h
 
 	local header_h = 44
+	local right_width = 638
+	local header_button_w = 130
+	local header_top = 1
+	local header_corner_y = 27
+	local header_left_offset = -10
+	local header_back_top_left = 3
+	local header_back_left = 1
+	local header_back_top_right = 120
+	local header_back_bottom_right = 137
+	local header_button_bottom_left = 7
 
 	-- NOTE: SUB MENUS
 	-- NOTE: SUB LAYOUT
@@ -413,17 +418,16 @@ return function(ctx)
 		display = "header_left_b_icons",
 		widgets = { text(icons.back2) },
 	})
-	local header_button_w = 130
 	local header_back = ui_element({
 		display = "header_back_b",
 		widgets = { button(header_back_icon, { on_release = { action = "quit" } }) },
 		polyline = {
-			{ 3, 1 },
-			{ 120, 1 },
-			{ 120, 27 },
-			{ 137, header_h },
-			{ 1, header_h },
-			{ 1, 0 },
+			{ header_back_top_left, header_top },
+			{ header_back_top_right, header_top },
+			{ header_back_top_right, header_corner_y },
+			{ header_back_bottom_right, header_h },
+			{ header_back_left, header_h },
+			{ header_back_left, 0 },
 		},
 		align = block(Direction.Left, { px = header_button_w }),
 	})
@@ -442,19 +446,33 @@ return function(ctx)
 			display = "header_left_b",
 			widgets = { button(header_b_icon, { on_release = b[2] }) },
 			polyline = {
-				{ -10, 1 },
-				{ 120, 1 },
-				{ 120, 27 },
-				{ 137, header_h },
-				{ 7, header_h },
-				{ -10, 27 },
-				{ -10, 0 },
+				{ header_left_offset, header_top },
+				{ header_back_top_right, header_top },
+				{ header_back_top_right, header_corner_y },
+				{ header_back_bottom_right, header_h },
+				{ header_button_bottom_left, header_h },
+				{ header_left_offset, header_corner_y },
+				{ header_left_offset, 0 },
 			},
 			align = block(Direction.Left, { px = header_button_w }),
 		})
 
 		header:push_child(header_b)
 	end
+	local header_input = ui_element({
+		display = "header_input",
+		widgets = { text_input("Search", nil) },
+		polyline = {
+			{ -header_h + header_corner_y, header_top },
+			{ right_width, header_top },
+			{ right_width, header_h },
+			{ 0, header_h },
+			{ -header_h + header_corner_y , header_corner_y },
+			-- { header_left_offset, header_start },
+		},
+		align = block(Direction.Right, { px = right_width }),
+	})
+	header:push_child(header_input)
 	profiler.checkpoint("main_view", "setup header")
 
 	-- NOTE: LEFT SIDE
@@ -716,7 +734,6 @@ return function(ctx)
 	profiler.checkpoint("main_view", "setup left side")
 
 	-- NOTE: RIGHT SIDE
-	local right_width = 638
 	local right_scroll_gap = 40
 
 	-- NOTE: RIGHT HEADER
@@ -951,7 +968,7 @@ return function(ctx)
 
 	local root = ui_element({
 		display = "root",
-		widgets = { box() },
+		widgets = { background() },
 		align = absolute({
 			pivot = { x = 0, y = 0 },
 			parent_pivot = { x = 0, y = 0 },

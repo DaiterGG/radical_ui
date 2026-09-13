@@ -430,7 +430,8 @@ function list_view:pointer_collision(elem, ctx, hit)
 	end
 end
 
-function list_view:draw(elem, ctx, widget_data, display_data)
+function list_view:draw(elem, ctx, widget_display_data, display_data)
+	local widget_data = widget_display_data
 	local r = elem.rect
 
 	-- background
@@ -439,7 +440,11 @@ function list_view:draw(elem, ctx, widget_data, display_data)
 		widget_data and widget_data.bg,
 		widget_data and widget_data.border,
 		elem.polyline,
-		{ scale = ctx.ui_scale or 1 }
+		{
+			blur = widget_data and widget_data.blur,
+			source = ctx.ui.background_canvas,
+			scale = ctx.ui_scale or 1,
+		}
 	)
 
 	if #self.children > 0 then

@@ -1,7 +1,7 @@
 local class = require("class")
 local profiler = require("profiler")
 
-local PREVIEW_DELAY = 0.3
+local PREVIEW_DELAY = 0.1
 
 local beatmaps = class()
 
@@ -16,6 +16,9 @@ function beatmaps:new(game)
 	self.spring_list_data = nil
 	self.cache = {}
 	self.preview_timer = nil
+	self.background_images = {}
+	self.background_image_path = nil
+	self.background_alpha = 1
 end
 
 function beatmaps:ensure_loaded()
@@ -40,8 +43,23 @@ function beatmaps:update(dt)
 		if self.preview_timer <= 0 then
 			self.preview_timer = nil
 			self.game.previewModel:loadPreview()
+			self:update_background()
 		end
 	end
+end
+
+function beatmaps:update_background()
+	local background_model = self.game.backgroundModel
+	if not background_model then
+		self.background_images = {}
+		self.background_image_path = nil
+		self.background_alpha = 1
+		return
+	end
+
+	self.background_images = background_model.images or {}
+	self.background_image_path = background_model.path
+	self.background_alpha = background_model.alpha or 1
 end
 
 ---@param first integer
@@ -115,6 +133,24 @@ function beatmaps:get_selected()
 
 	local library = assert(self.select_model.noteChartSetLibrary, "noteChartSetLibrary is required")
 	return (library.items or {})[self.selected_index]
+end
+
+---@return love.Image[]
+function beatmaps:get_background_images()
+	self:ensure_loaded()
+	return self.background_images
+end
+
+---@return string?
+function beatmaps:get_background_image_path()
+	self:ensure_loaded()
+	return self.background_image_path
+end
+
+---@return number
+function beatmaps:get_background_alpha()
+	self:ensure_loaded()
+	return self.background_alpha
 end
 
 ---@return table[]

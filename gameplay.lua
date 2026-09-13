@@ -6,7 +6,7 @@ gameplay.type = "gameplay"
 function gameplay:new()
 end
 
-function gameplay:draw(elem, ctx)
+function gameplay:draw(elem, ctx, widget_display_data, display_data)
 	local rect = elem.rect
 	if not rect then
 		return

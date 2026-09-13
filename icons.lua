@@ -27,9 +27,11 @@ local icons = {
 	["filter1"] = 0x0032,
 	["filter2"] = 0x006F,
 
-	["idle"] = 0x000C,
+	["idle1"] = 0x0041,
+	["idle2"] = 0x0042,
 	["hover"] = 0x000B,
-	["scroll"] = 0x000B,
+	["scroll1"] = 0x0043,
+	["scroll2"] = 0x0044,
 	["press"] = 0x000B,
 }
 

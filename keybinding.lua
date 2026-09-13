@@ -101,7 +101,16 @@ function keybinding:trigger_key(ctx, key, is_repeat)
 	end
 	local action = self:trigger(key, ctx.input_state.modifiers)
 	if action then
-		ctx.action_queue:register({ action = action })
+		ctx.action_queue:register({
+			action = action,
+			key = key,
+			modifiers = {
+				shift = ctx.input_state.modifiers.shift,
+				ctrl = ctx.input_state.modifiers.ctrl,
+				alt = ctx.input_state.modifiers.alt,
+				super = ctx.input_state.modifiers.super,
+			},
+		})
 	end
 	return action
 end

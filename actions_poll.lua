@@ -1,6 +1,98 @@
 local profiler = require("profiler")
+local text_input = require("text_input")
 local execute
 execute = {
+	keyinput = function(ctx, action)
+		local input = ctx.input_state
+		local data = input.input_key and ctx.widget_reg:get(input.input_key)
+		if not data then
+			return
+		end
+
+		text_input:insert_text(data, action.key or "")
+		text_input:trigger_input(ctx, data)
+	end,
+	input_left = function(ctx, action)
+		local data = ctx.input_state.input_key and ctx.widget_reg:get(ctx.input_state.input_key)
+		if not data then
+			return
+		end
+		text_input:move_caret(data, -1, action.modifiers)
+	end,
+	input_right = function(ctx, action)
+		local data = ctx.input_state.input_key and ctx.widget_reg:get(ctx.input_state.input_key)
+		if not data then
+			return
+		end
+		text_input:move_caret(data, 1, action.modifiers)
+	end,
+	input_home = function(ctx)
+		local data = ctx.input_state.input_key and ctx.widget_reg:get(ctx.input_state.input_key)
+		if not data then
+			return
+		end
+		data.caret = 1
+		data.selection[1] = data.caret
+		data.selection[2] = data.caret
+	end,
+	input_end = function(ctx)
+		local data = ctx.input_state.input_key and ctx.widget_reg:get(ctx.input_state.input_key)
+		if not data then
+			return
+		end
+		data.caret = #data.input_field + 1
+		data.selection[1] = data.caret
+		data.selection[2] = data.caret
+	end,
+	input_backspace = function(ctx, action)
+		local data = ctx.input_state.input_key and ctx.widget_reg:get(ctx.input_state.input_key)
+		if not data then
+			return
+		end
+		text_input:erase(data, true, action.modifiers and action.modifiers.ctrl)
+		text_input:trigger_input(ctx, data)
+	end,
+	input_delete = function(ctx, action)
+		local data = ctx.input_state.input_key and ctx.widget_reg:get(ctx.input_state.input_key)
+		if not data then
+			return
+		end
+		text_input:erase(data, false, action.modifiers and action.modifiers.ctrl)
+		text_input:trigger_input(ctx, data)
+	end,
+	input_select_all = function(ctx)
+		local data = ctx.input_state.input_key and ctx.widget_reg:get(ctx.input_state.input_key)
+		if data then
+			text_input:select_all(data)
+		end
+	end,
+	input_deselect = function(ctx)
+		ctx.input_state.input_key = nil
+	end,
+	input_copy = function(ctx)
+		local data = ctx.input_state.input_key and ctx.widget_reg:get(ctx.input_state.input_key)
+		if data then
+			love.system.setClipboardText(text_input:selected_text(data))
+		end
+	end,
+	input_cut = function(ctx)
+		local data = ctx.input_state.input_key and ctx.widget_reg:get(ctx.input_state.input_key)
+		if data then
+			local selected = text_input:selected_text(data)
+			if selected ~= "" then
+				love.system.setClipboardText(selected)
+				text_input:erase(data, false, false)
+				text_input:trigger_input(ctx, data)
+			end
+		end
+	end,
+	input_paste = function(ctx)
+		local data = ctx.input_state.input_key and ctx.widget_reg:get(ctx.input_state.input_key)
+		if data then
+			text_input:insert_text(data, love.system.getClipboardText() or "")
+			text_input:trigger_input(ctx, data)
+		end
+	end,
 	quit = function(ctx)
 		if ctx.ui.scene == "gameplay" then
 			execute.stop_gameplay(ctx)
@@ -65,9 +157,6 @@ execute = {
 	ui_scale_custom = function(ctx, new_scale)
 		ctx.ui.custom_scale = new_scale
 		ctx.ui.need_to_realign = true
-	end,
-	print_b = function(ctx)
-		print("pressed button B")
 	end,
 	main_list_up = function(ctx)
 		ctx.beatmaps:ensure_loaded()
@@ -180,82 +269,6 @@ execute = {
 		if api and api.loaded then
 			local dir = action.dir or 1
 			api:increasePlaySpeed(dir)
-		end
-	end,
-
-	-- Select / chart browser
-	toggle_autoplay = function(ctx)
-		local api = SELECT_CONTEXT and SELECT_CONTEXT.selectApi
-		if api then
-			local replay = api:getReplayBase()
-			api:setAutoplay(not replay.autoplay)
-		end
-	end,
-	remove_all_mods = function(ctx)
-		local api = SELECT_CONTEXT and SELECT_CONTEXT.selectApi
-		if api then
-			api:removeAllMods()
-		end
-	end,
-	play_preview = function(ctx)
-		local api = SELECT_CONTEXT and SELECT_CONTEXT.selectApi
-		if api then
-			api:playPreview()
-		end
-	end,
-	pause_preview = function(ctx)
-		local api = SELECT_CONTEXT and SELECT_CONTEXT.selectApi
-		if api then
-			api:pausePreview()
-		end
-	end,
-	toggle_preview = function(ctx)
-		local api = SELECT_CONTEXT and SELECT_CONTEXT.selectApi
-		if api then
-			local src = api:getPreviewAudioSource()
-			if src and src:isPlaying() then
-				api:pausePreview()
-			else
-				api:playPreview()
-			end
-		end
-	end,
-	open_chart_directory = function(ctx)
-		local api = SELECT_CONTEXT and SELECT_CONTEXT.selectApi
-		if api then
-			api:openChartDirectory()
-		end
-	end,
-	export_osu_chart = function(ctx)
-		local api = SELECT_CONTEXT and SELECT_CONTEXT.selectApi
-		if api then
-			api:exportOsuChart()
-		end
-	end,
-	open_web_notechart = function(ctx)
-		local api = SELECT_CONTEXT and SELECT_CONTEXT.selectApi
-		if api then
-			api:openWebNotechart()
-		end
-	end,
-
-	-- Locations
-	load_locations = function(ctx)
-		local api = SELECT_CONTEXT and SELECT_CONTEXT.locationsApi
-		if api then
-			api:loadLocations()
-		end
-	end,
-	delete_chart_cache = function(ctx)
-		local api = SELECT_CONTEXT and SELECT_CONTEXT.locationsApi
-		if api then
-			api:deleteChartCache()
-		end
-	end,
-	recalculate_scores = function(ctx)
-		local api = SELECT_CONTEXT and SELECT_CONTEXT.locationsApi
-		if api then
-			api:recalculateScores()
 		end
 	end,
 }

@@ -7,6 +7,18 @@ local default_bindings = {
 	{ key = "down", action = "main_list_down" },
 	{ key = "ctrl+up", action = "main_list_first" },
 	{ key = "ctrl+down", action = "main_list_last" },
+	{ key = "left", action = "input_left" },
+	{ key = "right", action = "input_right" },
+	{ key = "backspace", action = "input_backspace" },
+	{ key = "delete", action = "input_delete" },
+	{ key = "home", action = "input_home" },
+	{ key = "end", action = "input_end" },
+	{ key = "ctrl+a", action = "input_select_all" },
+	{ key = "ctrl+c", action = "input_copy" },
+	{ key = "ctrl+x", action = "input_cut" },
+	{ key = "ctrl+v", action = "input_paste" },
+	{ key = "return", action = "input_deselect" },
+	{ key = "kpenter", action = "input_deselect" },
 }
 
 return function(ctx)

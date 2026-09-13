@@ -92,7 +92,11 @@ function event_handler.process(ctx)
 		-- calls (GameController intercepts them); they only reach receive() when
 		-- fed straight to it -> ignore
 		elseif event.name == "textinput" then
-		-- TODO: text input (text boxes)
+			ctx.action_queue:register({
+				action = "keyinput",
+				key = event[1] or "",
+				event = "keyinput",
+			})
 		elseif event.name == "focus" then
 		-- TODO: window focus gained/lost (event[1] = focused)
 		elseif event.name == "mousefocus" then

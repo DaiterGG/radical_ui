@@ -155,6 +155,9 @@ regular `ui_element` children keep their own pointer-derived states.
 
 - `bg`: fill color.
 - `border`: border configuration.
+- `blur`: optional background blur configuration, for example
+  `{ percent = 0.2, blurSize = 2 }`. `opacity` can reduce the strength of
+  the blurred layer.
 
 ### `button`
 
@@ -182,6 +185,8 @@ button style or under `idle` / `hovered` / `held` / `pressed`.
 ### `list_view`
 
 - `bg`: list background color.
+- `blur`: optional background blur configuration using the same fields as
+  `box.blur`.
 - `scroll_speed`: scroll amount per input step.
 - `scroll_bar.width`: scrollbar width.
 - `scroll_bar.padding`: scrollbar inset.
@@ -189,8 +194,8 @@ button style or under `idle` / `hovered` / `held` / `pressed`.
 ### `spring_list`
 
 `main_view.lua` selects it with `spring_list = {}`. Its layout and animation
-are provided by the `spring_list()` widget; the style entry itself has no
-display parameters.
+are provided by the `spring_list()` widget. It accepts the same optional
+`blur` configuration as `box.blur`.
 
 ### Colors
 

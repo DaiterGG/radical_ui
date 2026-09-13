@@ -19,6 +19,7 @@ function button:new(child, opts)
 		self.on_press = opts.on_press or self.on_hield
 		self.on_hover = opts.on_hover
 		self.on_release = opts.on_release
+		self.on_any_release = opts.on_any_release
 	end
 	self.child = child
 	self.hovered = false
@@ -58,7 +59,6 @@ function button:pointer_collision(elem, ctx, hit)
 
 	if hit and input.left == "pressed" then
 		input.interacting_with = hash
-		print(elem.hash_num)
 	end
 end
 
@@ -74,7 +74,7 @@ function button:pointer_collision_after(elem, ctx, hit, children_hit)
 	local released_and_hit = released and true_hit
 
 	if released and hit then
-		print(released_and_hit, input.interacting_with, elem.hash_num)
+		-- print(released_and_hit, input.interacting_with, elem.hash_num)
 	end
 
 	if true_hit and not self.hovered and self.on_hover then
@@ -88,6 +88,11 @@ function button:pointer_collision_after(elem, ctx, hit, children_hit)
 	if released_and_hit and interacting and self.on_release then
 		ctx.action_queue:register(self.on_release)
 	end
+
+	if released_and_hit and (interacting or input.interacting_with == nil) and self.on_any_release then
+		ctx.action_queue:register(self.on_any_release)
+	end
+
 	if not interacting and true_hit and held and self.on_hield then
 		input.interacting_with = elem.hash_num
 		ctx.action_queue:register(self.on_hield)
@@ -101,7 +106,8 @@ function button:pointer_collision_after(elem, ctx, hit, children_hit)
 	end
 end
 
-function button:draw(elem, ctx, widget_data, all_data)
+function button:draw(elem, ctx, widget_display_data, display_data)
+	local widget_data = widget_display_data
 	local r = elem.rect
 
 	if widget_data then
@@ -110,7 +116,11 @@ function button:draw(elem, ctx, widget_data, all_data)
 			widget_data.bg,
 			widget_data.border,
 			elem.polyline,
-			{ scale = ctx.ui_scale or 1 }
+			{
+				blur = widget_data.blur,
+				source = ctx.ui.background_canvas,
+				scale = ctx.ui_scale or 1,
+			}
 		)
 	end
 
