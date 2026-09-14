@@ -1,4 +1,5 @@
 local profiler = require("profiler")
+local utils = require("utils")
 local text_input = require("text_input")
 local execute
 execute = {
@@ -127,7 +128,7 @@ execute = {
 		ctx.ui.need_to_rebuild = true
 	end,
 	start_gameplay = function(ctx)
-		if ctx.ui.scene == "gameplay" then
+		if ctx.ui.scene ~= "select" then
 			return
 		end
 
@@ -180,6 +181,28 @@ execute = {
 
 		execute.select_beatmap(ctx, { index = next_index })
 	end,
+	main_list_page_up = function(ctx)
+		ctx.beatmaps:ensure_loaded()
+		local count = ctx.beatmaps:len()
+		if count == 0 then
+			return
+		end
+		local current_index = ctx.beatmaps.selected_index or 1
+		local next_index = math.max(1, math.min(current_index - 7, count))
+
+		execute.select_beatmap(ctx, { index = next_index })
+	end,
+	main_list_page_down = function(ctx)
+		ctx.beatmaps:ensure_loaded()
+		local count = ctx.beatmaps:len()
+		if count == 0 then
+			return
+		end
+		local current_index = ctx.beatmaps.selected_index or 1
+		local next_index = math.max(1, math.min(current_index + 7, count))
+
+		execute.select_beatmap(ctx, { index = next_index })
+	end,
 	main_list_first = function(ctx)
 		ctx.beatmaps:ensure_loaded()
 		if ctx.beatmaps:len() == 0 then
@@ -200,6 +223,27 @@ execute = {
 	settings_tab = function(ctx, data)
 		ctx.state.settings_tab = data.tab
 		ctx.ui.need_to_rebuild = true
+	end,
+	set_blur = function(ctx, data)
+		ctx.widget_reg:set_value(data.key, "is_on", not data.is_on)
+		ctx.state.ui_settings.blur = not data.is_on
+		ctx.ui.need_to_rebuild = true
+	end,
+	set_background = function(ctx, data)
+		ctx.widget_reg:set_value(data.key, "is_on", not data.is_on)
+		ctx.state.ui_settings.background = not data.is_on
+		ctx.ui.need_to_rebuild = true
+	end,
+	set_animations = function(ctx, data)
+		ctx.widget_reg:set_value(data.key, "is_on", not data.is_on)
+		ctx.state.ui_settings.animations = not data.is_on
+		ctx.ui.need_to_rebuild = true
+	end,
+	trigger_animation = function(ctx, data)
+		if not data or not data.key then
+			error("trigger_animation requires key, direction, and force")
+		end
+		ctx.anim_reg:update(data.key, data.direction, data.forced)
 	end,
 	begin_keybind_capture = function(ctx, data)
 		if not data or not data.target_action then

@@ -21,13 +21,8 @@ function ctx:new(game, mount_path)
 	self.beatmaps = beatmaps(game)
 	self.gameplay_api = GameplayAPI(game)
 	self.action_queue = actions()
-	self.event_queue = {} -- game events queued by receive(), drained each update
+	self.event_queue = {}
 	self.res = res
-	self.settings = {
-		blur = true,
-		background = true,
-	}
-
 	self.theme = style.theme()
 	self.display_list = style.display_data(self.theme)
 	self.input_state = input_state()
@@ -45,7 +40,12 @@ function ctx:new(game, mount_path)
 	self.widget_reg = widget_registry.new()
 	self.state = {
 		-- active_window = "Settings",
-		settings_tab = "Gameplay",
+		settings_tab = "Menu",
+		ui_settings = {
+			blur = true,
+			background = true,
+			animations = true,
+		},
 		keybind_capture = nil,
 		dif_selected = 1,
 	}

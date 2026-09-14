@@ -1,4 +1,5 @@
 local class = require("class")
+local apply_display = require("apply_display")
 
 -- background widget: draws the chart background image (produced by the game
 -- from the chart, see ctx.game.backgroundModel) covering the element's rect.
@@ -9,7 +10,8 @@ local class = require("class")
 local background = class()
 background.type = "background"
 
-function background:new() end
+function background:new()
+end
 
 -- function background:pointer_collision(elem, ctx, hit)
 -- background is not interactive
@@ -42,7 +44,7 @@ function background:draw(elem, ctx, widget_display_data, display_data)
 		ctx.ui.background_canvas = canvas
 	end
 
-	-- render into the canvas (chart bg image, or test pattern as fallback)
+	-- render into the canvas (chart bg image, or configured color fallback)
 	love.graphics.push("all")
 	love.graphics.setCanvas(canvas)
 	love.graphics.origin()
@@ -50,10 +52,18 @@ function background:draw(elem, ctx, widget_display_data, display_data)
 	-- start with white so leaked setColor can't tint the canvas content
 	love.graphics.setColor(1, 1, 1, 1)
 
-	if ctx.settings.background and images[1] then
+	local has_background = ctx.state.ui_settings.background
+		and (not ctx.beatmaps or ctx.beatmaps:has_background())
+	if not has_background then
+		local color = widget_display_data and widget_display_data.color
+		apply_display.draw_box(0, 0, r.w, r.h, color)
+	end
+
+	if has_background and images[1] then
 		draw_cover(images[1], 0, 0, r.w, r.h)
 	end
-	if ctx.settings.background and images[2] then
+
+	if has_background and images[2] then
 		love.graphics.setColor(1, 1, 1, alpha)
 		draw_cover(images[2], 0, 0, r.w, r.h)
 		love.graphics.setColor(1, 1, 1, 1)

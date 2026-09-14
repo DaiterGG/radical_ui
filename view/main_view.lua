@@ -1,5 +1,5 @@
 local box = require("box")
-local background  = require("background")
+local background = require("background")
 local button = require("button")
 local text = require("text")
 local icons = require("icons")
@@ -16,6 +16,90 @@ local Direction = align_mod.Direction
 local absolute = align_mod.Absolute
 local block = align_mod.Block
 local Size = align_mod.Size
+
+local function settings_checkbox_actions(action, data_key)
+	return {
+		action,
+		{ action = "trigger_animation", key = data_key, direction = "in", force = true },
+	}
+end
+
+local function settings_checkbox_handle(data_key, is_on)
+	return ui_element({
+		display = "checkbox_handle",
+		widgets = { box() },
+		align = absolute({
+			pivot = { x = 50, y = 50 },
+			parent_pivot = { x = is_on and 75 or 25, y = 50 },
+			size = Size({ px = 26 }),
+		}):animation({
+			key = data_key,
+			delta_pos = { x = is_on and -40 or 40, y = 0 },
+			ease_fn = "out",
+			length_ms = 180,
+		}),
+	})
+end
+
+local function settings_checkbox(ctx, label, data_key, action_name, is_on)
+	local actions = {
+		{ action = action_name, key = data_key, is_on = is_on },
+		{ action = "trigger_animation", key = data_key, direction = "in", forced = true },
+	}
+	local row = ui_element({
+		align = block(Direction.Up, { px = 56 }),
+	})
+	local content = ui_element({
+		align = absolute({
+			pivot = { x = 50, y = 50 },
+			parent_pivot = { x = 50, y = 50 },
+			size = Size({ pc_hor = 90, pc_vert = 100 }),
+		}),
+	})
+	content:push_child(ui_element({
+		display = "settings_text",
+		widgets = { text(label) },
+		align = block(Direction.Left, { pc = 50 }),
+	}))
+	content:push_child(ui_element({
+		display = "checkbox",
+		widgets = { checkbox(data_key, actions, settings_checkbox_handle(data_key, is_on), is_on) },
+		align = absolute({
+			pivot = { x = 100, y = 50 },
+			parent_pivot = { x = 100, y = 50 },
+			size = Size({ px_hor = 80, px_vert = 40 }),
+		}),
+		display_animation = {
+			duration = 180,
+			ease = "out",
+			key = data_key,
+		},
+	}))
+	row:push_child(content)
+	return row
+end
+
+local function input_field(label, data_key, action)
+	local field = ui_element({
+		display = "header_input",
+		widgets = {
+			text_input(label, action, { registry_key = data_key }),
+		},
+		align = block(Direction.Left, { pc = 65 }),
+	})
+	local row = ui_element({
+		display = "w_main",
+		widgets = { box() },
+		align = block(Direction.Down, { px = 56 }),
+	})
+	row:push_child(ui_element({
+		display = "main_text",
+		widgets = { text(label) },
+		align = block(Direction.Left, { pc = 35 }),
+	}))
+	row:push_child(field)
+	return row
+end
 
 local function top_table_row(values, columns, display, text_display, height)
 	local row = ui_element({
@@ -89,6 +173,7 @@ local function score_values(item, index, difficulty)
 end
 
 local VIRTUAL_ROW_COUNT = 9
+local MAIN_LIST_GAP = 10
 
 local function add_beatmap_rows(ctx, list, song_h_full, song_h)
 	local count = ctx.beatmaps:len()
@@ -101,19 +186,28 @@ local function add_beatmap_rows(ctx, list, song_h_full, song_h)
 	local range_start = math.max(1, math.min(data.range_start or 1, count - range_count + 1))
 	local range_end = data.range_end and data.range_end >= range_start and math.min(data.range_end, count)
 		or range_start + range_count - 1
-	profiler.checkpoint("main_view", string.format(
-		"[main_view] setup beatmaps range: count=%d range=%d-%d",
-		count,
-		range_start,
-		range_end
-	))
+	profiler.checkpoint(
+		"main_view",
+		string.format("[main_view] setup beatmaps range: count=%d range=%d-%d", count, range_start, range_end)
+	)
 
 	if range_start > 1 then
 		list:add_child(ui_element({
 			align = absolute({
 				pivot = { x = 0, y = 0 },
 				parent_pivot = { x = 0, y = 0 },
-				size = Size({ pc_hor = 100, px_vert = (range_start - 1) * song_h_full }),
+				size = Size({
+					pc_hor = 100,
+					px_vert = MAIN_LIST_GAP + (range_start - 1) * song_h_full,
+				}),
+			}),
+		}))
+	else
+		list:add_child(ui_element({
+			align = absolute({
+				pivot = { x = 0, y = 0 },
+				parent_pivot = { x = 0, y = 0 },
+				size = Size({ pc_hor = 100, px_vert = MAIN_LIST_GAP }),
 			}),
 		}))
 	end
@@ -194,14 +288,14 @@ local function add_beatmap_rows(ctx, list, song_h_full, song_h)
 		local list_button = ui_element({
 			display = "main_list_button",
 			widgets = {
-        box(),
+				box(),
 				button(content, {
 					on_any_release = { action = "select_beatmap", index = index },
 				}),
 			},
 			align = absolute({
-				pivot = { x = 50, y = 50 },
-				parent_pivot = { x = 50, y = 50 },
+				pivot = { x = 50, y = 0 },
+				parent_pivot = { x = 50, y = 0 },
 				size = Size({ pc_hor = 100, px_vert = song_h }),
 			}),
 		})
@@ -218,7 +312,10 @@ local function add_beatmap_rows(ctx, list, song_h_full, song_h)
 			align = absolute({
 				pivot = { x = 0, y = 0 },
 				parent_pivot = { x = 0, y = 0 },
-				size = Size({ pc_hor = 100, px_vert = (count - range_end) * song_h_full }),
+				size = Size({
+					pc_hor = 100,
+					px_vert = (count - range_end) * song_h_full,
+				}),
 			}),
 		}))
 	end
@@ -239,13 +336,11 @@ return function(ctx)
 	local header_h = 44
 	local right_width = 638
 	local header_button_w = 130
-	local header_top = 1
 	local header_corner_y = 27
-	local header_left_offset = -10
-	local header_back_top_left = 3
-	local header_back_left = 1
+	local header_corner_y_bot = header_h - header_corner_y
 	local header_back_top_right = 120
-	local header_back_bottom_right = 137
+	local header_back_bottom_right = header_back_top_right + header_corner_y_bot
+	local header_left_offset = -10
 	local header_button_bottom_left = 7
 
 	-- NOTE: SUB MENUS
@@ -271,13 +366,40 @@ return function(ctx)
 			},
 			align = block(Direction.Down, { pc = 100 }),
 		})
+		if ctx.state.active_window == "Settings" and ctx.state.settings_tab == "Menu" then
+			local menu_rows = ui_element({
+				align = absolute({
+					pivot = { x = 0, y = 0 },
+					parent_pivot = { x = 0, y = 0 },
+					size = Size({ pc_hor = 50, px_vert = 168 }),
+				}),
+			})
+			menu_rows:push_child(settings_checkbox(ctx, "Blur", "blur", "set_blur", ctx.state.ui_settings.blur))
+			menu_rows:push_child(
+				settings_checkbox(ctx, "Background", "background", "set_background", ctx.state.ui_settings.background)
+			)
+			menu_rows:push_child(
+				settings_checkbox(ctx, "Animations", "animations", "set_animations", ctx.state.ui_settings.animations)
+			)
+			w_main:push_child(menu_rows)
+
+			local menu_separator = ui_element({
+				display = "settings_separator",
+				widgets = { box() },
+				align = absolute({
+					pivot = { x = 50, y = 50 },
+					parent_pivot = { x = 50, y = 50 },
+					size = Size({ px_hor = 1, pc_vert = 98 }),
+				}),
+			})
+			w_main:push_child(menu_separator)
+		end
 		if ctx.state.active_window == "Settings" then
 			w_header = ui_element({
 				widgets = {},
 				align = block(Direction.Up, { px = footer_h }),
 			})
 			local tabs = { "Gameplay", "Menu", "Graphics", "Audio", "Offsets", "Other" }
-			-- local tabs_i = { icons.general, icons.graphics, icons.other }
 			local tabs_i_left =
 				{ icons.gameplay1, icons.select1, icons.graphics1, icons.audio1, icons.offsets1, icons.other1 }
 			local tabs_i_right =
@@ -422,12 +544,12 @@ return function(ctx)
 		display = "header_back_b",
 		widgets = { button(header_back_icon, { on_release = { action = "quit" } }) },
 		polyline = {
-			{ header_back_top_left, header_top },
-			{ header_back_top_right, header_top },
-			{ header_back_top_right, header_corner_y },
-			{ header_back_bottom_right, header_h },
-			{ header_back_left, header_h },
-			{ header_back_left, 0 },
+			{ 0, 0 },
+			{ header_back_top_right + 2, 0 },
+			{ header_back_top_right + 2, header_corner_y + 1 },
+			{ header_back_top_right + (header_h - header_corner_y) + 2, header_h + 1 },
+			{ 0, header_h + 1 },
+			{ 0, 0 },
 		},
 		align = block(Direction.Left, { px = header_button_w }),
 	})
@@ -446,12 +568,12 @@ return function(ctx)
 			display = "header_left_b",
 			widgets = { button(header_b_icon, { on_release = b[2] }) },
 			polyline = {
-				{ header_left_offset, header_top },
-				{ header_back_top_right, header_top },
-				{ header_back_top_right, header_corner_y },
-				{ header_back_bottom_right, header_h },
-				{ header_button_bottom_left, header_h },
-				{ header_left_offset, header_corner_y },
+				{ header_left_offset, 0 },
+				{ header_back_top_right + 2, 0 },
+				{ header_back_top_right + 2, header_corner_y + 1 },
+				{ header_back_top_right + (header_h - header_corner_y) + 2, header_h + 1 },
+				{ header_left_offset + (header_h - header_corner_y), header_h + 1 },
+				{ header_left_offset, header_corner_y + 1 },
 				{ header_left_offset, 0 },
 			},
 			align = block(Direction.Left, { px = header_button_w }),
@@ -461,16 +583,22 @@ return function(ctx)
 	end
 	local header_input = ui_element({
 		display = "header_input",
-		widgets = { text_input("Search", nil) },
-		polyline = {
-			{ -header_h + header_corner_y, header_top },
-			{ right_width, header_top },
-			{ right_width, header_h },
-			{ 0, header_h },
-			{ -header_h + header_corner_y , header_corner_y },
-			-- { header_left_offset, header_start },
-		},
-		align = block(Direction.Right, { px = right_width }),
+		widgets = { text_input("Search...", nil, { registry_key = "header_search" }) },
+		-- polyline = {
+		-- 	{ -header_h + header_corner_y, header_top },
+		-- 	{ right_width, header_top },
+		-- 	{ right_width, header_h },
+		-- 	{ 0, header_h },
+		-- 	{ -header_h + header_corner_y , header_corner_y },
+		-- 	-- { header_left_offset, header_start },
+		-- },
+		-- align = block(Direction.Right, { px = right_width }),
+
+		align = absolute({
+			pivot = { x = 100, y = 50 },
+			parent_pivot = { x = 97, y = 50 },
+			size = Size({ px_hor = right_width - 40 * 2, px_vert = header_h - 6 * 2 }),
+		}),
 	})
 	header:push_child(header_input)
 	profiler.checkpoint("main_view", "setup header")
@@ -486,13 +614,13 @@ return function(ctx)
 		display = "first_b",
 		widgets = { button(first) },
 		polyline = {
-			{ 1, 1 },
+			{ -1, 1 },
 			{ 228, 1 },
-			{ 228, 54 },
-			{ 270, nav_h - 26 },
-			{ 270, nav_h },
-			{ 1, nav_h },
-			{ 1, 0 },
+			{ 228, 57 },
+			{ 270, nav_h - 23 },
+			{ 270, nav_h + 2 },
+			{ -2, nav_h + 2 },
+			{ -1, 1 },
 		},
 		align = block(Direction.Left, { pc = 33 }),
 	})
@@ -501,18 +629,18 @@ return function(ctx)
 		widgets = { text("Play") },
 	})
 	local second_b = ui_element({
-		display = "second_b",
+		display = "second_b_gradient",
 		widgets = { button(sec, { on_release = { action = "start_gameplay" } }) },
 		polyline = {
-			{ -20, 1 },
-			{ 285, 1 },
-			{ 285, 30 },
-			{ 270, 54 },
-			{ 270, nav_h },
-			{ 22, nav_h },
-			{ 22, nav_h - 26 },
-			{ -20, 54 },
-			{ -20, 0 },
+			{ -20 - 1, 1 },
+			{ 285 + 4, 1 },
+			{ 285 + 4, 30 - 2 },
+			{ 260 + 4, 55 },
+			{ 260 + 4, nav_h + 2 },
+			{ 22 - 1, nav_h + 2 },
+			{ 22 - 1, nav_h - 26 + 5 },
+			{ -20 - 1, 58 + 1 },
+			{ -20 - 1, 1 },
 		},
 		align = block(Direction.Left, { pc = 55 }),
 	})
@@ -526,13 +654,13 @@ return function(ctx)
 		display = "third_b",
 		widgets = { button(third) },
 		polyline = {
-			{ 9, 1 },
-			{ 200, 1 },
-			{ 300, nav_h },
-			{ -18, nav_h },
-			{ -18, 54 },
-			{ 9, 30 },
-			{ 9, 1 },
+			{ 8, 1 },
+			{ 170, 1 },
+			{ 170 + nav_h + 2, nav_h + 2 },
+			{ -17 + 3, nav_h + 2 },
+			{ -14, 53 },
+			{ 8, 29 },
+			{ 8, 1 },
 		},
 		align = block(Direction.Left, { pc = 100 }),
 	})
@@ -552,24 +680,24 @@ return function(ctx)
 		polyline = {
 			{ 0, 0 },
 			{ panel_w, 0 },
-			{ panel_w, panel_h - 98 },
-			{ panel_w - 100, panel_h },
-			{ 0, panel_h },
+			{ panel_w, panel_h - 100 },
+			{ panel_w - 100, panel_h + 2 },
+			{ 0, panel_h + 2 },
 			{ 0, 0 },
 		},
 		align = block(Direction.Up, { pc = 40 }),
 	})
 	local top_columns = {
+		{ key = "", label = "", width = 1 },
 		{ key = "number", label = "№", width = 5 },
-		-- { key = "player", label = "Player", width = 18 },
 		{ key = "time", label = "Time", width = 18 },
-		{ key = "accuracy", label = "Accuracy", width = 12 },
-		{ key = "difficulty", label = "Difficulty", width = 14 },
-		{ key = "rating", label = "Rating", width = 10 },
+		{ key = "accuracy", label = "Acc", width = 12 },
+		{ key = "difficulty", label = "Diff", width = 10 },
 		{ key = "rate", label = "Rate", width = 10 },
 		{ key = "score", label = "Score", width = 10 },
-		{ key = "misses", label = "Misses", width = 10 },
 		{ key = "mode", label = "Mode", width = 10 },
+		{ key = "misses", label = "Misses", width = 10 },
+		{ key = "rating", label = "Rating", width = 10 },
 	}
 	local difficulties = ctx.beatmaps:get_difficulties()
 	local selected_difficulty_index = ctx.beatmaps:get_selected_difficulty()
@@ -579,6 +707,10 @@ return function(ctx)
 	local top_list_h = 320
 	local top_header_h = panel_h - top_list_h
 	local top_header_values = {}
+
+	local middle_w = 580
+	local middle_h = 272
+
 	for _, column in ipairs(top_columns) do
 		top_header_values[column.key] = column.label
 	end
@@ -608,25 +740,24 @@ return function(ctx)
 		align = absolute({
 			pivot = { x = 0, y = 0 },
 			parent_pivot = { x = 0, y = 0 },
-			size = Size({ px_hor = panel_w - 100, pc_vert = 100 }),
+			size = Size({ px_hor = middle_w, pc_vert = 100 }),
 		}),
 	})
 	top_table:push_child(top_header)
 	top_table:push_child(top_list)
 	up_panel:push_child(top_table)
-	local middle_w = 580
-	local middle_h = 272
+
 	local middle_panel = ui_element({
 		display = "middle_panel",
 		widgets = { box() },
 		polyline = {
-			{ 0, 0 },
-			{ middle_w, 0 },
+			{ 0, -2 },
+			{ middle_w, -2 },
 			{ middle_w, 130 },
 			{ middle_w - 40, 170 },
-			{ middle_w - 40, middle_h },
-			{ 0, middle_h },
-			{ 0, 0 },
+			{ middle_w - 40, middle_h + 3 },
+			{ 0, middle_h + 3 },
+			{ 0, -2 },
 		},
 		align = block(Direction.Up, { pc = 50 }),
 	})
@@ -641,8 +772,8 @@ return function(ctx)
 			{ down_w - 40, 40 },
 			{ down_w - 40, 100 },
 			{ down_w, 140 },
-			{ down_w, down_h },
-			{ 0, down_h },
+			{ down_w, down_h - 4 },
+			{ 0, down_h - 4 },
 			{ 0, 0 },
 		},
 		align = block(Direction.Up, { pc = 100 }),
@@ -651,8 +782,10 @@ return function(ctx)
 		display = "down_list_scrollbar",
 		widgets = { box() },
 	})
-	local down_list_w = list_view("main_down_list", down_list_scrollbar, true)
-	local down_row_h = 56
+	local len = #difficulties
+	local down_row_h = middle_h / 5
+	local dls = len > 5 and down_list_scrollbar or nil
+	local down_list_w = list_view("main_down_list", dls, true)
 	for index, difficulty in ipairs(difficulties) do
 		local item = difficulty_values(difficulty)
 		local content = ui_element({
@@ -679,7 +812,7 @@ return function(ctx)
 				align = absolute({
 					pivot = { x = 50, y = 50 },
 					parent_pivot = { x = 5, y = 50 },
-					size = Size({ px = 30 }),
+					size = Size({ px = 20 }),
 				}),
 			}))
 		end
@@ -687,8 +820,8 @@ return function(ctx)
 			display = "down_list_item_name",
 			widgets = { text(item.dif_name) },
 			align = absolute({
-				pivot = { x = 0, y = 0 },
-				parent_pivot = { x = 10, y = 0 },
+				pivot = { x = 0, y = 50 },
+				parent_pivot = { x = 10, y = 30 },
 				size = Size({ pc_hor = 58, pc_vert = 50 }),
 			}),
 		}))
@@ -696,8 +829,8 @@ return function(ctx)
 			display = "down_list_item_author",
 			widgets = { text(item.dif_author) },
 			align = absolute({
-				pivot = { x = 0, y = 100 },
-				parent_pivot = { x = 10, y = 100 },
+				pivot = { x = 0, y = 50 },
+				parent_pivot = { x = 10, y = 70 },
 				size = Size({ pc_hor = 58, pc_vert = 50 }),
 			}),
 		}))
@@ -705,8 +838,8 @@ return function(ctx)
 			display = "down_list_item_keymod",
 			widgets = { text(item.keymod) },
 			align = absolute({
-				pivot = { x = 50, y = 0 },
-				parent_pivot = { x = 90, y = 0 },
+				pivot = { x = 50, y = 50 },
+				parent_pivot = { x = 90, y = 30 },
 				size = Size({ pc_hor = 24, pc_vert = 50 }),
 			}),
 		}))
@@ -714,8 +847,8 @@ return function(ctx)
 			display = "down_list_item_dif",
 			widgets = { text(item.dif) },
 			align = absolute({
-				pivot = { x = 50, y = 100 },
-				parent_pivot = { x = 90, y = 100 },
+				pivot = { x = 50, y = 50 },
+				parent_pivot = { x = 90, y = 70 },
 				size = Size({ pc_hor = 24, pc_vert = 50 }),
 			}),
 		}))
@@ -816,25 +949,36 @@ return function(ctx)
 
 	-- NOTE: RIGHT SCROLL
 	local scroll_h = 1080 - header_h - right_header_h * 2
-	local song_h_full = scroll_h / 7
-	local song_h = song_h_full - 10
+	local visible_song_count = 7
+	local song_h = (scroll_h - (visible_song_count + 1) * MAIN_LIST_GAP) / visible_song_count
+	local song_h_full = song_h + MAIN_LIST_GAP
 
 	local main_list_w = spring_list()
+	local main_list_margin = 0
 
 	profiler.checkpoint("main_view", "setup right_header")
 	add_beatmap_rows(ctx, main_list_w, song_h_full, song_h)
 	profiler.checkpoint("main_view", "setup scroll_total")
 
 	local main_list = ui_element({
-		display = "main_list",
-		widgets = { main_list_w },
-
 		align = absolute({
 			pivot = { x = 50, y = 50 },
 			parent_pivot = { x = 50, y = 50 },
 			size = Size({ px_hor = right_width - (right_scroll_gap * 2), px_vert = scroll_h }),
 		}),
 	})
+	main_list:push_child(ui_element({
+		display = "main_list",
+		widgets = { main_list_w },
+		align = absolute({
+			pivot = { x = 50, y = 50 },
+			parent_pivot = { x = 50, y = 50 },
+			size = Size({
+				pc_hor = 100,
+				px_vert = scroll_h - (main_list_margin * 2),
+			}),
+		}),
+	}))
 	-- NOTE: RIGHT FOOTTER
 
 	local first_footer = ui_element({
@@ -842,7 +986,7 @@ return function(ctx)
 		widgets = { text("Locations") },
 	})
 	local first_footer_b = ui_element({
-		display = "first_header_b",
+		display = "first_footer_b",
 		widgets = { button(first_footer) },
 		polyline = {
 			{ 0, right_header_h },
@@ -868,7 +1012,7 @@ return function(ctx)
 		widgets = { text("Collections") },
 	})
 	local second_footer_b = ui_element({
-		display = "second_header_b",
+		display = "second_footer_b",
 		widgets = { button(second_footer) },
 		polyline = {
 			{ -2 + header_overlap - right_header_h - header_notch, 0 },
@@ -901,7 +1045,7 @@ return function(ctx)
 		widgets = { text("Direct") },
 	})
 	local third_footer_b = ui_element({
-		display = "first_header_b",
+		display = "first_footer_b",
 		widgets = { button(third_footer) },
 		polyline = {
 			{ -header_overlap, right_header_h },

@@ -3,9 +3,10 @@ local polyline_collision = require("polyline_collision")
 local utils = require("utils")
 local apply_align = require("apply_align")
 -- ui_element(opts)
--- opts: { display = display_key, widgets = {...}, align = Align(...), polyline = {...} }
+-- opts: { display = display_key, widgets = {...}, align = Align(...),
+--   polyline = {...}, display_animation = { key, duration, ease } }
 -- display_key: string key from ctx.display_list
--- widgets: list of independent widget modules (box/button/slider)
+-- widgets: list of independent widget modules (box/button)
 -- align: optional alignment
 
 -- unique per-element id, used to key ctx.input_state.interacting_with
@@ -22,6 +23,7 @@ function ui_element:new(opts)
 	self.widget = opts.widgets or {}
 	self.align = opts.align
 	self.polyline = opts.polyline
+	self.display_animation = opts.display_animation
 	self.children = {}
 	self.rect = nil
 	self.states = {
@@ -85,6 +87,9 @@ function ui_element:align_rec(window, ctx)
 	window = { x = rect.x, y = rect.y, w = rect.w, h = rect.h }
 
 	for _, w in ipairs(self.widget) do
+		if w == true or w == false then
+			utils.print(self)
+		end
 		if w.align then
 			w:align(self, ctx)
 		end

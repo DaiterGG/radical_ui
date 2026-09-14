@@ -2,6 +2,7 @@ local apply_display = require("apply_display")
 local class = require("class")
 local ui_element = require("ui_element")
 local utils = require("utils")
+local widget = require("widget")
 
 -- button widget: interactive (hover/press states).
 -- optionally owns a child ui_element (text or icon element, created in the
@@ -25,32 +26,8 @@ function button:new(child, opts)
 	self.hovered = false
 end
 
-local function button_window(elem)
-	local r = elem.rect
-	return { x = r.x, y = r.y, w = r.w, h = r.h }
-end
-
-local function set_child_states(elem, states)
-	elem.states = states
-	for _, child in ipairs(elem.children) do
-		set_child_states(child, states)
-	end
-end
-
 function button:align(elem, ctx)
-	if not self.child then
-		return
-	end
-
-	local window = button_window(elem)
-	if self.child.align then
-		self.child:align_rec(window, ctx)
-	else
-		self.child.rect = window
-		for _, child in ipairs(self.child.children) do
-			child:align_rec(button_window(self.child), ctx)
-		end
-	end
+	widget.align(self, elem, ctx)
 end
 
 function button:pointer_collision(elem, ctx, hit)
@@ -111,23 +88,14 @@ function button:draw(elem, ctx, widget_display_data, display_data)
 	local r = elem.rect
 
 	if widget_data then
-		apply_display.draw_background(
-			r,
-			widget_data.bg,
-			widget_data.border,
-			elem.polyline,
-			{
-				blur = widget_data.blur,
-				source = ctx.ui.background_canvas,
-				scale = ctx.ui_scale or 1,
-			}
-		)
+		apply_display.draw_background(widget_data, ctx, r, elem.polyline, elem)
 	end
 
 	-- draw the owned child (text/icon) on top; its state mirrors the button's
 	if self.child then
-		self.child.rect = button_window(elem)
-		set_child_states(self.child, elem.states)
+		local r = elem.rect
+		self.child.rect = { x = r.x, y = r.y, w = r.w, h = r.h }
+		widget.set_child_states(self.child, elem.states)
 		self.child:draw_rec(ctx)
 	end
 end

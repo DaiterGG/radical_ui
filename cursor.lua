@@ -10,8 +10,8 @@ function cursor:new(fonts)
 	self.color = { 0.8, 0.8, 0.8, 1 }
 	self.color_outline = { 0, 0, 0, 1 }
 	self.icons = {
-		idle = {icons.idle2, icons.idle1},
-		scroll = {icons.scroll2, icons.scroll1},
+		idle = { icons.idle2, icons.idle1 },
+		scroll = { icons.scroll2, icons.scroll1 },
 		hover = icons.hover,
 		pressed = icons.press,
 	}

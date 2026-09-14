@@ -5,7 +5,7 @@ function animation_registry.new()
 	return setmetatable({}, animation_registry)
 end
 
-function animation_registry:update(animation_name, direction, force)
+function animation_registry:update(animation_name, direction, forced)
 	local in_or_from = direction
 	local stamp = love.timer.getTime()
 
@@ -14,11 +14,11 @@ function animation_registry:update(animation_name, direction, force)
 	end
 
 	local animation = self[animation_name]
-	if not animation or force then
+	if not animation or forced then
 		animation = {
 			progress = 0,
 			transition_stamp = stamp,
-			transition_progress = force and 1 or 0,
+			transition_progress = forced and 1 or 0,
 		}
 		self[animation_name] = animation
 	end

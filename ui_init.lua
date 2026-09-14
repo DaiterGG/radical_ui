@@ -30,6 +30,7 @@ function UserInterface:load()
 end
 
 function UserInterface:unload()
+	self.ctx.beatmaps:unload()
 	love.mouse.setVisible(true)
 	love.mouse.setCursor()
 	self.ctx = nil

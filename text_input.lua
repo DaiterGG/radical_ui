@@ -202,7 +202,10 @@ function text_input:draw_markers(data, widget_data, font, x, y, height)
 end
 
 local function get_widget_data(elem, ctx, widget)
-	local widget_data_key = "text_input:" .. tostring(elem.hash_num)
+	if not widget.registry_key then
+		error("text_input requires a widget registry key")
+	end
+	local widget_data_key = widget.registry_key
 	local data = ctx.widget_reg:get(widget_data_key)
 	if not data then
 		data = { input_field = "" }
@@ -223,16 +226,18 @@ end
 -- constructor: text_input(placeholder_str, action, options)
 --   placeholder_str: hint text when empty and unfocused
 --   action: called via action_queue when focus changes
---   options: { on_input, on_finish_select, on_input_with_delay, input_delay }
+--   options: { registry_key, on_input, on_finish_select, on_input_with_delay, input_delay }
 function text_input:new(placeholder_str, action, options)
+	if not options or not options.registry_key then
+		error("text_input requires a widget registry key")
+	end
 	self.placeholder = placeholder_str or ""
 	self.action = action
-	if options then
-		self.on_input = options.on_input
-		self.on_finish_select = options.on_finish_select
-		self.on_input_with_delay = options.on_input_with_delay
-		self.input_delay = options.input_delay
-	end
+	self.registry_key = options.registry_key
+	self.on_input = options.on_input
+	self.on_finish_select = options.on_finish_select
+	self.on_input_with_delay = options.on_input_with_delay
+	self.input_delay = options.input_delay
 	self.focused = false
 end
 
@@ -336,7 +341,7 @@ function text_input:draw(elem, ctx, widget_display_data, display_data)
 		border = widget_display_data.border_focused or border
 	end
 
-	apply_display.draw_background(r, bg, border, elem.polyline, { scale = ctx.ui_scale or 1 })
+	apply_display.draw_background({ bg = bg, border = border }, ctx, r, elem.polyline, elem)
 
 	-- choose what to display: real text or placeholder
 	local display_text = data.input_field

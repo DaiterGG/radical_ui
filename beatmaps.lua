@@ -16,9 +16,6 @@ function beatmaps:new(game)
 	self.spring_list_data = nil
 	self.cache = {}
 	self.preview_timer = nil
-	self.background_images = {}
-	self.background_image_path = nil
-	self.background_alpha = 1
 end
 
 function beatmaps:ensure_loaded()
@@ -28,6 +25,16 @@ function beatmaps:ensure_loaded()
 
 	self.select_controller:load()
 	self.controller_loaded = true
+end
+
+function beatmaps:unload()
+	if not self.controller_loaded then
+		return
+	end
+
+	self.select_controller:beginUnload()
+	self.select_controller:unload()
+	self.controller_loaded = false
 end
 
 function beatmaps:update(dt)
@@ -43,27 +50,8 @@ function beatmaps:update(dt)
 		if self.preview_timer <= 0 then
 			self.preview_timer = nil
 			self.game.previewModel:loadPreview()
-			self:update_background()
 		end
 	end
-end
-
-function beatmaps:update_background()
-	local background_model = self.game.backgroundModel
-	if not background_model then
-		self.background_images = {}
-		self.background_image_path = nil
-		self.background_alpha = 1
-		return
-	end
-
-	local images = background_model.images or {}
-	self.background_images = {}
-	for index, image in ipairs(images) do
-		self.background_images[index] = image
-	end
-	self.background_image_path = background_model.path
-	self.background_alpha = background_model.alpha or 1
 end
 
 ---@param first integer
@@ -142,19 +130,40 @@ end
 ---@return love.Image[]
 function beatmaps:get_background_images()
 	self:ensure_loaded()
-	return self.background_images
+
+	local background_model = self.game.backgroundModel
+	return background_model and background_model.images or {}
+end
+
+---@return boolean
+function beatmaps:has_background()
+	local images = self:get_background_images()
+	for index = 1, 2 do
+		local image = images[index]
+		if image then
+			local width, height = image:getDimensions()
+			if width > 1 and height > 1 then
+				return true
+			end
+		end
+	end
+	return false
 end
 
 ---@return string?
 function beatmaps:get_background_image_path()
 	self:ensure_loaded()
-	return self.background_image_path
+
+	local background_model = self.game.backgroundModel
+	return background_model and background_model.path or nil
 end
 
 ---@return number
 function beatmaps:get_background_alpha()
 	self:ensure_loaded()
-	return self.background_alpha
+
+	local background_model = self.game.backgroundModel
+	return background_model and background_model.alpha or 1
 end
 
 ---@return table[]
@@ -217,7 +226,7 @@ function beatmaps:set_selected(index)
 	assert(type(index) == "number" and index % 1 == 0, "index must be an integer")
 	assert(index >= 1, "index must be greater than or equal to 1")
 
-	self.selected_index = index
+	self:select(index)
 end
 
 ---@param index integer

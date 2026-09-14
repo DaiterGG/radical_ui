@@ -1,63 +1,60 @@
 local apply_display = require("apply_display")
 local class = require("class")
-local ui_element = require("ui_element")
-local utils = require("utils")
+local widget = require("widget")
 
--- button widget: interactive (hover/press states).
--- optionally owns a child ui_element (text or icon element, created in the
--- view and passed to the builder); the button draws it and manages its state.
--- completely independent widget file.
+local checkbox = class()
+checkbox.type = "checkbox"
 
-local chekbox = class()
-chekbox.type = "checkbox"
-
-function chekbox:new(on_press, is_on, child_on, child_off)
-	self.on_press = on_press
-	self.child_on = child_on or nil
-	self.child_off = child_off or nil
-	self.is_on = is_on or false
+function checkbox:new(display_key, on_toggle, child, is_on)
+	self.display_key = display_key
+	self.is_on = is_on
+	self.on_toggle = on_toggle
+	self.child = child
 end
 
-function chekbox:pointer_collision(elem, ctx, hit)
-	local input = ctx.input_state
+function checkbox:align(elem, ctx)
+	widget.align(self, elem, ctx)
+end
 
-	-- push the configured action into the action queue when clicked
+function checkbox:pointer_collision(elem, ctx, hit)
+	local input = ctx.input_state
 	if hit and input.left == "pressed" then
-		self.is_on = not self.is_on
-		if self.on_press then
-			local data = self.on_press
-			data.is_on = self.is_on
-			ctx.action_queue:register(data)
-		end
+		input.interacting_with = elem.hash_num
 	end
 end
 
-function chekbox:draw(elem, ctx, widget_display_data, display_data)
-	local widget_data = widget_display_data
+function checkbox:pointer_collision_after(elem, ctx, hit, children_hit)
+	local input = ctx.input_state
+	local true_hit = hit and not children_hit
+	if true_hit and input.left == "pressed" then
+		ctx.action_queue:register(self.on_toggle)
+	end
+end
+
+function checkbox:draw(elem, ctx, widget_display_data, display_data)
 	local r = elem.rect
-	if not widget_data then
+	if not r then
 		return
 	end
 
-	apply_display.draw_background(
-		r,
-		widget_data.bg,
-		widget_data.border,
-		elem.polyline,
-		{ scale = ctx.ui_scale or 1 }
-	)
-
-	if self.child_off and not self.is_on then
-		self.child_off.rect = { x = r.x, y = r.y, w = r.w, h = r.h }
-		self.child_off.states = elem.states
-		self.child_off:draw(ctx)
+	if widget_display_data then
+		local base_data = widget_display_data
+		local state_data = self.is_on and base_data.on or base_data.off
+		state_data = state_data or base_data
+		local background_data = {
+			bg = state_data.bg,
+			border = state_data.border or base_data.border,
+			blur = state_data.blur or base_data.blur,
+			gradient = state_data.gradient or base_data.gradient,
+		}
+		apply_display.draw_background(background_data, ctx, r, elem.polyline, elem)
 	end
-	-- draw the owned child (text/icon) on top; its state mirrors the button's
-	if self.child_on and self.is_on then
-		self.child_on.rect = { x = r.x, y = r.y, w = r.w, h = r.h }
-		self.child_on.states = elem.states
-		self.child_on:draw(ctx)
+
+	-- draw the owned child (any ui_element) on top; its state mirrors the checkbox
+	if self.child then
+		widget.set_child_states(self.child, elem.states)
+		self.child:draw_rec(ctx)
 	end
 end
 
-return chekbox
+return checkbox

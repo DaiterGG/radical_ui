@@ -436,15 +436,11 @@ function list_view:draw(elem, ctx, widget_display_data, display_data)
 
 	-- background
 	apply_display.draw_background(
+		widget_data,
+		ctx,
 		r,
-		widget_data and widget_data.bg,
-		widget_data and widget_data.border,
 		elem.polyline,
-		{
-			blur = widget_data and widget_data.blur,
-			source = ctx.ui.background_canvas,
-			scale = ctx.ui_scale or 1,
-		}
+		elem
 	)
 
 	if #self.children > 0 then

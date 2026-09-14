@@ -24,6 +24,7 @@ local VERTICAL_CURSOR_FOLLOW_START_RATIO = 0.5
 local VERTICAL_CURSOR_FOLLOW_MAX_RATIO = 0.1
 local VIRTUAL_ROW_COUNT = 9
 local SHORT_LIST_ITEM_COUNT = 7
+local DEFAULT_ITEM_GAP = 10
 
 local INTERACTION_IDLE = "idle"
 local INTERACTION_DRAG_PENDING = "drag_pending"
@@ -51,19 +52,44 @@ local function centered_scroll_offset(data, rect)
 	return (data.content_height - rect.h) / 2
 end
 
+local function item_geometry(data)
+	local item_height = data.item_height
+	local item_pitch = data.item_pitch
+	local item_gap = data.item_gap or DEFAULT_ITEM_GAP
+	if not item_height or item_height <= 0 then
+		item_height = item_pitch and item_pitch > item_gap and item_pitch - item_gap or 0
+	end
+	if not item_pitch or item_pitch <= 0 then
+		item_pitch = item_height + item_gap
+	end
+	return item_height, item_pitch, item_gap
+end
+
+local function item_top(data, index)
+	local _, item_pitch, item_gap = item_geometry(data)
+	return item_gap + (index - 1) * item_pitch
+end
+
 local function effective_scroll(data, rect)
 	if is_short_list(data) then
-		return data.scroll_y + centered_scroll_offset(data, rect)
+		return data.scroll_y - centered_scroll_offset(data, rect)
 	end
 	return data.scroll_y
+end
+
+local function center_index(data, rect)
+	local item_height, item_pitch, item_gap = item_geometry(data)
+	return math.floor(
+		(effective_scroll(data, rect) + rect.h / 2 - item_height / 2 - item_gap)
+			/ math.max(1, item_pitch)
+	) + 1
 end
 
 local function set_scroll_to_current(data, rect)
 	if data.item_count <= 0 then
 		return
 	end
-	local item_height = data.content_height / data.item_count
-	local current_index = math.floor((effective_scroll(data, rect) + rect.h / 2) / math.max(1, item_height)) + 1
+	local current_index = center_index(data, rect)
 	data.scroll_to = clamp(current_index, 1, data.item_count)
 end
 
@@ -72,10 +98,10 @@ local function update_scroll_to(data, rect, dt)
 		return
 	end
 
-	local item_height = data.content_height / data.item_count
-	local target_scroll = (data.scroll_to - 1) * item_height - (rect.h - item_height) / 2
+	local item_height = select(1, item_geometry(data))
+	local target_scroll = item_top(data, data.scroll_to) - (rect.h - item_height) / 2
 	if is_short_list(data) then
-		target_scroll = target_scroll - centered_scroll_offset(data, rect)
+		target_scroll = target_scroll + centered_scroll_offset(data, rect)
 	else
 		target_scroll = clamp(target_scroll, 0, data.max_scroll_y)
 	end
@@ -161,6 +187,9 @@ function spring_list:get_data(ctx)
 			horizontal_acceleration = 0,
 			middle_anchor_y = 0,
 			item_count = 0,
+			item_height = 0,
+			item_pitch = 0,
+			item_gap = DEFAULT_ITEM_GAP,
 			range_start = 1,
 			range_end = 0,
 		}
@@ -198,6 +227,9 @@ function spring_list:get_data(ctx)
 	data.horizontal_velocity = data.horizontal_velocity or 0
 	data.horizontal_acceleration = data.horizontal_acceleration or 0
 	data.item_count = data.item_count or 0
+	data.item_height = data.item_height or 0
+	data.item_pitch = data.item_pitch or 0
+	data.item_gap = data.item_gap or DEFAULT_ITEM_GAP
 	data.range_start = data.range_start or 1
 	data.range_end = data.range_end or 0
 	return data
@@ -222,6 +254,12 @@ function spring_list:realign(ctx, elem)
 	end
 
 	data.content_height = content_height
+	local first_row_index = 2
+	local first_row = self.children[first_row_index]
+	if first_row and first_row.rect then
+		data.item_pitch = first_row.rect.h
+		data.item_height = math.max(0, data.item_pitch - (data.item_gap or DEFAULT_ITEM_GAP))
+	end
 	data.max_scroll_y = math.max(0, data.content_height - rect.h)
 	local start_y = rect.y - data.scroll_y
 	if is_short_list(data) then
@@ -337,9 +375,8 @@ function spring_list:update_scroll(elem, ctx)
 		local wheel_delta = input.scroll_y > 0 and -1 or 1
 		local wheel_distance = math.abs(input.scroll_y)
 		if data.item_count > 0 and math.abs(data.horizontal_offset) < rect.w * HORIZONTAL_FULL_STRETCH_EPSILON then
-			local item_height = data.content_height / data.item_count
 			local current_index = data.scroll_to
-				or math.floor((effective_scroll(data, rect) + rect.h / 2) / math.max(1, item_height)) + 1
+				or center_index(data, rect)
 			data.scroll_to = clamp(current_index + wheel_delta * wheel_distance, 1, data.item_count)
 		end
 		input.scroll_y = 0
@@ -430,7 +467,7 @@ function spring_list:update_virtual_range(elem, ctx)
 		return
 	end
 
-	local first_row_index = data.range_start > 1 and 2 or 1
+	local first_row_index = 2
 	local first_row = self.children[first_row_index]
 	local item_height = first_row and first_row.rect and first_row.rect.h or 0
 	if item_height <= 0 then
@@ -438,8 +475,8 @@ function spring_list:update_virtual_range(elem, ctx)
 	end
 
 	local range_count = math.min(VIRTUAL_ROW_COUNT, data.item_count)
-	local center_index = math.floor((data.scroll_y + elem.rect.h / 2) / item_height) + 1
-	local range_start = math.max(1, center_index - math.floor(range_count / 2))
+	local current_index = center_index(data, elem.rect)
+	local range_start = math.max(1, current_index - math.floor(range_count / 2))
 	range_start = math.min(range_start, data.item_count - range_count + 1)
 	local range_end = range_start + range_count - 1
 
@@ -491,15 +528,11 @@ function spring_list:draw(elem, ctx, widget_display_data, display_data)
 	local data = self:get_data(ctx)
 	local rect = elem.rect
 	apply_display.draw_background(
+		widget_data,
+		ctx,
 		rect,
-		widget_data and widget_data.bg,
-		widget_data and widget_data.border,
 		elem.polyline,
-		{
-			blur = widget_data and widget_data.blur,
-			source = ctx.ui.background_canvas,
-			scale = ctx.ui_scale or 1,
-		}
+		elem
 	)
 	if #self.children == 0 then
 		return

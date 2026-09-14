@@ -122,12 +122,38 @@ regions.
 `polyline = { { x, y }, ... }` changes the visible/hit-test shape from a
 rectangle; points are local to the element.
 
+Each widget must use a dedicated display entry for its own style. Do not
+nest a widget style under an unrelated container style, such as putting
+`checkbox` styling inside `w_main`. Use a standalone entry such as
+`checkbox = { checkbox = { ... } }` and pass that display key to the widget.
+
 ### Button children
 
 - Put an element in `ui_element`'s `children` to draw it above the button;
   it blocks pointer interaction in its area.
 - Pass an element to `button(element, ...)` to let the button manage it;
   it is drawn above the button but remains part of the clickable area.
+
+### Settings controls
+
+`view/main_view.lua` provides these settings-row helpers:
+
+```lua
+settings_checkbox(label, data_key, action)
+input_field(label, data_key, action)
+```
+
+`data_key` is mandatory and is used directly as the `ctx.widget_reg` key.
+Checkboxes store `{ is_on = ... }` at that key and add the updated `is_on`
+value to the queued action. Input fields store their text-input data at the
+same key.
+
+The underlying widgets also require explicit registry keys:
+
+```lua
+checkbox(registry_key, display_key, on_press, child)
+text_input(placeholder, action, { registry_key = registry_key, ... })
+```
 
 ## Display styles (`style_dispaly.lua`)
 
@@ -154,6 +180,14 @@ regular `ui_element` children keep their own pointer-derived states.
 ### `box`
 
 - `bg`: fill color.
+- `gradient`: optional GPU gradient replacing `bg`:
+  `{ origin = { x, y }, direction = { angle, distance }, color1, color2 }`.
+  `origin` uses relative coordinates: `{ x = 0, y = 0 }` is the top-left,
+  and `{ x = 1, y = 1 }` is the bottom-right. `angle` is in degrees:
+  `0` points right and positive angles rotate clockwise on screen.
+  `distance` is relative to the element size: `1` reaches one element width
+  or height along the selected angle. Colors accept the same color formats
+  as `bg` and include alpha.
 - `border`: border configuration.
 - `blur`: optional background blur configuration, for example
   `{ percent = 0.2, blurSize = 2 }`. `opacity` can reduce the strength of
@@ -163,6 +197,7 @@ regular `ui_element` children keep their own pointer-derived states.
 
 Uses the same `bg` and `border` fields as `box`. Put them directly in the
 button style or under `idle` / `hovered` / `held` / `pressed`.
+Buttons also support the same optional `gradient` field as `box`.
 
 ### `border`
 

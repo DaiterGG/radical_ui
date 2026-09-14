@@ -2,9 +2,11 @@ local utils = require("utils")
 local color = require("color")
 
 local apply_display = {}
+local gradient_shader
+local gradient_stencil
 
 -- general draw functions (shared by all element types).
--- no state management here; widget modules (box/button/slider) own their
+-- no state management here; widget modules (box/button) own their
 -- display data and call these primitives from their own draw().
 --
 -- color arguments accept: a Color instance, a hex string ("#RRGGBB[AA]" /
@@ -24,6 +26,241 @@ local function resolve(c)
 		return { c:to_rgba() }
 	end
 	return c -- already an rgba table
+end
+
+local function ease_background(value, ease_name)
+	if ease_name == "in" then
+		return value * value
+	elseif ease_name == "out" then
+		return 1 - (1 - value) * (1 - value)
+	elseif ease_name == "in_out" then
+		if value < 0.5 then
+			return 2 * value * value
+		end
+		return 1 - ((-2 * value + 2) ^ 2) / 2
+	end
+	return value
+end
+
+local function interpolate_background_color(from, target, amount)
+	return {
+		from[1] + (target[1] - from[1]) * amount,
+		from[2] + (target[2] - from[2]) * amount,
+		from[3] + (target[3] - from[3]) * amount,
+		from[4] + (target[4] - from[4]) * amount,
+	}
+end
+
+local function resolve_background(bg, ctx, elem)
+	if type(bg) ~= "table" or (bg.in_color == nil and bg.from_color == nil) then
+		return resolve(bg)
+	end
+
+	if bg.in_color == nil or bg.from_color == nil then
+		error("animated background requires both 'in_color' and 'from_color'", 3)
+	end
+
+	local from = resolve(bg.from_color)
+	local target = resolve(bg.in_color)
+	if not from or not target then
+		error("animated background colors must not be nil", 3)
+	end
+	if not ctx.state.ui_settings.animations then
+		return target
+	end
+
+	local animation = elem and elem.display_animation
+	if not animation then
+		error("animated background requires ui_element.display_animation", 3)
+	end
+	if type(animation.key) ~= "string" or animation.key == "" then
+		error("animated background requires a non-empty 'key'", 3)
+	end
+	if type(animation.duration) ~= "number" or animation.duration < 0 then
+		error("animated background duration must be a non-negative number", 3)
+	end
+	if animation.ease ~= nil
+		and animation.ease ~= "in"
+		and animation.ease ~= "out"
+		and animation.ease ~= "in_out"
+	then
+		error("animated background ease must be 'in', 'out', or 'in_out'", 3)
+	end
+
+	local registry = ctx and ctx.anim_reg and ctx.anim_reg[animation.key]
+	if not registry then
+		return target
+	end
+
+	local now = love.timer.getTime()
+	local in_stamp = registry["in"] or 0
+	local from_stamp = registry["from"] or 0
+	if in_stamp <= 0 and from_stamp <= 0 then
+		return target
+	end
+
+	local direction = from_stamp > in_stamp and "from" or "in"
+	local stamp = registry[direction]
+	if registry.background_transition_stamp ~= stamp then
+		registry.background_transition_stamp = stamp
+		registry.background_transition_started_at = now
+	end
+
+	local duration = animation.duration / 1000
+	local progress = duration > 0
+		and math.min(1, math.max(0, (now - registry.background_transition_started_at) / duration))
+		or 1
+	progress = ease_background(progress, animation.ease)
+	if direction == "from" then
+		return interpolate_background_color(target, from, progress)
+	end
+	return interpolate_background_color(from, target, progress)
+end
+
+local function vector_component(vector, index, key)
+	if not vector then
+		return 0
+	end
+	return vector[key] or vector[index] or 0
+end
+
+local function create_gradient_shader()
+	return love.graphics.newShader([[
+		extern vec2 gradientElementOrigin;
+		extern vec2 gradientOrigin;
+		extern vec2 gradientVector;
+		extern vec4 gradientColor1;
+		extern vec4 gradientColor2;
+		extern vec4 gradientBackground;
+
+		vec4 effect(vec4 color, Image tex, vec2 uv, vec2 screen_coords) {
+			number lengthSquared = dot(gradientVector, gradientVector);
+			number amount = 0.0;
+			if (lengthSquared > 0.000001) {
+				vec2 localCoords = screen_coords - gradientElementOrigin;
+				amount = dot(localCoords - gradientOrigin, gradientVector) / lengthSquared;
+			}
+			amount = clamp(amount, 0.0, 1.0);
+			vec4 gradientColor = vec4(
+				mix(
+					gradientColor1.rgb * gradientColor1.a,
+					gradientColor2.rgb * gradientColor2.a,
+					amount
+				),
+				mix(gradientColor1.a, gradientColor2.a, amount)
+			);
+			number inverseAlpha = 1.0 - gradientColor.a;
+			number outputAlpha = gradientColor.a
+				+ gradientBackground.a * inverseAlpha;
+			vec3 outputRgb = gradientColor.rgb
+				+ gradientBackground.rgb * gradientBackground.a * inverseAlpha;
+			if (outputAlpha > 0.0) {
+				outputRgb /= outputAlpha;
+			}
+			return vec4(
+				outputRgb,
+				outputAlpha
+			) * color;
+		}
+	]])
+end
+
+local function get_gradient_shader()
+	if not gradient_shader then
+		gradient_shader = create_gradient_shader()
+	end
+	return gradient_shader
+end
+
+local function draw_gradient_stencil()
+	if gradient_stencil.kind == "polygon" then
+		apply_display.draw_polygon(
+			gradient_stencil.x,
+			gradient_stencil.y,
+			gradient_stencil.points,
+			{ 1, 1, 1, 1 }
+		)
+	else
+		love.graphics.rectangle(
+			"fill",
+			gradient_stencil.x,
+			gradient_stencil.y,
+			gradient_stencil.w,
+			gradient_stencil.h,
+			gradient_stencil.radius,
+			gradient_stencil.radius
+		)
+	end
+end
+
+local function draw_gradient_shape(rect, bg, gradient, polyline, scale, radius)
+	if not gradient then
+		return false
+	end
+	local color1 = resolve(gradient.color1 or gradient.from)
+	local color2 = resolve(gradient.color2 or gradient.to)
+	local background = resolve(bg)
+	if not color1 or not color2 or not background then
+		return false
+	end
+
+	local origin = gradient.origin or { x = 0, y = 0 }
+	local direction = gradient.direction or {}
+	local angle = math.rad(direction.angle or 0)
+	local distance = direction.distance or 1
+	local origin_x = vector_component(origin, 1, "x") * rect.w
+	local origin_y = vector_component(origin, 2, "y") * rect.h
+	local vector_x = math.cos(angle) * distance * rect.w
+	local vector_y = math.sin(angle) * distance * rect.h
+	local shader = get_gradient_shader()
+
+	shader:send("gradientElementOrigin", { rect.x, rect.y })
+	shader:send("gradientOrigin", { origin_x, origin_y })
+	shader:send("gradientVector", { vector_x, vector_y })
+	shader:send("gradientColor1", color1)
+	shader:send("gradientColor2", color2)
+	shader:send("gradientBackground", background)
+
+	love.graphics.push("all")
+	if not polyline and radius <= 0 then
+		love.graphics.setShader(shader)
+		love.graphics.setColor(1, 1, 1, 1)
+		love.graphics.rectangle("fill", rect.x, rect.y, rect.w, rect.h)
+		love.graphics.setShader()
+		love.graphics.pop()
+		return true
+	end
+	if polyline then
+		love.graphics.setShader(shader)
+		love.graphics.setColor(1, 1, 1, 1)
+		apply_display.draw_polygon(
+			rect.x,
+			rect.y,
+			apply_display.scale_points(polyline, scale),
+			{ 1, 1, 1, 1 }
+		)
+		love.graphics.setShader()
+		love.graphics.pop()
+		return true
+	end
+	gradient_stencil = {
+		kind = "rectangle",
+		x = rect.x,
+		y = rect.y,
+		w = rect.w,
+		h = rect.h,
+		radius = radius,
+	}
+	love.graphics.stencil(draw_gradient_stencil, "replace", 1)
+	love.graphics.setStencilTest("greater", 0)
+	love.graphics.setShader(shader)
+	love.graphics.setColor(1, 1, 1, 1)
+	love.graphics.rectangle("fill", rect.x, rect.y, rect.w, rect.h)
+	love.graphics.setShader()
+	love.graphics.setStencilTest()
+	love.graphics.pop()
+	gradient_stencil = nil
+	return true
 end
 
 -- draw a filled box
@@ -362,13 +599,32 @@ function apply_display.scale_points(points, scale)
 	return out
 end
 
+local function get_points_bounds(x, y, points)
+	if #points == 0 then
+		return x, y, 0, 0
+	end
+
+	local min_x, min_y = math.huge, math.huge
+	local max_x, max_y = -math.huge, -math.huge
+
+	for _, point in ipairs(points) do
+		min_x = math.min(min_x, point[1])
+		min_y = math.min(min_y, point[2])
+		max_x = math.max(max_x, point[1])
+		max_y = math.max(max_y, point[2])
+	end
+
+	return x + min_x, y + min_y, max_x - min_x, max_y - min_y
+end
+
 -- draw a background: bg fill + border. if polyline is provided it draws a
--- polygon (scaled by opts.scale) instead of a rect; opts.blur frosts the
--- background canvas region (opts.source) behind it.
--- opts: { scale = ui_scale, blur = { percent, blurSize }, source = canvas }
-function apply_display.draw_background(rect, bg, border, polyline, opts)
-	opts = opts or {}
-	local scale = opts.scale or 1
+-- polygon instead of a rect; widget_data supplies the display properties and
+-- ctx supplies the background canvas and UI scale.
+function apply_display.draw_background(widget_data, ctx, rect, polyline, elem)
+	widget_data = widget_data or {}
+	local bg = resolve_background(widget_data.bg, ctx, elem)
+	local border = widget_data.border
+	local scale = ctx.ui_scale or 1
 	local x = rect.x
 	local y = rect.y
 	local w = rect.w
@@ -376,17 +632,29 @@ function apply_display.draw_background(rect, bg, border, polyline, opts)
 
 	if polyline then
 		local pts = apply_display.scale_points(polyline, scale)
-		if opts.blur and opts.source then
-			love.graphics.push("all")
-			love.graphics.stencil(function()
-				apply_display.draw_polygon(x, y, pts, { 1, 1, 1, 1 })
-			end, "replace", 1)
-			love.graphics.setStencilTest("greater", 0)
-			apply_display.blur(opts.source, x, y, w, h, opts.blur)
-			love.graphics.setStencilTest()
-			love.graphics.pop()
+		if ctx.state.ui_settings.blur and widget_data.blur and ctx.ui.background_canvas then
+			local blur_x, blur_y, blur_w, blur_h = get_points_bounds(x, y, pts)
+			if blur_w > 0 and blur_h > 0 then
+				love.graphics.push("all")
+				love.graphics.stencil(function()
+					apply_display.draw_polygon(x, y, pts, { 1, 1, 1, 1 })
+				end, "replace", 1)
+				love.graphics.setStencilTest("greater", 0)
+				apply_display.blur(
+					ctx.ui.background_canvas,
+					blur_x,
+					blur_y,
+					blur_w,
+					blur_h,
+					widget_data.blur
+				)
+				love.graphics.setStencilTest()
+				love.graphics.pop()
+			end
 		end
-		apply_display.draw_polygon(x, y, pts, bg)
+		if not draw_gradient_shape(rect, bg, widget_data.gradient, polyline, scale, 0) then
+			apply_display.draw_polygon(x, y, pts, bg)
+		end
 		if border and border.color then
 			apply_display.draw_polyline(x, y, pts, border.width, border.color)
 		end
@@ -394,15 +662,17 @@ function apply_display.draw_background(rect, bg, border, polyline, opts)
 	end
 
 	local radius = border and border.radius or 0
-	if opts.blur and opts.source then
+	if ctx.state.ui_settings.blur and widget_data.blur and ctx.ui.background_canvas then
 		local blur = {}
-		for key, value in pairs(opts.blur) do
+		for key, value in pairs(widget_data.blur) do
 			blur[key] = value
 		end
 		blur.cornerRadius = radius
-		apply_display.blur(opts.source, x, y, w, h, blur)
+		apply_display.blur(ctx.ui.background_canvas, x, y, w, h, blur)
 	end
-	apply_display.corner_radius(x, y, w, h, radius, bg)
+	if not draw_gradient_shape(rect, bg, widget_data.gradient, nil, scale, radius) then
+		apply_display.corner_radius(x, y, w, h, radius, bg)
+	end
 
 	if border and (border.color or border.up or border.down or border.left or border.right) then
 		apply_display.draw_box_border(x, y, w, h, border, border.color)

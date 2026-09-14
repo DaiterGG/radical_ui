@@ -9,7 +9,9 @@ local function theme()
 		international_font = "afacad_medium",
 		main_accent = color("#26FF88"),
 		main_panel = color("#25232E"),
+		main_panel_gr = color("#121117", 100),
 		main_panel_br = color("#292733"),
+		main_panel_gr_br = color("#16151F", 100),
 		separator_main = color("#14151A"),
 		glass_icons = color("#C7C7C7"),
 		glass_stroke = color("#000000", 46),
@@ -23,30 +25,46 @@ local function theme()
 		glass_bg_tint = color("#3E3E46", 58),
 		glass_blur = { percent = 1, blurSize = 4 },
 		glass_list_blur = { percent = 0.2, blurSize = 2, opacity = 0.35 },
-		root_bg = color("#333333"),
+		root_bg = color("#080808"),
+		-- root_bg = color("#ffffff"),
 		header_bg = color("#1e1d26"),
+		input_bg = color("#2E2B38"),
+		input_selected_bg = color("#343241"),
+		main_origin = { x = 0, y = 2 },
+		main_origin_rev = { x = 0, y = -1 },
+		main_direction = { angle = 270, distance = 2 },
+		main_direction_rev = { angle = 90, distance = 2 },
+
+		-- input_selected_bg = color("#ffffff", 5),
 	}
 end
 
 local function display_data(theme)
 	return {
-		root = { box = { bg = theme.root_bg } },
-
+		root = {
+			background = { color = theme.root_bg },
+		},
 		header = {
 			box = {
 				bg = theme.header_bg,
-				border = { center = true, width = 1, color = theme.separator_header },
+				gradient = {
+					origin = { x = 0, y = 1 },
+					direction = { angle = 270, distance = 1 },
+					color1 = color("#000000", 30),
+					color2 = color("#FFFFFF", 0),
+				},
+				border = { width = 1, color = theme.separator_header },
 			},
 		},
 		header_back_b = {
 			button = {
 				idle = {
-					bg = theme.header_bg,
-					border = { center = true, width = 1, color = theme.separator_header },
+					-- bg = theme.header_bg,
+					border = { width = 1, color = theme.separator_header },
 				},
 				held = {
 					bg = theme.header_bg,
-					border = { center = true, width = 1, color = theme.separator_header },
+					border = { width = 1, color = theme.separator_header },
 				},
 				hovered = {
 					bg = theme.main_hover_c,
@@ -56,8 +74,8 @@ local function display_data(theme)
 		header_left_b = {
 			button = {
 				idle = {
-					bg = theme.header_bg,
-					border = { center = true, width = 1, color = theme.separator_header },
+					-- bg = theme.header_bg,
+					border = { width = 1, color = theme.separator_header },
 				},
 				hovered = {
 					bg = theme.main_hover_c,
@@ -80,13 +98,13 @@ local function display_data(theme)
 		},
 		header_input = {
 			text_input = {
-				bg = theme.header_bg,
-				selected_bg = theme.header_bg,
-				border = { center = true, width = 1, color = theme.separator_header, radius = 4 },
+				bg = theme.input_bg,
+				selected_bg = theme.input_selected_bg,
+				border = { radius = 5 },
 				bg_focused = theme.header_bg,
 				border_focused = { center = true, width = 1, color = theme.separator_header, radius = 4 },
 				font = theme.main_font,
-				size = 18,
+				size = 22,
 				text_color = theme.main_text,
 				placeholder_color = theme.glass_icons,
 				align_x = "center",
@@ -105,6 +123,12 @@ local function display_data(theme)
 				idle = {
 					bg = theme.main_panel_br,
 					border = { center = true, width = 1, color = theme.separator_main },
+					gradient = {
+						origin = theme.main_origin,
+						direction = theme.main_direction,
+						color1 = theme.main_panel_gr_br,
+						color2 = color("#FFFFFF", 0),
+					},
 				},
 				hovered = {
 					bg = theme.main_hover_c,
@@ -148,10 +172,16 @@ local function display_data(theme)
 				},
 			},
 		},
-		second_b = {
+		second_b_gradient = {
 			button = {
 				idle = {
 					bg = theme.main_panel,
+					gradient = {
+						origin = theme.main_origin,
+						direction = theme.main_direction,
+						color1 = theme.main_panel_gr,
+						color2 = color("#FFFFFF", 0),
+					},
 					border = { center = true, width = 1, color = theme.separator_main },
 				},
 				hovered = {
@@ -173,6 +203,12 @@ local function display_data(theme)
 				idle = {
 					bg = theme.main_panel_br,
 					border = { center = true, width = 1, color = theme.separator_main },
+					gradient = {
+						origin = theme.main_origin,
+						direction = theme.main_direction,
+						color1 = theme.main_panel_gr_br,
+						color2 = color("#FFFFFF", 0),
+					},
 				},
 				hovered = {
 					bg = theme.main_hover_c,
@@ -193,6 +229,12 @@ local function display_data(theme)
 			button = {
 				idle = {
 					bg = theme.main_panel,
+					gradient = {
+						origin = theme.main_origin_rev,
+						direction = theme.main_direction_rev,
+						color1 = theme.main_panel_gr,
+						color2 = color("#FFFFFF", 0),
+					},
 					border = { width = 1, color = theme.separator_main },
 				},
 			},
@@ -200,13 +242,47 @@ local function display_data(theme)
 		second_header_b = {
 			button = {
 				idle = {
+					gradient = {
+						origin = theme.main_origin_rev,
+						direction = theme.main_direction_rev,
+						color1 = theme.main_panel_gr_br,
+						color2 = color("#FFFFFF", 0),
+					},
+					bg = theme.main_panel_br,
+					border = { width = 1, color = theme.separator_main },
+				},
+			},
+		},
+		first_footer_b = {
+			button = {
+				idle = {
+					bg = theme.main_panel,
+
+					gradient = {
+						origin = theme.main_origin,
+						direction = theme.main_direction,
+						color1 = theme.main_panel_gr,
+						color2 = color("#FFFFFF", 0),
+					},
+					border = { width = 1, color = theme.separator_main },
+				},
+			},
+		},
+		second_footer_b = {
+			button = {
+				idle = {
+					gradient = {
+						origin = theme.main_origin,
+						direction = theme.main_direction,
+						color1 = theme.main_panel_gr_br,
+						color2 = color("#FFFFFF", 0),
+					},
 					bg = theme.main_panel_br,
 					border = { width = 1, color = theme.separator_main },
 				},
 			},
 		},
 		w_settings_tab_text_left = {
-
 			text = {
 				idle = {
 					font = "custom",
@@ -235,12 +311,14 @@ local function display_data(theme)
 			button = {
 				bg = theme.glass_bg_tint,
 				border = { width = 1, color = theme.glass_stroke },
+				blur = theme.glass_blur,
 			},
 		},
 		w_settings_tab_right = {
 			button = {
 				bg = theme.glass_bg_tint,
 				border = { width = 1, color = theme.glass_stroke },
+				blur = theme.glass_blur,
 			},
 		},
 		w_settings_active_tab_text = {
@@ -259,7 +337,6 @@ local function display_data(theme)
 		},
 		w_header_dis = {
 			box = {
-				bg = theme.glass_bg_tint,
 				blur = theme.glass_blur,
 				border = { width = 1, color = theme.glass_stroke },
 			},
@@ -268,6 +345,43 @@ local function display_data(theme)
 			box = {
 				bg = theme.main_panel_br,
 				border = { width = 1, color = theme.separator_main },
+			},
+		},
+		checkbox = {
+			checkbox = {
+				border = { center = true, width = 1, radius = 100, color = theme.separator_main },
+				off = {
+					bg = {
+						in_color = theme.input_bg,
+						from_color = theme.main_accent,
+					},
+				},
+				on = {
+					bg = {
+						in_color = theme.main_accent,
+						from_color = theme.input_bg,
+					},
+				},
+			},
+		},
+		checkbox_handle = {
+			box = {
+				bg = theme.separator_main,
+				border = { center = true, width = 1, radius = 999, color = theme.separator_main },
+			},
+		},
+		settings_text = {
+			text = {
+				font = theme.main_font,
+				size = 26,
+				color = theme.main_text,
+				align_x = "left",
+				align_y = "center",
+			},
+		},
+		settings_separator = {
+			box = {
+				bg = theme.glass_stroke,
 			},
 		},
 		w_footer = {
@@ -281,7 +395,7 @@ local function display_data(theme)
 		third_header_b = {
 			button = {
 				idle = {
-					-- bg = theme.main_panel_br,
+					bg = theme.main_panel_br,
 					border = { width = 1, color = theme.separator_main },
 				},
 				-- hovered = {
@@ -299,13 +413,12 @@ local function display_data(theme)
 			},
 		},
 		main_list = {
-			spring_list = {
-			},
+			spring_list = {},
 		},
 
 		main_list_button = {
 			button = {
-        blur = theme.glass_blur,
+				blur = theme.glass_blur,
 				bg = theme.glass_bg_tint,
 				border = { center = true, radius = 999, width = 1, color = theme.glass_stroke },
 			},
@@ -378,7 +491,6 @@ local function display_data(theme)
 		top_list = {
 			list_view = {
 				bg = theme.glass_list_bg,
-				blur = theme.glass_list_blur,
 				scroll_speed = 0.4,
 			},
 		},
@@ -434,7 +546,6 @@ local function display_data(theme)
 		down_list = {
 			list_view = {
 				bg = theme.glass_list_bg,
-				blur = theme.glass_list_blur,
 				scroll_speed = 0.4,
 				scroll_bar = {
 					width = 16,
@@ -448,7 +559,7 @@ local function display_data(theme)
 			},
 			text = {
 				font = theme.international_font,
-				size = 28,
+				size = 22,
 				align_x = "left",
 				align_y = "center",
 				color = theme.glass_text,
@@ -460,7 +571,7 @@ local function display_data(theme)
 			},
 			text = {
 				font = theme.international_font,
-				size = 28,
+				size = 22,
 				align_x = "left",
 				align_y = "center",
 				color = theme.glass_text,
@@ -469,7 +580,7 @@ local function display_data(theme)
 		down_list_item_name = {
 			text = {
 				font = theme.international_font,
-				size = 28,
+				size = 22,
 				align_x = "left",
 				align_y = "center",
 				color = theme.glass_text,
@@ -479,7 +590,7 @@ local function display_data(theme)
 		down_list_item_author = {
 			text = {
 				font = theme.international_font,
-				size = 18,
+				size = 16,
 				align_x = "left",
 				align_y = "bottom",
 				color = theme.glass_text,
@@ -489,7 +600,7 @@ local function display_data(theme)
 		down_list_item_keymod = {
 			text = {
 				font = theme.international_font,
-				size = 22,
+				size = 18,
 				align_x = "center",
 				align_y = "top",
 				color = theme.glass_text,
@@ -498,7 +609,7 @@ local function display_data(theme)
 		down_list_item_dif = {
 			text = {
 				font = theme.main_font,
-				size = 22,
+				size = 18,
 				align_x = "center",
 				align_y = "bottom",
 				color = theme.glass_text,

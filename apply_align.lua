@@ -204,7 +204,7 @@ end
 
 function Align:apply_animation(rect, ctx)
 	local data = self.animation_data
-	if not data or not ctx or not ctx.anim_reg then
+	if not data or not ctx or not ctx.anim_reg or not ctx.state.ui_settings.animations then
 		return rect
 	end
 
