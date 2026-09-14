@@ -5,8 +5,7 @@ local widget = require("widget")
 local checkbox = class()
 checkbox.type = "checkbox"
 
-function checkbox:new(display_key, on_toggle, child, is_on)
-	self.display_key = display_key
+function checkbox:new(on_toggle, child, is_on)
 	self.is_on = is_on
 	self.on_toggle = on_toggle
 	self.child = child

@@ -10,8 +10,7 @@ local apply_display = require("apply_display")
 local background = class()
 background.type = "background"
 
-function background:new()
-end
+function background:new() end
 
 -- function background:pointer_collision(elem, ctx, hit)
 -- background is not interactive
@@ -52,8 +51,7 @@ function background:draw(elem, ctx, widget_display_data, display_data)
 	-- start with white so leaked setColor can't tint the canvas content
 	love.graphics.setColor(1, 1, 1, 1)
 
-	local has_background = ctx.state.ui_settings.background
-		and (not ctx.beatmaps or ctx.beatmaps:has_background())
+	local has_background = ctx.state.ui_settings.background and (not ctx.beatmaps or ctx.beatmaps:has_background())
 	if not has_background then
 		local color = widget_display_data and widget_display_data.color
 		apply_display.draw_box(0, 0, r.w, r.h, color)

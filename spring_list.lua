@@ -13,7 +13,7 @@ local DRAG_DEAD_ZONE = 10
 local HORIZONTAL_SPRING_STIFFNESS = 120
 local HORIZONTAL_SPRING_DAMPING = 22
 local HORIZONTAL_ACTIVE_VELOCITY_EPSILON = 0.1
-local HORIZONTAL_RELEASE_FORCE = 60
+local HORIZONTAL_RELEASE_FORCE = 120
 local HORIZONTAL_START_OUTSIDE_RATIO = 0.25
 local HORIZONTAL_DRAG_RESPONSE = 24
 local HORIZONTAL_MAX_ROTATION = math.rad(4)
@@ -80,8 +80,7 @@ end
 local function center_index(data, rect)
 	local item_height, item_pitch, item_gap = item_geometry(data)
 	return math.floor(
-		(effective_scroll(data, rect) + rect.h / 2 - item_height / 2 - item_gap)
-			/ math.max(1, item_pitch)
+		(effective_scroll(data, rect) + rect.h / 2 - item_height / 2 - item_gap) / math.max(1, item_pitch)
 	) + 1
 end
 
@@ -112,11 +111,8 @@ local function update_scroll_to(data, rect, dt)
 		return
 	end
 
-	local overscroll_distance = data.scroll_y < 0
-		and -data.scroll_y
-		or math.max(0, data.scroll_y - data.max_scroll_y)
-	local speed = overscroll_distance > 0
-		and OVERSCROLL_BASE_SPEED + overscroll_distance * OVERSCROLL_DISTANCE_SPEED
+	local overscroll_distance = data.scroll_y < 0 and -data.scroll_y or math.max(0, data.scroll_y - data.max_scroll_y)
+	local speed = overscroll_distance > 0 and OVERSCROLL_BASE_SPEED + overscroll_distance * OVERSCROLL_DISTANCE_SPEED
 		or SNAP_BASE_SPEED + math.abs(displacement) * SNAP_DISTANCE_SPEED
 	data.scroll_y = data.scroll_y + (displacement > 0 and 1 or -1) * math.min(math.abs(displacement), speed * dt)
 end
@@ -216,12 +212,11 @@ function spring_list:get_data(ctx)
 	data.right_scrolling = nil
 	data.snapping = nil
 	data.drag_start_x = data.drag_start_x or 0
-  data.drag_start_y = data.drag_start_y or 0
+	data.drag_start_y = data.drag_start_y or 0
 	data.drag_pointer_x = data.drag_pointer_x or 0
 	data.drag_pointer_y = data.drag_pointer_y or 0
 	data.drag_cursor_y = data.drag_cursor_y or 0
 	data.drag_cursor_x = data.drag_cursor_x or 0
-
 
 	data.horizontal_offset = data.horizontal_offset or 0
 	data.horizontal_velocity = data.horizontal_velocity or 0
@@ -375,8 +370,7 @@ function spring_list:update_scroll(elem, ctx)
 		local wheel_delta = input.scroll_y > 0 and -1 or 1
 		local wheel_distance = math.abs(input.scroll_y)
 		if data.item_count > 0 and math.abs(data.horizontal_offset) < rect.w * HORIZONTAL_FULL_STRETCH_EPSILON then
-			local current_index = data.scroll_to
-				or center_index(data, rect)
+			local current_index = data.scroll_to or center_index(data, rect)
 			data.scroll_to = clamp(current_index + wheel_delta * wheel_distance, 1, data.item_count)
 		end
 		input.scroll_y = 0
@@ -436,12 +430,8 @@ function spring_list:update_scroll(elem, ctx)
 		end
 		if input.left == "idle" then
 			input.interacting_with = nil
-    end
-	elseif
-		data.interaction_state == INTERACTION_IDLE
-		and inside
-		and input.left == "pressed"
-	then
+		end
+	elseif data.interaction_state == INTERACTION_IDLE and inside and input.left == "pressed" then
 		data.interaction_state = INTERACTION_DRAG_PENDING
 		data.drag_start_x = mouse_x
 		data.drag_start_y = mouse_y
@@ -451,7 +441,11 @@ function spring_list:update_scroll(elem, ctx)
 		data.drag_cursor_y = mouse_y
 	end
 
-	if (data.interaction_state == INTERACTION_IDLE or data.interaction_state == INTERACTION_DRAG_PENDING) and not user_scrolled and data.scroll_to ~= nil then
+	if
+		(data.interaction_state == INTERACTION_IDLE or data.interaction_state == INTERACTION_DRAG_PENDING)
+		and not user_scrolled
+		and data.scroll_to ~= nil
+	then
 		update_scroll_to(data, rect, dt)
 	end
 	update_horizontal_motion(data, dt)
@@ -527,13 +521,7 @@ function spring_list:draw(elem, ctx, widget_display_data, display_data)
 	local widget_data = widget_display_data
 	local data = self:get_data(ctx)
 	local rect = elem.rect
-	apply_display.draw_background(
-		widget_data,
-		ctx,
-		rect,
-		elem.polyline,
-		elem
-	)
+	apply_display.draw_background(widget_data, ctx, rect, elem.polyline, elem)
 	if #self.children == 0 then
 		return
 	end

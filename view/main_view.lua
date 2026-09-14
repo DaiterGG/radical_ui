@@ -63,7 +63,7 @@ local function settings_checkbox(ctx, label, data_key, action_name, is_on)
 	}))
 	content:push_child(ui_element({
 		display = "checkbox",
-		widgets = { checkbox(data_key, actions, settings_checkbox_handle(data_key, is_on), is_on) },
+		widgets = { checkbox(actions, settings_checkbox_handle(data_key, is_on), is_on) },
 		align = absolute({
 			pivot = { x = 100, y = 50 },
 			parent_pivot = { x = 100, y = 50 },
