@@ -7,14 +7,36 @@ function actions:new()
 	self.actions = {}
 end
 
-function actions:register(data)
-	if type(data) == "table" and not data.action then
-		for _, action in ipairs(data) do
+function actions:register(_actions)
+	if not _actions then
+		return
+	end
+	if type(_actions) == "table" and not _actions.action then
+		for _, action in ipairs(_actions) do
 			self:register(action)
 		end
 		return
 	end
-	self.actions[#self.actions + 1] = data
+	self.actions[#self.actions + 1] = _actions
+end
+
+function actions:register_with_value(_actions, value)
+	if not _actions then
+		return
+	end
+
+	if type(_actions) == "table" and not _actions.action then
+		for _, action in ipairs(_actions) do
+			self:register_with_value(action, value)
+		end
+		return
+	end
+	local temp = {}
+	for key, data in pairs(_actions) do
+		temp[key] = data
+	end
+	temp.attached = value
+	self.actions[#self.actions + 1] = temp
 end
 
 function actions:pop()

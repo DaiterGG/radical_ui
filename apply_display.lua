@@ -79,11 +79,7 @@ local function resolve_background(bg, ctx, elem)
 	if type(animation.duration) ~= "number" or animation.duration < 0 then
 		error("animated background duration must be a non-negative number", 3)
 	end
-	if animation.ease ~= nil
-		and animation.ease ~= "in"
-		and animation.ease ~= "out"
-		and animation.ease ~= "in_out"
-	then
+	if animation.ease ~= nil and animation.ease ~= "in" and animation.ease ~= "out" and animation.ease ~= "in_out" then
 		error("animated background ease must be 'in', 'out', or 'in_out'", 3)
 	end
 
@@ -108,7 +104,7 @@ local function resolve_background(bg, ctx, elem)
 
 	local duration = animation.duration / 1000
 	local progress = duration > 0
-		and math.min(1, math.max(0, (now - registry.background_transition_started_at) / duration))
+			and math.min(1, math.max(0, (now - registry.background_transition_started_at) / duration))
 		or 1
 	progress = ease_background(progress, animation.ease)
 	if direction == "from" then
@@ -174,12 +170,7 @@ end
 
 local function draw_gradient_stencil()
 	if gradient_stencil.kind == "polygon" then
-		apply_display.draw_polygon(
-			gradient_stencil.x,
-			gradient_stencil.y,
-			gradient_stencil.points,
-			{ 1, 1, 1, 1 }
-		)
+		apply_display.draw_polygon(gradient_stencil.x, gradient_stencil.y, gradient_stencil.points, { 1, 1, 1, 1 })
 	else
 		love.graphics.rectangle(
 			"fill",
@@ -233,12 +224,7 @@ local function draw_gradient_shape(rect, bg, gradient, polyline, scale, radius)
 	if polyline then
 		love.graphics.setShader(shader)
 		love.graphics.setColor(1, 1, 1, 1)
-		apply_display.draw_polygon(
-			rect.x,
-			rect.y,
-			apply_display.scale_points(polyline, scale),
-			{ 1, 1, 1, 1 }
-		)
+		apply_display.draw_polygon(rect.x, rect.y, apply_display.scale_points(polyline, scale), { 1, 1, 1, 1 })
 		love.graphics.setShader()
 		love.graphics.pop()
 		return true
@@ -386,15 +372,12 @@ function apply_display.draw_polygon(x, y, points, c)
 	local signed_area = 0
 	for i = 1, count do
 		local next_i = i % count + 1
-		signed_area = signed_area
-			+ vertices[i][1] * vertices[next_i][2]
-			- vertices[next_i][1] * vertices[i][2]
+		signed_area = signed_area + vertices[i][1] * vertices[next_i][2] - vertices[next_i][1] * vertices[i][2]
 	end
 	local orientation = signed_area >= 0 and 1 or -1
 
 	local function cross(a, b, c_point)
-		return (b[1] - a[1]) * (c_point[2] - a[2])
-			- (b[2] - a[2]) * (c_point[1] - a[1])
+		return (b[1] - a[1]) * (c_point[2] - a[2]) - (b[2] - a[2]) * (c_point[1] - a[1])
 	end
 
 	local function inside_triangle(point, a, b, c_point)
@@ -422,19 +405,24 @@ function apply_display.draw_polygon(x, y, points, c)
 			if cross(a, b, c_point) * orientation > 0 then
 				local contains_vertex = false
 				for other_position, vertex_index in ipairs(remaining) do
-					if other_position ~= previous_position
+					if
+						other_position ~= previous_position
 						and other_position ~= position
 						and other_position ~= next_position
-						and inside_triangle(vertices[vertex_index], a, b, c_point) then
+						and inside_triangle(vertices[vertex_index], a, b, c_point)
+					then
 						contains_vertex = true
 						break
 					end
 				end
 				if not contains_vertex then
 					love.graphics.polygon("fill", {
-						x + a[1], y + a[2],
-						x + b[1], y + b[2],
-						x + c_point[1], y + c_point[2],
+						x + a[1],
+						y + a[2],
+						x + b[1],
+						y + b[2],
+						x + c_point[1],
+						y + c_point[2],
 					})
 					table.remove(remaining, position)
 					clipped = true
@@ -453,9 +441,12 @@ function apply_display.draw_polygon(x, y, points, c)
 		local b = vertices[remaining[2]]
 		local c_point = vertices[remaining[3]]
 		love.graphics.polygon("fill", {
-			x + a[1], y + a[2],
-			x + b[1], y + b[2],
-			x + c_point[1], y + c_point[2],
+			x + a[1],
+			y + a[2],
+			x + b[1],
+			y + b[2],
+			x + c_point[1],
+			y + c_point[2],
 		})
 	end
 end
@@ -521,9 +512,7 @@ function apply_display.draw_polyline(x, y, points, width, c)
 	if closed then
 		for i = 1, count do
 			local next_i = i % count + 1
-			signed_area = signed_area
-				+ vertices[i][1] * vertices[next_i][2]
-				- vertices[next_i][1] * vertices[i][2]
+			signed_area = signed_area + vertices[i][1] * vertices[next_i][2] - vertices[next_i][1] * vertices[i][2]
 		end
 	end
 	local inward_left = signed_area > 0
@@ -624,7 +613,7 @@ function apply_display.draw_background(widget_data, ctx, rect, polyline, elem)
 	widget_data = widget_data or {}
 	local bg = resolve_background(widget_data.bg, ctx, elem)
 	local border = widget_data.border
-	local scale = ctx.ui_scale or 1
+	local scale = ctx.ui_scale
 	local x = rect.x
 	local y = rect.y
 	local w = rect.w
@@ -640,14 +629,7 @@ function apply_display.draw_background(widget_data, ctx, rect, polyline, elem)
 					apply_display.draw_polygon(x, y, pts, { 1, 1, 1, 1 })
 				end, "replace", 1)
 				love.graphics.setStencilTest("greater", 0)
-				apply_display.blur(
-					ctx.ui.background_canvas,
-					blur_x,
-					blur_y,
-					blur_w,
-					blur_h,
-					widget_data.blur
-				)
+				apply_display.blur(ctx.ui.background_canvas, blur_x, blur_y, blur_w, blur_h, widget_data.blur)
 				love.graphics.setStencilTest()
 				love.graphics.pop()
 			end

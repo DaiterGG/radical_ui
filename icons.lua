@@ -15,6 +15,7 @@ local icons = {
 	["other2"] = 0x000C,
 	["back1"] = 0x0023,
 	["back2"] = 0x004A,
+	["reset"] = 0x004B,
 	["input1"] = 0x0052,
 	["input2"] = 0x0036,
 	["cog1"] = 0x0041,

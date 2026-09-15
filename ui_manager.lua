@@ -6,6 +6,7 @@ local function align(ctx)
 		return
 	end
 	ctx.ui.need_to_realign = false
+	print("realign")
 	local w, h = ctx.res.w or 800, ctx.res.h or 600
 	local screen_window = { x = 0, y = 0, w = w, h = h }
 

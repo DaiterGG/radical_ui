@@ -4,6 +4,8 @@ local button = require("button")
 local text = require("text")
 local icons = require("icons")
 local checkbox = require("checkbox")
+local drop_down = require("drop_down")
+local slider = require("slider")
 local text_input = require("text_input")
 local align_mod = require("apply_align")
 local spring_list = require("spring_list")
@@ -16,13 +18,6 @@ local Direction = align_mod.Direction
 local absolute = align_mod.Absolute
 local block = align_mod.Block
 local Size = align_mod.Size
-
-local function settings_checkbox_actions(action, data_key)
-	return {
-		action,
-		{ action = "trigger_animation", key = data_key, direction = "in", force = true },
-	}
-end
 
 local function settings_checkbox_handle(data_key, is_on)
 	return ui_element({
@@ -38,13 +33,30 @@ local function settings_checkbox_handle(data_key, is_on)
 			ease_fn = "out",
 			length_ms = 180,
 		}),
+		display_animation = {
+			duration = 180,
+			ease = "out",
+			key = data_key,
+		},
 	})
 end
 
-local function settings_checkbox(ctx, label, data_key, action_name, is_on)
+local function settings_reset_button(action, value, align)
+	local icon = ui_element({
+		display = "settings_reset_icon",
+		widgets = { text(icons.reset) },
+	})
+	return ui_element({
+		display = "settings_reset_button",
+		widgets = { button(icon, { on_release = { action = action, value = value } }) },
+		align = align,
+	})
+end
+
+local function settings_checkbox(label, action_name, value, default_value)
 	local actions = {
-		{ action = action_name, key = data_key, is_on = is_on },
-		{ action = "trigger_animation", key = data_key, direction = "in", forced = true },
+		{ action = action_name, value = not value },
+		{ action = "trigger_animation", key = action_name, direction = "in", forced = true },
 	}
 	local row = ui_element({
 		align = block(Direction.Up, { px = 56 }),
@@ -61,9 +73,28 @@ local function settings_checkbox(ctx, label, data_key, action_name, is_on)
 		widgets = { text(label) },
 		align = block(Direction.Left, { pc = 50 }),
 	}))
-	content:push_child(ui_element({
+	local checkbox_area = ui_element({
+		align = absolute({
+			pivot = { x = 100, y = 50 },
+			parent_pivot = { x = 100, y = 50 },
+			size = Size({ px_hor = 132, pc_vert = 100 }),
+		}),
+	})
+	if value ~= default_value then
+		checkbox_area:push_child(
+			settings_reset_button(action_name .. "_reset", default_value, block(Direction.Left, { px = 36 }))
+		)
+	else
+		checkbox_area:push_child(ui_element({
+			align = block(Direction.Left, { px = 36 }),
+		}))
+	end
+	checkbox_area:push_child(ui_element({
+		align = block(Direction.Left, { px = 8 }),
+	}))
+	checkbox_area:push_child(ui_element({
 		display = "checkbox",
-		widgets = { checkbox(actions, settings_checkbox_handle(data_key, is_on), is_on) },
+		widgets = { checkbox(actions, settings_checkbox_handle(action_name, value), value) },
 		align = absolute({
 			pivot = { x = 100, y = 50 },
 			parent_pivot = { x = 100, y = 50 },
@@ -72,9 +103,85 @@ local function settings_checkbox(ctx, label, data_key, action_name, is_on)
 		display_animation = {
 			duration = 180,
 			ease = "out",
-			key = data_key,
+			key = action_name,
 		},
 	}))
+	content:push_child(checkbox_area)
+	row:push_child(content)
+	return row
+end
+
+local function settings_slider_handle()
+	return ui_element({
+		display = "slider_handle",
+		widgets = { box() },
+		align = absolute({
+			pivot = { x = 50, y = 50 },
+			parent_pivot = { x = 0, y = 50 },
+			size = Size({ px = 26 }),
+		}),
+	})
+end
+
+local function settings_slider_control(value, on_release, align)
+	return ui_element({
+		display = "slider",
+		widgets = { slider(value, settings_slider_handle(), nil, on_release) },
+		align = align or absolute({
+			pivot = { x = 50, y = 50 },
+			parent_pivot = { x = 50, y = 50 },
+			size = Size({ pc_vert = 100, pc_hor = 100 }),
+		}),
+	})
+end
+
+local function settings_slider(label, value, action_name, default_value)
+	local action = { action = action_name }
+	local row = ui_element({
+		align = block(Direction.Up, { px = 56 }),
+	})
+	local content = ui_element({
+		align = absolute({
+			pivot = { x = 50, y = 50 },
+			parent_pivot = { x = 50, y = 50 },
+			size = Size({ pc_hor = 90, pc_vert = 100 }),
+		}),
+	})
+	content:push_child(ui_element({
+		display = "settings_text",
+		widgets = { text(label) },
+		align = block(Direction.Left, { pc = 50 }),
+	}))
+	local slider_area = ui_element({
+		align = block(Direction.Right, { pc = 100 }),
+	})
+	if value.current ~= default_value then
+		slider_area:push_child(
+			settings_reset_button(action_name .. "_reset", default_value, block(Direction.Left, { px = 36 }))
+		)
+	else
+		slider_area:push_child(ui_element({
+			align = block(Direction.Left, { px = 36 }),
+		}))
+	end
+	slider_area:push_child(ui_element({
+		align = block(Direction.Left, { px = 8 }),
+	}))
+	local slider_control_area = ui_element({
+		align = block(Direction.Right, { pc = 100 }),
+	})
+	slider_control_area:push_child(ui_element({
+		display = "slider_track",
+		widgets = { box() },
+		align = absolute({
+			pivot = { x = 50, y = 50 },
+			parent_pivot = { x = 50, y = 50 },
+			size = Size({ pc_hor = 100, px_vert = 4 }),
+		}),
+	}))
+	slider_control_area:push_child(settings_slider_control(value, action, block(Direction.Right, { pc = 100 })))
+	slider_area:push_child(slider_control_area)
+	content:push_child(slider_area)
 	row:push_child(content)
 	return row
 end
@@ -101,6 +208,53 @@ local function input_field(label, data_key, action)
 	return row
 end
 
+local function dropdown_row(action_name, value, all_values, widget_key)
+	local idle_text = ui_element({
+		display = "first_b_text",
+		widgets = { text(tostring(value)) },
+	})
+	local idle = ui_element({
+		display = "first_b",
+		widgets = { button(idle_text) },
+		align = absolute({
+			pivot = { x = 0, y = 0 },
+			parent_pivot = { x = 0, y = 0 },
+			size = Size({ pc_hor = 100, pc_vert = 100 }),
+		}),
+	})
+
+	local selected = ui_element({
+		align = absolute({
+			pivot = { x = 0, y = 0 },
+			parent_pivot = { x = 0, y = 0 },
+			size = Size({ pc_hor = 100, pc_vert = 100 }),
+		}),
+	})
+	for _, selected_value in ipairs(all_values) do
+		local selected_text = ui_element({
+			display = "first_b_text",
+			widgets = { text(tostring(selected_value)) },
+		})
+		selected:push_child(ui_element({
+			display = "first_b",
+			widgets = {
+				button(selected_text, {
+					on_release = {
+						action = action_name,
+						value = selected_value,
+					},
+				}),
+			},
+			align = block(Direction.Down, { px = 56 }),
+		}))
+	end
+
+	return ui_element({
+		widgets = { drop_down(widget_key, idle, selected) },
+		align = block(Direction.Down, { px = 56 }),
+	})
+end
+
 local function top_table_row(values, columns, display, text_display, height)
 	local row = ui_element({
 		display = display,
@@ -113,17 +267,19 @@ local function top_table_row(values, columns, display, text_display, height)
 	})
 	local offset = 0
 	for _, column in ipairs(columns) do
-		local cell = ui_element({
-			display = text_display,
-			widgets = { text(values[column.key] or "") },
-			align = absolute({
-				pivot = { x = 0, y = 0 },
-				parent_pivot = { x = offset, y = 0 },
-				size = Size({ pc_hor = column.width, pc_vert = 100 }),
-			}),
-		})
-		row:push_child(cell)
-		offset = offset + column.width
+		if values[column.key] then
+			local cell = ui_element({
+				display = text_display,
+				widgets = { text(values[column.key]) },
+				align = absolute({
+					pivot = { x = 0, y = 0 },
+					parent_pivot = { x = offset, y = 0 },
+					size = Size({ pc_hor = column.width, pc_vert = 100 }),
+				}),
+			})
+			row:push_child(cell)
+			offset = offset + column.width
+		end
 	end
 	return row
 end
@@ -229,7 +385,7 @@ local function add_beatmap_rows(ctx, list, song_h_full, song_h)
 		})
 		local title = ui_element({
 			display = "main_list_title",
-			widgets = { text(name) },
+			widgets = { name = text(name) },
 			align = absolute({
 				pivot = { x = 50, y = 50 },
 				parent_pivot = { x = 50, y = 42 },
@@ -368,19 +524,20 @@ return function(ctx)
 		})
 		if ctx.state.active_window == "Settings" and ctx.state.settings_tab == "Menu" then
 			local menu_rows = ui_element({
-				align = absolute({
-					pivot = { x = 0, y = 0 },
-					parent_pivot = { x = 0, y = 0 },
-					size = Size({ pc_hor = 50, px_vert = 168 }),
-				}),
+				align = block(Direction.Left, { pc = 50 }),
 			})
-			menu_rows:push_child(settings_checkbox(ctx, "Blur", "blur", "set_blur", ctx.state.ui_settings.blur))
+			menu_rows:push_child(settings_checkbox("Blur", "set_blur", ctx.state.ui_settings.blur, true))
 			menu_rows:push_child(
-				settings_checkbox(ctx, "Background", "background", "set_background", ctx.state.ui_settings.background)
+				settings_checkbox("Background", "set_background", ctx.state.ui_settings.background, true)
 			)
 			menu_rows:push_child(
-				settings_checkbox(ctx, "Animations", "animations", "set_animations", ctx.state.ui_settings.animations)
+				settings_checkbox("Animations", "set_animations", ctx.state.ui_settings.animations, true)
 			)
+			menu_rows:push_child(settings_slider("UI Scale", {
+				min = 0.25,
+				max = 2,
+				current = ctx.ui.custom_scale,
+			}, "ui_scale_custom", 1))
 			w_main:push_child(menu_rows)
 
 			local menu_separator = ui_element({
@@ -688,8 +845,8 @@ return function(ctx)
 		align = block(Direction.Up, { pc = 40 }),
 	})
 	local top_columns = {
-		{ key = "", label = "", width = 1 },
-		{ key = "number", label = "№", width = 5 },
+		{ key = " ", label = " ", width = 1 },
+		{ key = "number", label = "rank", width = 10 },
 		{ key = "time", label = "Time", width = 18 },
 		{ key = "accuracy", label = "Acc", width = 12 },
 		{ key = "difficulty", label = "Diff", width = 10 },
@@ -1134,64 +1291,6 @@ return function(ctx)
 		})
 		root:push_child(right_p)
 	end
-
-	-- local test_p = ui_element({
-	-- 	display = "test_p",
-	-- 	widgets = { button(first) },
-	-- 	polyline = {
-	-- 		{ x_px = 0, y_pc = 0 },
-	-- 		{ x_px = 220, y_pc = 0 },
-	-- 		{ x_px = 220, y_pc = 45 },
-	-- 		{ x_px = 320, y_pc = 100 },
-	-- 		{ x_pc = 0, y_pc = 100, center = false },
-	-- 		{ x_px = 0, y_px = 0, center = false },
-	-- 	},
-	-- 	align = absolute({
-	-- 		pivot = { x = 0, y = 100 },
-	-- 		parent_pivot = { x = 0, y = 100 },
-	-- 		size = Size({ pc_hor = 20, pc_vert = 10 }),
-	-- 	}),
-	-- })
-	-- root:push_child(test_p)
-
-	-- local bar = ui_element({ display = "scrollable_list_scroll_bar", widgets = { box() } })
-	-- local ch = ui_element({ display = "header", widgets = { box() }, align = block(Direction.Up, "50") })
-	-- bar:push_child(ch)
-	-- local lv = spring_list()
-
-	-- for _, title in ipairs(songs) do
-	-- 	local txt = ui_element({ display = "main_text", widgets = { text(title) } })
-	-- 	local item = ui_element({
-	-- 		display = "list_item",
-	-- 		widgets = { button( txt) },
-	-- 		align = absolute({
-	-- 			pivot = { x = 0, y = 0 },
-	-- 			parent_pivot = { x = 0, y = 0 },
-	-- 			size = Size({ pc_hor = 100, px_vert = item_height }),
-	-- 		}),
-	-- 	})
-	-- 	lv:add_child(item)
-	-- end
-	-- local padding = ui_element({
-	-- 	display = "header",
-	-- 	widgets = { box(), text("Locations Manage Collections Direct") },
-	-- 	align = block(Direction.Down, "60"),
-	-- })
-	-- root:push_child(padding)
-
-	-- local list_elem = ui_element({ display = "scrollable_list", widgets = { lv }, align = block(Direction.Left, "40") })
-
-	-- root:push_child(list_elem)
-	-- local check = ui_element({
-	-- 	display = "checkbox",
-	-- 	widgets = { checkbox(nil, false, ui_element({ display = "main_text", widgets = { text("hi") } })) },
-	-- 	align = absolute({
-	-- 		pivot = { x = 0, y = 0 },
-	-- 		parent_pivot = { x = 0, y = 0 },
-	-- 		size = Size({ px_hor = 150, px_vert = 150 }),
-	-- 	}),
-	-- })
-
 	-- utils.print(root)
 
 	ctx.ui.root_elements = {}
@@ -1205,6 +1304,5 @@ return function(ctx)
 		ctx.ui.root_elements[#ctx.ui.root_elements + 1] = header
 	end
 
-	ctx.ui.need_to_realign = true
 	profiler.checkpoint("main_view", "setup main layout and finalization")
 end

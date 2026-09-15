@@ -8,6 +8,7 @@ local function theme()
 		main_font = "afacad_medium",
 		international_font = "afacad_medium",
 		main_accent = color("#26FF88"),
+		alt_accent = color("#098d45"),
 		main_panel = color("#25232E"),
 		main_panel_gr = color("#121117", 100),
 		main_panel_br = color("#292733"),
@@ -92,6 +93,25 @@ local function display_data(theme)
 				held = {
 					font = "icons",
 					size = 30,
+					color = theme.main_accent,
+				},
+			},
+		},
+		settings_reset_button = {
+			button = {
+				bg = color("#000000", 0),
+			},
+		},
+		settings_reset_icon = {
+			text = {
+				idle = {
+					font = "icons",
+					size = 26,
+					color = theme.separator_main,
+				},
+				hovered = {
+					font = "icons",
+					size = 26,
 					color = theme.main_accent,
 				},
 			},
@@ -310,7 +330,7 @@ local function display_data(theme)
 		w_settings_tab_left = {
 			button = {
 				bg = theme.glass_bg_tint,
-				border = { width = 1, color = theme.glass_stroke },
+				border = { width = 0.5, color = theme.glass_stroke },
 				blur = theme.glass_blur,
 			},
 		},
@@ -367,6 +387,22 @@ local function display_data(theme)
 		checkbox_handle = {
 			box = {
 				bg = theme.separator_main,
+				border = { center = true, width = 1, radius = 999, color = theme.separator_main },
+			},
+		},
+		slider = {
+			slider = {
+				bg = color("#000000", 0),
+			},
+		},
+		slider_track = {
+			box = {
+				bg = theme.separator_main,
+			},
+		},
+		slider_handle = {
+			box = {
+				bg = theme.main_accent,
 				border = { center = true, width = 1, radius = 999, color = theme.separator_main },
 			},
 		},

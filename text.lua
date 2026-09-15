@@ -1,6 +1,7 @@
 local apply_display = require("apply_display")
 local class = require("class")
 local fonts = require("fonts")
+local utils = require("utils")
 
 -- text widget: renders text with a font + color.
 -- font name + size come from display data (data.font, data.size).
@@ -41,9 +42,7 @@ end
 function text:draw(elem, ctx, widget_display_data, display_data)
 	local widget_data = widget_display_data
 	local r = elem.rect
-	widget_data = widget_data
-		or (display_data and display_data.font and display_data)
-		or self.display_data
+	widget_data = widget_data or (display_data and display_data.font and display_data) or self.display_data
 	if not widget_data or not r then
 		return
 	end

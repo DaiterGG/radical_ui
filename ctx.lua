@@ -22,37 +22,65 @@ function ctx:new(game, mount_path)
 	self.gameplay_api = GameplayAPI(game)
 	self.action_queue = actions()
 	self.event_queue = {}
-	self.res = res
 	self.theme = style.theme()
 	self.display_list = style.display_data(self.theme)
 	self.input_state = input_state()
 	self.keybindings = keybinding()
 	self.fonts = fonts.load(love.graphics.getFont(), mount_path)
 	self.cursor = cursor(self.fonts)
-	self.ui = {
-		custom_scale = 1,
-		need_to_rebuild = true,
-		need_to_realign = true,
-		root_elements = {},
-		scene = "select",
-	}
 	self.anim_reg = animation_registry.new()
 	self.widget_reg = widget_registry.new()
-	self.state = {
-		-- active_window = "Settings",
-		settings_tab = "Menu",
+	-- self.res = res
+	-- self.ui = {
+	-- 	custom_scale = 1, -- do not work
+	-- 	need_to_rebuild = true,
+	-- 	need_to_realign = true,
+	-- 	root_elements = {},
+	-- 	scene = "select",
+	-- }
+	-- self.state = {
+	-- 	-- active_window = "Settings",
+	-- 	settings_tab = "Menu",
+	-- 	ui_settings = {
+	-- 		blur = true,
+	-- 		background = true,
+	-- 		animations = true,
+	-- 	},
+	-- 	keybind_capture = nil,
+	-- 	dif_selected = 1,
+	-- }
+	-- self.last_delta = 0.1
+
+	-- local ui_scale = self.ui.custom_scale * h / 1080
+	-- self.ui_scale = ui_scale
+
+	--NEW:
+
+	self.settings = {
+		game_settings = {},
 		ui_settings = {
+			custom_scale = 1, -- do not work
 			blur = true,
 			background = true,
 			animations = true,
 		},
-		keybind_capture = nil,
-		dif_selected = 1,
 	}
-	self.last_delta = 0.1
 
 	local ui_scale = self.ui.custom_scale * h / 1080
-	self.ui_scale = ui_scale
+	self.state = {
+		scene = "select",
+		root_elements = {},
+		need_to_rebuild = true,
+		need_to_realign = true,
+		-- active_window = "Settings",
+		active_window = nil,
+		res = res,
+		settings_tab = "Menu",
+		keybind_capture = nil,
+		dif_selected = 1,
+		last_delta = 0.1,
+		ui_scale = ui_scale,
+	}
 end
 
 function ctx:update(dt)
@@ -68,6 +96,7 @@ function ctx:update(dt)
 	self.dt = dt
 	self.res = res
 	self.ui_scale = ui_scale
+	print(self.ui_scale)
 end
 
 return ctx

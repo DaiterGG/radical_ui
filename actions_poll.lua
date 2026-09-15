@@ -156,8 +156,14 @@ execute = {
 		ctx.ui.need_to_realign = true
 	end,
 	ui_scale_custom = function(ctx, new_scale)
-		ctx.ui.custom_scale = new_scale
-		ctx.ui.need_to_realign = true
+		ctx.ui.custom_scale = new_scale.attached
+		ctx.ui.need_to_rebuild = true
+		ctx.ui_scale = ctx.ui.custom_scale * ctx.res.h / 1080
+	end,
+	ui_scale_custom_reset = function(ctx, data)
+		ctx.ui.custom_scale = data.value
+		ctx.ui.need_to_rebuild = true
+		ctx.ui_scale = ctx.ui.custom_scale * ctx.res.h / 1080
 	end,
 	main_list_up = function(ctx)
 		ctx.beatmaps:ensure_loaded()
@@ -225,18 +231,27 @@ execute = {
 		ctx.ui.need_to_rebuild = true
 	end,
 	set_blur = function(ctx, data)
-		ctx.widget_reg:set_value(data.key, "is_on", not data.is_on)
-		ctx.state.ui_settings.blur = not data.is_on
+		ctx.state.ui_settings.blur = data.value
+		ctx.ui.need_to_rebuild = true
+	end,
+	set_blur_reset = function(ctx, data)
+		ctx.state.ui_settings.blur = data.value
 		ctx.ui.need_to_rebuild = true
 	end,
 	set_background = function(ctx, data)
-		ctx.widget_reg:set_value(data.key, "is_on", not data.is_on)
-		ctx.state.ui_settings.background = not data.is_on
+		ctx.state.ui_settings.background = data.value
+		ctx.ui.need_to_rebuild = true
+	end,
+	set_background_reset = function(ctx, data)
+		ctx.state.ui_settings.background = data.value
 		ctx.ui.need_to_rebuild = true
 	end,
 	set_animations = function(ctx, data)
-		ctx.widget_reg:set_value(data.key, "is_on", not data.is_on)
-		ctx.state.ui_settings.animations = not data.is_on
+		ctx.state.ui_settings.animations = data.value
+		ctx.ui.need_to_rebuild = true
+	end,
+	set_animations_reset = function(ctx, data)
+		ctx.state.ui_settings.animations = data.value
 		ctx.ui.need_to_rebuild = true
 	end,
 	trigger_animation = function(ctx, data)
