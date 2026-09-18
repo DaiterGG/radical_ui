@@ -1,9 +1,11 @@
 local utils = require("utils")
 local color = require("color")
+local animation_settings = require("animation_settings")
 
 local apply_display = {}
 local gradient_shader
 local gradient_stencil
+local rounded_shape_stencil
 
 -- general draw functions (shared by all element types).
 -- no state management here; widget modules (box/button) own their
@@ -65,10 +67,6 @@ local function resolve_background(bg, ctx, elem)
 	if not from or not target then
 		error("animated background colors must not be nil", 3)
 	end
-	if not ctx.state.ui_settings.animations then
-		return target
-	end
-
 	local animation = elem and elem.display_animation
 	if not animation then
 		error("animated background requires ui_element.display_animation", 3)
@@ -81,6 +79,9 @@ local function resolve_background(bg, ctx, elem)
 	end
 	if animation.ease ~= nil and animation.ease ~= "in" and animation.ease ~= "out" and animation.ease ~= "in_out" then
 		error("animated background ease must be 'in', 'out', or 'in_out'", 3)
+	end
+	if animation_settings.is_disabled(ctx) then
+		return target
 	end
 
 	local registry = ctx and ctx.anim_reg and ctx.anim_reg[animation.key]
@@ -97,12 +98,18 @@ local function resolve_background(bg, ctx, elem)
 
 	local direction = from_stamp > in_stamp and "from" or "in"
 	local stamp = registry[direction]
+	if animation_settings.is_instant(ctx) then
+		if direction == "from" then
+			return from
+		end
+		return target
+	end
 	if registry.background_transition_stamp ~= stamp then
 		registry.background_transition_stamp = stamp
 		registry.background_transition_started_at = now
 	end
 
-	local duration = animation.duration / 1000
+	local duration = animation_settings.duration(ctx, animation.duration / 1000)
 	local progress = duration > 0
 			and math.min(1, math.max(0, (now - registry.background_transition_started_at) / duration))
 		or 1
@@ -168,19 +175,72 @@ local function get_gradient_shader()
 	return gradient_shader
 end
 
+local function clamp_radius(radius, w, h)
+	if type(radius) ~= "table" then
+		return math.min(radius or 0, w / 2, h / 2)
+	end
+	return {
+		top_left = math.min(radius.top_left or radius.up_left or 0, w / 2, h / 2),
+		top_right = math.min(radius.top_right or radius.up_right or 0, w / 2, h / 2),
+		bottom_right = math.min(radius.bottom_right or radius.down_right or 0, w / 2, h / 2),
+		bottom_left = math.min(radius.bottom_left or radius.down_left or 0, w / 2, h / 2),
+	}
+end
+
+local function draw_rounded_shape(x, y, w, h, radius)
+	local clamped_radius = clamp_radius(radius, w, h)
+	local top_left = clamped_radius.top_left
+	local top_right = clamped_radius.top_right
+	local bottom_right = clamped_radius.bottom_right
+	local bottom_left = clamped_radius.bottom_left
+	local right = x + w
+	local bottom = y + h
+
+	love.graphics.rectangle("fill", x + top_left, y, w - top_left - top_right, h)
+	love.graphics.rectangle("fill", x, y + top_left, w, h - top_left - bottom_left)
+	if top_left > 0 then
+		love.graphics.arc("fill", "pie", x + top_left, y + top_left, top_left, math.pi, math.pi * 1.5)
+	end
+	if top_right > 0 then
+		love.graphics.arc("fill", "pie", right - top_right, y + top_right, top_right, math.pi * 1.5, math.pi * 2)
+	end
+	if bottom_right > 0 then
+		love.graphics.arc("fill", "pie", right - bottom_right, bottom - bottom_right, bottom_right, 0, math.pi * 0.5)
+	end
+	if bottom_left > 0 then
+		love.graphics.arc("fill", "pie", x + bottom_left, bottom - bottom_left, bottom_left, math.pi * 0.5, math.pi)
+	end
+end
+
+local function draw_rounded_shape_stencil()
+	if type(rounded_shape_stencil.radius) == "table" then
+		draw_rounded_shape(
+			rounded_shape_stencil.x,
+			rounded_shape_stencil.y,
+			rounded_shape_stencil.w,
+			rounded_shape_stencil.h,
+			rounded_shape_stencil.radius
+		)
+		return
+	end
+	love.graphics.rectangle(
+		"fill",
+		rounded_shape_stencil.x,
+		rounded_shape_stencil.y,
+		rounded_shape_stencil.w,
+		rounded_shape_stencil.h,
+		rounded_shape_stencil.radius,
+		rounded_shape_stencil.radius
+	)
+end
+
 local function draw_gradient_stencil()
 	if gradient_stencil.kind == "polygon" then
 		apply_display.draw_polygon(gradient_stencil.x, gradient_stencil.y, gradient_stencil.points, { 1, 1, 1, 1 })
 	else
-		love.graphics.rectangle(
-			"fill",
-			gradient_stencil.x,
-			gradient_stencil.y,
-			gradient_stencil.w,
-			gradient_stencil.h,
-			gradient_stencil.radius,
-			gradient_stencil.radius
-		)
+		rounded_shape_stencil = gradient_stencil
+		draw_rounded_shape_stencil()
+		rounded_shape_stencil = nil
 	end
 end
 
@@ -213,7 +273,7 @@ local function draw_gradient_shape(rect, bg, gradient, polyline, scale, radius)
 	shader:send("gradientBackground", background)
 
 	love.graphics.push("all")
-	if not polyline and radius <= 0 then
+	if not polyline and type(radius) ~= "table" and radius <= 0 then
 		love.graphics.setShader(shader)
 		love.graphics.setColor(1, 1, 1, 1)
 		love.graphics.rectangle("fill", rect.x, rect.y, rect.w, rect.h)
@@ -235,7 +295,7 @@ local function draw_gradient_shape(rect, bg, gradient, polyline, scale, radius)
 		y = rect.y,
 		w = rect.w,
 		h = rect.h,
-		radius = radius,
+		radius = clamp_radius(radius, rect.w, rect.h),
 	}
 	love.graphics.stencil(draw_gradient_stencil, "replace", 1)
 	love.graphics.setStencilTest("greater", 0)
@@ -262,6 +322,8 @@ end
 -- draw a box border (outline).
 --
 -- single shared style: border = { width, radius, color, center = false }
+-- radius may also be a table with top_left, top_right, bottom_left, and
+-- bottom_right values for independent corner rounding.
 --   default inner border (drawn inside the rect, not expanding outside);
 --   set border.center = true to draw centered on the edge.
 --
@@ -325,11 +387,29 @@ function apply_display.draw_box_border(x, y, w, h, border, c)
 		bx, by = x + inset, y + inset
 		bw_rect, bh_rect = w - bw, h - bw
 	end
-	radius = math.min(radius, bw_rect / 2, bh_rect / 2)
-
 	love.graphics.setColor(c)
 	love.graphics.setLineWidth(bw)
-	love.graphics.rectangle("line", math.floor(bx + 0.5), math.floor(by + 0.5), bw_rect, bh_rect, radius, radius)
+	if type(radius) ~= "table" then
+		radius = math.min(radius, bw_rect / 2, bh_rect / 2)
+		love.graphics.rectangle("line", math.floor(bx + 0.5), math.floor(by + 0.5), bw_rect, bh_rect, radius, radius)
+		return
+	end
+
+	local top_left = math.min(radius.top_left or radius.up_left or 0, bw_rect / 2, bh_rect / 2)
+	local top_right = math.min(radius.top_right or radius.up_right or 0, bw_rect / 2, bh_rect / 2)
+	local bottom_right = math.min(radius.bottom_right or radius.down_right or 0, bw_rect / 2, bh_rect / 2)
+	local bottom_left = math.min(radius.bottom_left or radius.down_left or 0, bw_rect / 2, bh_rect / 2)
+	local right = bx + bw_rect
+	local bottom = by + bh_rect
+
+	love.graphics.line(bx + top_left, by, right - top_right, by)
+	love.graphics.line(right, by + top_right, right, bottom - bottom_right)
+	love.graphics.line(right - bottom_right, bottom, bx + bottom_left, bottom)
+	love.graphics.line(bx, bottom - bottom_left, bx, by + top_left)
+	love.graphics.arc("line", "open", bx + top_left, by + top_left, top_left, math.pi, math.pi * 1.5)
+	love.graphics.arc("line", "open", right - top_right, by + top_right, top_right, math.pi * 1.5, math.pi * 2)
+	love.graphics.arc("line", "open", right - bottom_right, bottom - bottom_right, bottom_right, 0, math.pi * 0.5)
+	love.graphics.arc("line", "open", bx + bottom_left, bottom - bottom_left, bottom_left, math.pi * 0.5, math.pi)
 end
 
 -- draw a filled box with rounded corners (radius in px, 0 = square)
@@ -338,7 +418,17 @@ function apply_display.corner_radius(x, y, w, h, radius, c)
 	if not c then
 		return
 	end
-	radius = math.min(radius or 0, w / 2, h / 2)
+	if type(radius) == "table" then
+		rounded_shape_stencil = { x = x, y = y, w = w, h = h, radius = radius }
+		love.graphics.stencil(draw_rounded_shape_stencil, "replace", 1)
+		love.graphics.setStencilTest("greater", 0)
+		love.graphics.setColor(c)
+		love.graphics.rectangle("fill", x, y, w, h)
+		love.graphics.setStencilTest()
+		rounded_shape_stencil = nil
+		return
+	end
+	radius = clamp_radius(radius, w, h)
 	love.graphics.setColor(c)
 	love.graphics.rectangle("fill", math.floor(x + 0.5), math.floor(y + 0.5), w, h, radius, radius)
 end
@@ -613,7 +703,7 @@ function apply_display.draw_background(widget_data, ctx, rect, polyline, elem)
 	widget_data = widget_data or {}
 	local bg = resolve_background(widget_data.bg, ctx, elem)
 	local border = widget_data.border
-	local scale = ctx.ui_scale
+	local scale = ctx.state.ui_scale
 	local x = rect.x
 	local y = rect.y
 	local w = rect.w
@@ -621,7 +711,7 @@ function apply_display.draw_background(widget_data, ctx, rect, polyline, elem)
 
 	if polyline then
 		local pts = apply_display.scale_points(polyline, scale)
-		if ctx.state.ui_settings.blur and widget_data.blur and ctx.ui.background_canvas then
+		if ctx.settings.ui_settings.blur and widget_data.blur and ctx.state.background_canvas then
 			local blur_x, blur_y, blur_w, blur_h = get_points_bounds(x, y, pts)
 			if blur_w > 0 and blur_h > 0 then
 				love.graphics.push("all")
@@ -629,7 +719,7 @@ function apply_display.draw_background(widget_data, ctx, rect, polyline, elem)
 					apply_display.draw_polygon(x, y, pts, { 1, 1, 1, 1 })
 				end, "replace", 1)
 				love.graphics.setStencilTest("greater", 0)
-				apply_display.blur(ctx.ui.background_canvas, blur_x, blur_y, blur_w, blur_h, widget_data.blur)
+				apply_display.blur(ctx.state.background_canvas, blur_x, blur_y, blur_w, blur_h, widget_data.blur)
 				love.graphics.setStencilTest()
 				love.graphics.pop()
 			end
@@ -644,13 +734,22 @@ function apply_display.draw_background(widget_data, ctx, rect, polyline, elem)
 	end
 
 	local radius = border and border.radius or 0
-	if ctx.state.ui_settings.blur and widget_data.blur and ctx.ui.background_canvas then
+	local blur_radius = radius
+	if type(radius) == "table" then
+		blur_radius = math.max(
+			radius.top_left or radius.up_left or 0,
+			radius.top_right or radius.up_right or 0,
+			radius.bottom_right or radius.down_right or 0,
+			radius.bottom_left or radius.down_left or 0
+		)
+	end
+	if ctx.settings.ui_settings.blur and widget_data.blur and ctx.state.background_canvas then
 		local blur = {}
 		for key, value in pairs(widget_data.blur) do
 			blur[key] = value
 		end
-		blur.cornerRadius = radius
-		apply_display.blur(ctx.ui.background_canvas, x, y, w, h, blur)
+		blur.cornerRadius = blur_radius
+		apply_display.blur(ctx.state.background_canvas, x, y, w, h, blur)
 	end
 	if not draw_gradient_shape(rect, bg, widget_data.gradient, nil, scale, radius) then
 		apply_display.corner_radius(x, y, w, h, radius, bg)

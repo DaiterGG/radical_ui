@@ -95,13 +95,17 @@ execute = {
 		end
 	end,
 	quit = function(ctx)
-		if ctx.ui.scene == "gameplay" then
+		if ctx.state.scene == "gameplay" then
 			execute.stop_gameplay(ctx)
 			return
 		end
 		love.event.push("quit") -- same as the osu_ui example: the loop polls it and exits
 	end,
 	select_beatmap = function(ctx, data)
+		if ctx.state.active_window then
+			return
+		end
+
 		if ctx.beatmaps.selected_index == data.index then
 			return
 		end
@@ -125,10 +129,10 @@ execute = {
 		end
 
 		ctx.beatmaps:play_preview()
-		ctx.ui.need_to_rebuild = true
+		ctx.state.need_to_rebuild = true
 	end,
 	start_gameplay = function(ctx)
-		if ctx.ui.scene ~= "select" then
+		if ctx.state.scene ~= "select" then
 			return
 		end
 
@@ -139,33 +143,37 @@ execute = {
 
 		ctx.beatmaps:stop_preview()
 		ctx.gameplay_api:start()
-		ctx.ui.scene = "gameplay"
-		ctx.ui.need_to_rebuild = true
-		ctx.ui.need_to_realign = true
+		ctx.state.scene = "gameplay"
+		ctx.state.need_to_rebuild = true
+		ctx.state.need_to_realign = true
 	end,
 	stop_gameplay = function(ctx)
-		if ctx.ui.scene ~= "gameplay" then
+		if ctx.state.scene ~= "gameplay" then
 			return
 		end
 
 		ctx.gameplay_api:stop()
-		ctx.ui.scene = "select"
+		ctx.state.scene = "select"
 		ctx.beatmaps:reselect(ctx.beatmaps.selected_index, ctx.state.dif_selected)
 		ctx.beatmaps:play_preview()
-		ctx.ui.need_to_rebuild = true
-		ctx.ui.need_to_realign = true
+		ctx.state.need_to_rebuild = true
+		ctx.state.need_to_realign = true
 	end,
 	ui_scale_custom = function(ctx, new_scale)
-		ctx.ui.custom_scale = new_scale.attached
-		ctx.ui.need_to_rebuild = true
-		ctx.ui_scale = ctx.ui.custom_scale * ctx.res.h / 1080
+		ctx.settings.ui_settings.custom_scale = new_scale.attached
+		ctx.state.need_to_rebuild = true
+		ctx.state.ui_scale = ctx.settings.ui_settings.custom_scale * ctx.state.res.h / 1080
 	end,
 	ui_scale_custom_reset = function(ctx, data)
-		ctx.ui.custom_scale = data.value
-		ctx.ui.need_to_rebuild = true
-		ctx.ui_scale = ctx.ui.custom_scale * ctx.res.h / 1080
+		ctx.settings.ui_settings.custom_scale = data.value
+		ctx.state.need_to_rebuild = true
+		ctx.state.ui_scale = ctx.settings.ui_settings.custom_scale * ctx.state.res.h / 1080
 	end,
 	main_list_up = function(ctx)
+		if ctx.state.active_window then
+			return
+		end
+
 		ctx.beatmaps:ensure_loaded()
 		local count = ctx.beatmaps:len()
 		if count == 0 then
@@ -177,6 +185,10 @@ execute = {
 		execute.select_beatmap(ctx, { index = next_index })
 	end,
 	main_list_down = function(ctx)
+		if ctx.state.active_window then
+			return
+		end
+
 		ctx.beatmaps:ensure_loaded()
 		local count = ctx.beatmaps:len()
 		if count == 0 then
@@ -188,6 +200,10 @@ execute = {
 		execute.select_beatmap(ctx, { index = next_index })
 	end,
 	main_list_page_up = function(ctx)
+		if ctx.state.active_window then
+			return
+		end
+
 		ctx.beatmaps:ensure_loaded()
 		local count = ctx.beatmaps:len()
 		if count == 0 then
@@ -199,6 +215,10 @@ execute = {
 		execute.select_beatmap(ctx, { index = next_index })
 	end,
 	main_list_page_down = function(ctx)
+		if ctx.state.active_window then
+			return
+		end
+
 		ctx.beatmaps:ensure_loaded()
 		local count = ctx.beatmaps:len()
 		if count == 0 then
@@ -210,6 +230,10 @@ execute = {
 		execute.select_beatmap(ctx, { index = next_index })
 	end,
 	main_list_first = function(ctx)
+		if ctx.state.active_window then
+			return
+		end
+
 		ctx.beatmaps:ensure_loaded()
 		if ctx.beatmaps:len() == 0 then
 			return
@@ -218,6 +242,10 @@ execute = {
 		execute.select_beatmap(ctx, { index = 1 })
 	end,
 	main_list_last = function(ctx)
+		if ctx.state.active_window then
+			return
+		end
+
 		ctx.beatmaps:ensure_loaded()
 		local count = ctx.beatmaps:len()
 		if count == 0 then
@@ -228,31 +256,129 @@ execute = {
 	end,
 	settings_tab = function(ctx, data)
 		ctx.state.settings_tab = data.tab
-		ctx.ui.need_to_rebuild = true
+		ctx.state.need_to_rebuild = true
+	end,
+	set_play_speed = function(ctx, data)
+		ctx.game.speedModel:set(data.attached)
+	end,
+	set_speed_type = function(ctx, data)
+		ctx.game.configModel.configs.settings.gameplay.speedType = data.value
+		ctx.state.need_to_rebuild = true
+	end,
+	set_action_type = function(ctx, data)
+		ctx.game.configModel.configs.settings.gameplay.tempoFactor = data.value
+		ctx.state.need_to_rebuild = true
+	end,
+	set_action_on_fail = function(ctx, data)
+		ctx.game.configModel.configs.settings.gameplay.actionOnFail = data.value
+		ctx.state.need_to_rebuild = true
+	end,
+	set_scale_scroll_speed = function(ctx, data)
+		ctx.game.configModel.configs.settings.gameplay.scaleSpeed = data.value
+		ctx.state.need_to_rebuild = true
+	end,
+	set_long_note_shortening = function(ctx, data)
+		ctx.game.configModel.configs.settings.gameplay.longNoteShortening = data.attached
+		ctx.state.need_to_rebuild = true
+	end,
+	set_long_note_shortening_reset = function(ctx, data)
+		ctx.game.configModel.configs.settings.gameplay.longNoteShortening = data.value
+		ctx.state.need_to_rebuild = true
+	end,
+	set_auto_key_sound = function(ctx, data)
+		ctx.game.configModel.configs.settings.gameplay.autoKeySound = data.value
+		ctx.state.need_to_rebuild = true
+	end,
+	set_auto_key_sound_reset = function(ctx, data)
+		ctx.game.configModel.configs.settings.gameplay.autoKeySound = data.value
+		ctx.state.need_to_rebuild = true
+	end,
+	set_event_based_render = function(ctx, data)
+		ctx.game.configModel.configs.settings.gameplay.eventBasedRender = data.value
+		ctx.state.need_to_rebuild = true
+	end,
+	set_event_based_render_reset = function(ctx, data)
+		ctx.game.configModel.configs.settings.gameplay.eventBasedRender = data.value
+		ctx.state.need_to_rebuild = true
+	end,
+	set_prepare_time = function(ctx, data)
+		ctx.game.configModel.configs.settings.gameplay.time.prepare = data.attached
+		ctx.state.need_to_rebuild = true
+	end,
+	set_prepare_time_reset = function(ctx, data)
+		ctx.game.configModel.configs.settings.gameplay.time.prepare = data.value
+		ctx.state.need_to_rebuild = true
+	end,
+	set_play_pause_time = function(ctx, data)
+		ctx.game.configModel.configs.settings.gameplay.time.playPause = data.attached
+		ctx.state.need_to_rebuild = true
+	end,
+	set_play_pause_time_reset = function(ctx, data)
+		ctx.game.configModel.configs.settings.gameplay.time.playPause = data.value
+		ctx.state.need_to_rebuild = true
+	end,
+	set_pause_play_time = function(ctx, data)
+		ctx.game.configModel.configs.settings.gameplay.time.pausePlay = data.attached
+		ctx.state.need_to_rebuild = true
+	end,
+	set_pause_play_time_reset = function(ctx, data)
+		ctx.game.configModel.configs.settings.gameplay.time.pausePlay = data.value
+		ctx.state.need_to_rebuild = true
+	end,
+	set_play_retry_time = function(ctx, data)
+		ctx.game.configModel.configs.settings.gameplay.time.playRetry = data.attached
+		ctx.state.need_to_rebuild = true
+	end,
+	set_play_retry_time_reset = function(ctx, data)
+		ctx.game.configModel.configs.settings.gameplay.time.playRetry = data.value
+		ctx.state.need_to_rebuild = true
+	end,
+	set_pause_retry_time = function(ctx, data)
+		ctx.game.configModel.configs.settings.gameplay.time.pauseRetry = data.attached
+		ctx.state.need_to_rebuild = true
+	end,
+	set_pause_retry_time_reset = function(ctx, data)
+		ctx.game.configModel.configs.settings.gameplay.time.pauseRetry = data.value
+		ctx.state.need_to_rebuild = true
 	end,
 	set_blur = function(ctx, data)
-		ctx.state.ui_settings.blur = data.value
-		ctx.ui.need_to_rebuild = true
+		ctx.settings.ui_settings.blur = data.value
+		ctx.state.need_to_rebuild = true
 	end,
 	set_blur_reset = function(ctx, data)
-		ctx.state.ui_settings.blur = data.value
-		ctx.ui.need_to_rebuild = true
+		ctx.settings.ui_settings.blur = data.value
+		ctx.state.need_to_rebuild = true
 	end,
 	set_background = function(ctx, data)
-		ctx.state.ui_settings.background = data.value
-		ctx.ui.need_to_rebuild = true
+		ctx.settings.ui_settings.background = data.value
+		ctx.state.need_to_rebuild = true
 	end,
 	set_background_reset = function(ctx, data)
-		ctx.state.ui_settings.background = data.value
-		ctx.ui.need_to_rebuild = true
+		ctx.settings.ui_settings.background = data.value
+		ctx.state.need_to_rebuild = true
 	end,
 	set_animations = function(ctx, data)
-		ctx.state.ui_settings.animations = data.value
-		ctx.ui.need_to_rebuild = true
+		ctx.settings.ui_settings.animations = data.value
+		ctx.state.need_to_rebuild = true
 	end,
 	set_animations_reset = function(ctx, data)
-		ctx.state.ui_settings.animations = data.value
-		ctx.ui.need_to_rebuild = true
+		ctx.settings.ui_settings.animations = data.value
+		ctx.state.need_to_rebuild = true
+	end,
+	set_theme = function(ctx, data)
+		ctx.game_api:setTheme(data.value)
+		ctx.state.need_to_rebuild = true
+	end,
+	set_dummy_value = function(ctx, data)
+		local value = tonumber(data.value) or 0
+		ctx.settings.ui_settings.dummy_value = value
+		local input_data = ctx.widget_reg:get("settings_value_set_dummy_value")
+		if input_data then
+			input_data.input_field = tostring(value)
+			input_data.caret = #input_data.input_field + 1
+			input_data.selection[1] = input_data.caret
+			input_data.selection[2] = input_data.caret
+		end
 	end,
 	trigger_animation = function(ctx, data)
 		if not data or not data.key then
@@ -277,7 +403,7 @@ execute = {
 			ctx.state.active_window = nil
 			ctx.anim_reg:update("test_animation", "in")
 		end
-		ctx.ui.need_to_rebuild = true
+		ctx.state.need_to_rebuild = true
 	end,
 	sub_window_open = function(ctx, data)
 		if data.window then
@@ -287,14 +413,14 @@ execute = {
 			ctx.state.active_window = nil
 			ctx.anim_reg:update("test_animation", "in")
 		end
-		ctx.ui.need_to_rebuild = true
+		ctx.state.need_to_rebuild = true
 	end,
 	select_difficulty = function(ctx, data)
 		if ctx.state.dif_selected ~= data.index then
 			ctx.beatmaps:select_difficulty(data.index)
 			ctx.beatmaps:play_preview()
 			ctx.state.dif_selected = data.index
-			ctx.ui.need_to_rebuild = true
+			ctx.state.need_to_rebuild = true
 		end
 	end,
 

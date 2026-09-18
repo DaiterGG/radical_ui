@@ -20,6 +20,7 @@ local function register_action(ctx, action, data, event)
 	end
 	queued.event = event
 	queued.text = data.input_field
+	queued.value = data.input_field
 	queued.input_data = data
 	ctx.action_queue:register(queued)
 end
@@ -96,9 +97,7 @@ end
 function text_input:insert_text(data, text)
 	local start_pos = math.min(data.selection[1], data.selection[2])
 	local end_pos = math.max(data.selection[1], data.selection[2])
-	data.input_field = string.sub(data.input_field, 1, start_pos - 1)
-		.. text
-		.. string.sub(data.input_field, end_pos)
+	data.input_field = string.sub(data.input_field, 1, start_pos - 1) .. text .. string.sub(data.input_field, end_pos)
 	data.caret = start_pos + #text
 	data.selection[1] = data.caret
 	data.selection[2] = data.caret
@@ -152,14 +151,10 @@ function text_input:erase(data, backward, ctrl)
 			end_pos = data.caret + 1
 			if ctrl then
 				end_pos = data.caret
-				while end_pos <= #data.input_field
-					and string.sub(data.input_field, end_pos, end_pos):match("%s")
-				do
+				while end_pos <= #data.input_field and string.sub(data.input_field, end_pos, end_pos):match("%s") do
 					end_pos = end_pos + 1
 				end
-				while end_pos <= #data.input_field
-					and not string.sub(data.input_field, end_pos, end_pos):match("%s")
-				do
+				while end_pos <= #data.input_field and not string.sub(data.input_field, end_pos, end_pos):match("%s") do
 					end_pos = end_pos + 1
 				end
 			end
@@ -167,8 +162,7 @@ function text_input:erase(data, backward, ctrl)
 	end
 	start_pos = math.max(1, start_pos)
 	end_pos = math.min(#data.input_field + 1, end_pos)
-	data.input_field = string.sub(data.input_field, 1, start_pos - 1)
-		.. string.sub(data.input_field, end_pos)
+	data.input_field = string.sub(data.input_field, 1, start_pos - 1) .. string.sub(data.input_field, end_pos)
 	data.caret = start_pos
 	data.selection[1] = start_pos
 	data.selection[2] = start_pos
@@ -208,7 +202,9 @@ local function get_widget_data(elem, ctx, widget)
 	local widget_data_key = widget.registry_key
 	local data = ctx.widget_reg:get(widget_data_key)
 	if not data then
-		data = { input_field = "" }
+		data = {}
+		data.input_field = widget.starting_value or ""
+		data.is_selected = false
 		local text = data.input_field
 		local caret = #text + 1
 		data.selection = { caret, caret }
@@ -223,17 +219,20 @@ local function get_widget_data(elem, ctx, widget)
 	return widget_data_key, data
 end
 
--- constructor: text_input(placeholder_str, action, options)
+-- constructor: text_input(placeholder_str, action, registry_key, options)
 --   placeholder_str: hint text when empty and unfocused
 --   action: called via action_queue when focus changes
---   options: { registry_key, on_input, on_finish_select, on_input_with_delay, input_delay }
-function text_input:new(placeholder_str, action, options)
-	if not options or not options.registry_key then
+--   options: { starting_value, auto_select, on_input, on_finish_select, on_input_with_delay, input_delay }
+function text_input:new(placeholder_str, action, registry_key, options)
+	if not registry_key then
 		error("text_input requires a widget registry key")
 	end
+	options = options or {}
 	self.placeholder = placeholder_str or ""
 	self.action = action
-	self.registry_key = options.registry_key
+	self.registry_key = registry_key
+	self.starting_value = options.starting_value
+	self.auto_select = options.auto_select == true
 	self.on_input = options.on_input
 	self.on_finish_select = options.on_finish_select
 	self.on_input_with_delay = options.on_input_with_delay
@@ -244,9 +243,7 @@ end
 function text_input:pointer_collision(elem, ctx, hit)
 	local input = ctx.input_state
 	local widget_data_key, data = get_widget_data(elem, ctx, self)
-	if self.focused and input.input_key == widget_data_key
-		and input.left == "pressed" and not hit
-	then
+	if self.focused and input.input_key == widget_data_key and input.left == "pressed" and not hit then
 		input.input_key = nil
 	end
 	if self.focused and input.input_key == nil then
@@ -256,17 +253,12 @@ function text_input:pointer_collision(elem, ctx, hit)
 		data.selection[1] = data.caret
 		data.selection[2] = data.caret
 	end
-	self:process_delay(ctx, data, ctx.dt or 0)
-	local widget_data = ctx.display_list[elem.display_key]
-		and ctx.display_list[elem.display_key][self.type]
+	self:process_delay(ctx, data, ctx.state.last_delta or 0)
+	local widget_data = ctx.display_list[elem.display_key] and ctx.display_list[elem.display_key][self.type]
 	if not widget_data or not widget_data.font then
 		return
 	end
-	local font = fonts:get_scaled(
-		widget_data.font,
-		widget_data.size or widget_data.font_size,
-		ctx.ui_scale
-	)
+	local font = fonts:get_scaled(widget_data.font, widget_data.size or widget_data.font_size, ctx.state.ui_scale)
 	if not font then
 		return
 	end
@@ -275,38 +267,32 @@ function text_input:pointer_collision(elem, ctx, hit)
 		self.focused = true
 		input.input_key = widget_data_key
 		elem.states.selected = true
-		data.mouse_selection_anchor = self:caret_from_x(
-			data,
-			font,
-			self:text_origin(elem, data, widget_data, font),
-			input.pos.x
-		)
-		data.caret = data.mouse_selection_anchor
-		data.selection[1] = data.caret
-		data.selection[2] = data.caret
+		if self.auto_select then
+			self:select_all(data)
+		else
+			data.mouse_selection_anchor =
+				self:caret_from_x(data, font, self:text_origin(elem, data, widget_data, font), input.pos.x)
+			data.caret = data.mouse_selection_anchor
+			data.selection[1] = data.caret
+			data.selection[2] = data.caret
+		end
 		if self.action then
 			ctx.action_queue:register({
 				action = self.action,
 				event = "focus",
 				text = data.input_field,
+				value = data.input_field,
 			})
 		end
 		return
 	end
 
-	if hit and input.input_key == widget_data_key and input.left == "held" then
-		local caret = self:caret_from_x(
-			data,
-			font,
-			self:text_origin(elem, data, widget_data, font),
-			input.pos.x
-		)
+	if hit and input.input_key == widget_data_key and input.left == "held" and not self.auto_select then
+		local caret = self:caret_from_x(data, font, self:text_origin(elem, data, widget_data, font), input.pos.x)
 		self:set_mouse_selection(data, caret)
 	end
 
-	if input.input_key == widget_data_key and input.left == "released"
-		and data.selection[1] ~= data.selection[2]
-	then
+	if input.input_key == widget_data_key and input.left == "released" and data.selection[1] ~= data.selection[2] then
 		register_action(ctx, data.on_finish_select, data, "finish_select")
 	end
 end
@@ -318,7 +304,7 @@ function text_input:draw(elem, ctx, widget_display_data, display_data)
 	end
 	local _, data = get_widget_data(elem, ctx, self)
 
-	local ui_scale = ctx and ctx.ui_scale
+	local ui_scale = ctx and ctx.state.ui_scale
 	local font = widget_display_data.font
 		and fonts:get_scaled(
 			widget_display_data.font,

@@ -33,6 +33,9 @@ end
 function button:pointer_collision(elem, ctx, hit)
 	local input = ctx.input_state
 	local hash = elem.hash_num
+	if self.child then
+		widget.set_child_states(self.child, elem.states)
+	end
 
 	if hit and input.left == "pressed" then
 		input.interacting_with = hash
@@ -78,6 +81,7 @@ function button:pointer_collision_after(elem, ctx, hit, children_hit)
 		input.interacting_with = nil
 	end
 
+	elem.states.held = input.interacting_with == elem.hash_num
 	if input.interacting_with == elem.hash_num then
 		elem.states.selected = true
 	end
@@ -95,7 +99,6 @@ function button:draw(elem, ctx, widget_display_data, display_data)
 	if self.child then
 		local r = elem.rect
 		self.child.rect = { x = r.x, y = r.y, w = r.w, h = r.h }
-		widget.set_child_states(self.child, elem.states)
 		self.child:draw_rec(ctx)
 	end
 end

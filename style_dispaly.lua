@@ -105,12 +105,12 @@ local function display_data(theme)
 		settings_reset_icon = {
 			text = {
 				idle = {
-					font = "icons",
+					font = "custom",
 					size = 26,
 					color = theme.separator_main,
 				},
 				hovered = {
-					font = "icons",
+					font = "custom",
 					size = 26,
 					color = theme.main_accent,
 				},
@@ -127,6 +127,138 @@ local function display_data(theme)
 				size = 22,
 				text_color = theme.main_text,
 				placeholder_color = theme.glass_icons,
+				align_x = "center",
+			},
+		},
+		settings_value_button = {
+			button = {
+				idle = {
+					bg = theme.main_panel_br,
+					border = { center = true, width = 1, color = theme.separator_main },
+				},
+				hovered = {
+					bg = theme.main_hover_c,
+					border = { center = true, width = 1, color = theme.separator_main },
+				},
+				held = {
+					bg = theme.main_panel,
+					border = { center = true, width = 1, color = theme.separator_main },
+				},
+				pressed = {
+					bg = theme.main_panel,
+					border = { center = true, width = 1, color = theme.separator_main },
+				},
+			},
+		},
+		settings_value_left_edge = {
+			button = {
+				idle = {
+					bg = theme.main_panel_br,
+					border = {
+						center = true,
+						width = 1,
+						color = theme.separator_main,
+						radius = { top_left = 999, bottom_left = 999 },
+					},
+				},
+				hovered = {
+					bg = theme.main_hover_c,
+					border = {
+						center = true,
+						width = 1,
+						color = theme.separator_main,
+						radius = { top_left = 999, bottom_left = 999 },
+					},
+				},
+				held = {
+					bg = theme.main_panel,
+					border = {
+						center = true,
+						width = 1,
+						color = theme.separator_main,
+						radius = { top_left = 999, bottom_left = 999 },
+					},
+				},
+				pressed = {
+					bg = theme.main_panel,
+					border = {
+						center = true,
+						width = 1,
+						color = theme.separator_main,
+						radius = { top_left = 999, bottom_left = 999 },
+					},
+				},
+			},
+		},
+		settings_value_right_edge = {
+			button = {
+				idle = {
+					bg = theme.main_panel_br,
+					border = {
+						center = true,
+						width = 1,
+						color = theme.separator_main,
+						radius = { top_right = 999, bottom_right = 999 },
+					},
+				},
+				hovered = {
+					bg = theme.main_hover_c,
+					border = {
+						center = true,
+						width = 1,
+						color = theme.separator_main,
+						radius = { top_right = 999, bottom_right = 999 },
+					},
+				},
+				held = {
+					bg = theme.main_panel,
+					border = {
+						center = true,
+						width = 1,
+						color = theme.separator_main,
+						radius = { top_right = 999, bottom_right = 999 },
+					},
+				},
+				pressed = {
+					bg = theme.main_panel,
+					border = {
+						center = true,
+						width = 1,
+						color = theme.separator_main,
+						radius = { top_right = 999, bottom_right = 999 },
+					},
+				},
+			},
+		},
+		settings_value_icon = {
+			text = {
+				idle = {
+					font = "icons",
+					size = 26,
+					color = theme.main_text,
+					align_x = "center",
+					align_y = "center",
+				},
+				held = {
+					font = "icons",
+					size = 26,
+					color = theme.main_accent,
+					align_x = "center",
+					align_y = "center",
+				},
+			},
+		},
+		settings_value_input = {
+			text_input = {
+				bg = theme.input_bg,
+				selected_bg = theme.input_selected_bg,
+				border = { center = true, width = 1, color = theme.separator_main },
+				bg_focused = theme.header_bg,
+				border_focused = { center = true, width = 1, color = theme.separator_main },
+				font = theme.main_font,
+				size = 22,
+				text_color = theme.main_text,
+				placeholder_color = theme.main_text,
 				align_x = "center",
 			},
 		},
@@ -161,6 +293,132 @@ local function display_data(theme)
 				pressed = {
 					bg = theme.main_panel,
 					border = { center = true, width = 1, color = theme.separator_main },
+				},
+			},
+		},
+		dropdown_button = {
+			button = {
+				idle = {
+					bg = theme.main_panel_br,
+					border = { center = true, width = 1, color = theme.separator_main, radius = 999 },
+					gradient = {
+						origin = theme.main_origin,
+						direction = theme.main_direction,
+						color1 = theme.main_panel_gr_br,
+						color2 = color("#FFFFFF", 0),
+					},
+				},
+				hovered = {
+					bg = theme.main_hover_c,
+					border = { center = true, width = 1, color = theme.separator_main, radius = 999 },
+				},
+				held = {
+					bg = theme.main_panel,
+					border = { center = true, width = 1, color = theme.separator_main, radius = 999 },
+				},
+				pressed = {
+					bg = theme.main_panel,
+					border = { center = true, width = 1, color = theme.separator_main, radius = 999 },
+				},
+			},
+		},
+		dropdown_middle_button = {
+			button = {
+				idle = {
+					bg = theme.main_panel_br,
+					border = { center = true, width = 1, color = theme.separator_main },
+				},
+				hovered = {
+					bg = theme.main_hover_c,
+					border = { center = true, width = 1, color = theme.separator_main },
+				},
+				held = {
+					bg = theme.main_panel,
+					border = { center = true, width = 1, color = theme.separator_main },
+				},
+				pressed = {
+					bg = theme.main_panel,
+					border = { center = true, width = 1, color = theme.separator_main },
+				},
+			},
+		},
+		dropdown_top_button = {
+			button = {
+				idle = {
+					bg = theme.main_panel_br,
+					border = {
+						center = true,
+						width = 1,
+						color = theme.separator_main,
+						radius = { top_left = 999, top_right = 999 },
+					},
+				},
+				hovered = {
+					bg = theme.main_hover_c,
+					border = {
+						center = true,
+						width = 1,
+						color = theme.separator_main,
+						radius = { top_left = 999, top_right = 999 },
+					},
+				},
+				held = {
+					bg = theme.main_panel,
+					border = {
+						center = true,
+						width = 1,
+						color = theme.separator_main,
+						radius = { top_left = 999, top_right = 999 },
+					},
+				},
+				pressed = {
+					bg = theme.main_panel,
+					border = {
+						center = true,
+						width = 1,
+						color = theme.separator_main,
+						radius = { top_left = 999, top_right = 999 },
+					},
+				},
+			},
+		},
+		dropdown_bottom_button = {
+			button = {
+				idle = {
+					bg = theme.main_panel_br,
+					border = {
+						center = true,
+						width = 1,
+						color = theme.separator_main,
+						radius = { bottom_left = 999, bottom_right = 999 },
+					},
+				},
+				hovered = {
+					bg = theme.main_hover_c,
+					border = {
+						center = true,
+						width = 1,
+						color = theme.separator_main,
+						radius = { bottom_left = 999, bottom_right = 999 },
+					},
+				},
+				held = {
+					bg = theme.main_panel,
+					border = {
+						center = true,
+						width = 1,
+						color = theme.separator_main,
+						radius = { bottom_left = 999, bottom_right = 999 },
+					},
+				},
+				pressed = {
+					bg = theme.main_panel,
+					border = {
+						center = true,
+						width = 1,
+						color = theme.separator_main,
+						radius = { bottom_left = 999, bottom_right = 999 },
+					},
 				},
 			},
 		},
@@ -402,8 +660,30 @@ local function display_data(theme)
 		},
 		slider_handle = {
 			box = {
-				bg = theme.main_accent,
-				border = { center = true, width = 1, radius = 999, color = theme.separator_main },
+				idle = {
+					bg = theme.main_panel,
+					border = { center = true, width = 1, radius = 999, color = theme.separator_main },
+				},
+				held = {
+					bg = theme.main_accent,
+					border = { center = true, width = 1, radius = 999, color = theme.separator_main },
+				},
+			},
+			text = {
+				idle = {
+					font = theme.main_font,
+					size = 22,
+					color = theme.main_text,
+					align_x = "center",
+					align_y = "center",
+				},
+				held = {
+					font = theme.main_font,
+					size = 22,
+					color = theme.separator_main,
+					align_x = "center",
+					align_y = "center",
+				},
 			},
 		},
 		settings_text = {
@@ -412,6 +692,15 @@ local function display_data(theme)
 				size = 26,
 				color = theme.main_text,
 				align_x = "left",
+				align_y = "center",
+			},
+		},
+		settings_section_text = {
+			text = {
+				font = theme.main_font,
+				size = 30,
+				color = theme.main_text,
+				align_x = "center",
 				align_y = "center",
 			},
 		},
@@ -597,6 +886,15 @@ local function display_data(theme)
 				font = theme.international_font,
 				size = 22,
 				align_x = "left",
+				align_y = "center",
+				color = theme.glass_text,
+			},
+		},
+		dropdown_text = {
+			text = {
+				font = theme.international_font,
+				size = 22,
+				align_x = "center",
 				align_y = "center",
 				color = theme.glass_text,
 			},

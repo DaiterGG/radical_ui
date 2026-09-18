@@ -3,7 +3,7 @@ local apply_display = require("apply_display")
 
 -- background widget: draws the chart background image (produced by the game
 -- from the chart, see ctx.game.backgroundModel) covering the element's rect.
--- renders into a shared canvas (ctx.ui.background_canvas) so other widgets
+-- renders into a shared canvas (ctx.state.background_canvas) so other widgets
 -- (e.g. box with a blur option) can blur what's behind them.
 -- completely independent widget file.
 
@@ -37,10 +37,10 @@ function background:draw(elem, ctx, widget_display_data, display_data)
 	end
 
 	-- (re)create the shared background canvas to match the element size
-	local canvas = ctx.ui.background_canvas
+	local canvas = ctx.state.background_canvas
 	if not canvas or canvas:getWidth() ~= math.floor(r.w) or canvas:getHeight() ~= math.floor(r.h) then
 		canvas = love.graphics.newCanvas(math.floor(r.w), math.floor(r.h))
-		ctx.ui.background_canvas = canvas
+		ctx.state.background_canvas = canvas
 	end
 
 	-- render into the canvas (chart bg image, or configured color fallback)
@@ -51,7 +51,7 @@ function background:draw(elem, ctx, widget_display_data, display_data)
 	-- start with white so leaked setColor can't tint the canvas content
 	love.graphics.setColor(1, 1, 1, 1)
 
-	local has_background = ctx.state.ui_settings.background and (not ctx.beatmaps or ctx.beatmaps:has_background())
+	local has_background = ctx.settings.ui_settings.background and (not ctx.beatmaps or ctx.beatmaps:has_background())
 	if not has_background then
 		local color = widget_display_data and widget_display_data.color
 		apply_display.draw_box(0, 0, r.w, r.h, color)

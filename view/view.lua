@@ -10,7 +10,7 @@ local absolute = align_mod.Absolute
 local Size = align_mod.Size
 
 local function gameplay_view(ctx)
-	ctx.ui.root_elements = {
+	ctx.state.root_elements = {
 		ui_element({
 			widgets = { gameplay() },
 			align = absolute({
@@ -23,16 +23,16 @@ local function gameplay_view(ctx)
 end
 
 return function(ctx)
-	if not ctx.ui.need_to_rebuild then
+	if not ctx.state.need_to_rebuild then
 		return
 	end
-	ctx.ui.need_to_rebuild = false
+	ctx.state.need_to_rebuild = false
 	print("rebuild")
 
-	if ctx.ui.scene == "gameplay" then
+	if ctx.state.scene == "gameplay" then
 		gameplay_view(ctx)
 	else
 		main_view(ctx)
 	end
-	ctx.ui.need_to_realign = true
+	ctx.state.need_to_realign = true
 end

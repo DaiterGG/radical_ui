@@ -19,6 +19,7 @@ function drop_down:new(widget_key, idle, focused)
 	self.idle = idle
 	self.focused = focused
 	self.widget_key = widget_key
+	self.selected_registered = false
 end
 
 function drop_down:selected_element(ctx)
@@ -30,35 +31,51 @@ function drop_down:selected_element(ctx)
 end
 
 function drop_down:align(elem, ctx)
-	local child = self:selected_element(ctx)
-	if not child then
+	local data = get_widget_data(ctx, self.widget_key)
+	local rect = elem.rect
+	if self.idle and not data.selected then
+		self.idle:align_rec({ x = rect.x, y = rect.y, w = rect.w, h = rect.h }, ctx)
 		return
 	end
-	local rect = elem.rect
-	child:align_rec(
-		{ x = rect.x, y = rect.y, w = rect.w, h = rect.h },
-		ctx
-	)
+	if not self.focused or not data.selected then
+		return
+	end
+	self.focused.align = self.focused.align or self.stealed_align
+	self.focused:align_rec({ x = rect.x, y = rect.y, w = rect.w, h = rect.h }, ctx)
+	self.stealed_align = self.focused.align
+	self.focused.align = nil
+	if not self.selected_registered then
+		ctx.state.root_elements[#ctx.state.root_elements + 1] = self.focused
+		self.selected_registered = true
+	end
 end
 
 function drop_down:pointer_collision(elem, ctx)
-	local child = self:selected_element(ctx)
-	if not child then
+	local data = get_widget_data(ctx, self.widget_key)
+
+	if self.idle and not data.selected then
+		local hit = self.idle:pointer_collision_rec(ctx, true)
+		if hit and ctx.input_state.left == "pressed" then
+			data.selected = true
+			ctx.state.need_to_realign = true
+		end
 		return
 	end
-	local hit = child:pointer_collision_rec(ctx, true)
-	if hit and ctx.input_state.left == "pressed" then
-		local data = get_widget_data(ctx, self.widget_key)
-		data.selected = not data.selected
+	if not data.selected then
+		return
+	end
+
+	if ctx.input_state.left == "pressed" then
+		data.selected = false
+		ctx.state.need_to_rebuild = true
 	end
 end
 
 function drop_down:draw(elem, ctx)
-	local child = self:selected_element(ctx)
-	if not child then
-		return
+	local data = get_widget_data(ctx, self.widget_key)
+	if self.idle and not data.selected then
+		self.idle:draw_rec(ctx)
 	end
-	child:draw_rec(ctx)
 end
 
 return drop_down

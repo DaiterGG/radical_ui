@@ -1,0 +1,1 @@
+this is a custom ui implementation and theme; at ./examples/osu_ui-main there is another ui implementation and theme just like mine, but complete and working; also .\..\..\..\game there is a decompiled version of the game itself; both folders are read only, you can only edit cwd

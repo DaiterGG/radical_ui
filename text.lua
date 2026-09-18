@@ -47,7 +47,7 @@ function text:draw(elem, ctx, widget_display_data, display_data)
 		return
 	end
 
-	local ui_scale = ctx and ctx.ui_scale
+	local ui_scale = ctx and ctx.state.ui_scale
 	local font = widget_data.font and fonts:get_scaled(widget_data.font, widget_data.size, ui_scale)
 	if not font then
 		return

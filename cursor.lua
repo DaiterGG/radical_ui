@@ -42,6 +42,11 @@ function cursor:buffer_cursor(glyph)
 
 	love.graphics.push("all")
 	love.graphics.setCanvas(canvas)
+	love.graphics.origin()
+	love.graphics.setScissor()
+	love.graphics.setShader()
+	love.graphics.setStencilTest()
+	love.graphics.setBlendMode("alpha")
 	love.graphics.clear(0, 0, 0, 0)
 	love.graphics.setFont(font)
 

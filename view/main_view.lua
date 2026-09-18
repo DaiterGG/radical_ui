@@ -42,9 +42,13 @@ local function settings_checkbox_handle(data_key, is_on)
 end
 
 local function settings_reset_button(action, value, align)
+	if value == nil then
+		return nil
+	end
 	local icon = ui_element({
 		display = "settings_reset_icon",
 		widgets = { text(icons.reset) },
+		align = block(Direction.Up, { pc = 100 }),
 	})
 	return ui_element({
 		display = "settings_reset_button",
@@ -80,18 +84,6 @@ local function settings_checkbox(label, action_name, value, default_value)
 			size = Size({ px_hor = 132, pc_vert = 100 }),
 		}),
 	})
-	if value ~= default_value then
-		checkbox_area:push_child(
-			settings_reset_button(action_name .. "_reset", default_value, block(Direction.Left, { px = 36 }))
-		)
-	else
-		checkbox_area:push_child(ui_element({
-			align = block(Direction.Left, { px = 36 }),
-		}))
-	end
-	checkbox_area:push_child(ui_element({
-		align = block(Direction.Left, { px = 8 }),
-	}))
 	checkbox_area:push_child(ui_element({
 		display = "checkbox",
 		widgets = { checkbox(actions, settings_checkbox_handle(action_name, value), value) },
@@ -106,19 +98,30 @@ local function settings_checkbox(label, action_name, value, default_value)
 			key = action_name,
 		},
 	}))
+
+	checkbox_area:push_child(ui_element({
+		align = block(Direction.Right, { px = 8 + 80 }),
+	}))
+
+	if value ~= default_value then
+		checkbox_area:push_child(
+			settings_reset_button(action_name .. "_reset", default_value, block(Direction.Right, { px = 36 }))
+		)
+	end
+
 	content:push_child(checkbox_area)
 	row:push_child(content)
 	return row
 end
 
-local function settings_slider_handle()
+local function settings_slider_handle(current_value)
 	return ui_element({
 		display = "slider_handle",
-		widgets = { box() },
+		widgets = { box(), text(string.format("%.1f", current_value)) },
 		align = absolute({
 			pivot = { x = 50, y = 50 },
 			parent_pivot = { x = 0, y = 50 },
-			size = Size({ px = 26 }),
+			size = Size({ px_hor = 72, px_vert = 26 }),
 		}),
 	})
 end
@@ -126,7 +129,7 @@ end
 local function settings_slider_control(value, on_release, align)
 	return ui_element({
 		display = "slider",
-		widgets = { slider(value, settings_slider_handle(), nil, on_release) },
+		widgets = { slider(value, settings_slider_handle(value.current), nil, on_release) },
 		align = align or absolute({
 			pivot = { x = 50, y = 50 },
 			parent_pivot = { x = 50, y = 50 },
@@ -190,7 +193,7 @@ local function input_field(label, data_key, action)
 	local field = ui_element({
 		display = "header_input",
 		widgets = {
-			text_input(label, action, { registry_key = data_key }),
+			text_input(label, action, data_key),
 		},
 		align = block(Direction.Left, { pc = 65 }),
 	})
@@ -208,13 +211,111 @@ local function input_field(label, data_key, action)
 	return row
 end
 
-local function dropdown_row(action_name, value, all_values, widget_key)
+local function settings_value_button(icon, button_value, action, display, align)
+	local icon_element = ui_element({
+		display = "settings_value_icon",
+		widgets = { text(icon) },
+		align = block(Direction.Up, { pc = 100 }),
+	})
+	return ui_element({
+		display = display,
+		widgets = {
+			button(icon_element, {
+				on_release = { action = action, value = button_value },
+			}),
+		},
+		align = align,
+	})
+end
+
+local function settings_value_row(label, value, action)
+	local row = ui_element({
+		align = block(Direction.Up, { px = 56 }),
+	})
+	local content = ui_element({
+		align = absolute({
+			pivot = { x = 50, y = 50 },
+			parent_pivot = { x = 50, y = 50 },
+			size = Size({ pc_hor = 90, pc_vert = 100 }),
+		}),
+	})
+	content:push_child(ui_element({
+		display = "settings_text",
+		widgets = { text(label) },
+		align = block(Direction.Left, { pc = 50 }),
+	}))
+	local controls = ui_element({
+		align = block(Direction.Right, { pc = 100 }),
+	})
+	local control_row = ui_element({
+		align = absolute({
+			pivot = { x = 50, y = 50 },
+			parent_pivot = { x = 50, y = 50 },
+			size = Size({ pc_hor = 100, px_vert = 40 }),
+		}),
+	})
+	control_row:push_child(
+		settings_value_button(icons.back_10, value - 10, action, "settings_value_left_edge", block(Direction.Left, { px = 40 }))
+	)
+	control_row:push_child(
+		settings_value_button(icons.back_1, value - 1, action, "settings_value_button", block(Direction.Left, { px = 40 }))
+	)
+	control_row:push_child(
+		settings_value_button(icons.forward_10, value + 10, action, "settings_value_right_edge", block(Direction.Right, { px = 40 }))
+	)
+	control_row:push_child(
+		settings_value_button(icons.forward_1, value + 1, action, "settings_value_button", block(Direction.Right, { px = 40 }))
+	)
+	control_row:push_child(ui_element({
+		display = "settings_value_input",
+		widgets = {
+			text_input(tostring(value), nil, "settings_value_" .. tostring(action), {
+				starting_value = tostring(value),
+				auto_select = true,
+				on_input = action,
+			}),
+		},
+		align = block(Direction.Right, { pc = 100 }),
+	}))
+	controls:push_child(control_row)
+	content:push_child(controls)
+	row:push_child(content)
+	return row
+end
+
+local function dropdown_option_label(option)
+	if type(option) == "table" then
+		return option.name
+	end
+	return option
+end
+
+local function dropdown_option_value(option)
+	if type(option) == "table" then
+		return option.id
+	end
+	return option
+end
+
+local function dropdown_row(action_name, value, all_values, widget_key, default_value, label)
+	local dropdown_width = 180
+	local dropdown_height = 40
+	local longest_value = dropdown_option_label(value)
+	for _, option in ipairs(all_values) do
+		local option_label = dropdown_option_label(option)
+		if type(option_label) == "string" and (not longest_value or #option_label > #longest_value) then
+			longest_value = option_label
+		end
+	end
+	if longest_value then
+		dropdown_width = #longest_value * 18
+	end
 	local idle_text = ui_element({
-		display = "first_b_text",
-		widgets = { text(tostring(value)) },
+		display = "dropdown_text",
+		widgets = { text(tostring(dropdown_option_label(value))) },
 	})
 	local idle = ui_element({
-		display = "first_b",
+		display = "dropdown_button",
 		widgets = { button(idle_text) },
 		align = absolute({
 			pivot = { x = 0, y = 0 },
@@ -227,32 +328,80 @@ local function dropdown_row(action_name, value, all_values, widget_key)
 		align = absolute({
 			pivot = { x = 0, y = 0 },
 			parent_pivot = { x = 0, y = 0 },
-			size = Size({ pc_hor = 100, pc_vert = 100 }),
+			size = Size({ pc_hor = 100, pc_vert = 100 * #all_values }),
 		}),
 	})
-	for _, selected_value in ipairs(all_values) do
+	for selected_index, selected_value in ipairs(all_values) do
 		local selected_text = ui_element({
-			display = "first_b_text",
-			widgets = { text(tostring(selected_value)) },
+			display = "dropdown_text",
+			widgets = { text(tostring(dropdown_option_label(selected_value))) },
 		})
+		local selected_display = "dropdown_middle_button"
+		if #all_values == 1 then
+			selected_display = "dropdown_button"
+		elseif selected_index == 1 then
+			selected_display = "dropdown_top_button"
+		elseif selected_index == #all_values then
+			selected_display = "dropdown_bottom_button"
+		end
 		selected:push_child(ui_element({
-			display = "first_b",
+			display = selected_display,
 			widgets = {
 				button(selected_text, {
-					on_release = {
+					on_press = {
 						action = action_name,
-						value = selected_value,
+						value = dropdown_option_value(selected_value),
 					},
 				}),
 			},
-			align = block(Direction.Down, { px = 56 }),
+			align = block(Direction.Up, { px = dropdown_height }),
 		}))
 	end
 
-	return ui_element({
-		widgets = { drop_down(widget_key, idle, selected) },
-		align = block(Direction.Down, { px = 56 }),
+	local row = ui_element({
+		align = block(Direction.Up, { px = 56 }),
 	})
+	local content = ui_element({
+		align = absolute({
+			pivot = { x = 50, y = 50 },
+			parent_pivot = { x = 50, y = 50 },
+			size = Size({ pc_hor = 90, pc_vert = 100 }),
+		}),
+	})
+	if label then
+		content:push_child(ui_element({
+			display = "settings_text",
+			widgets = { text(label) },
+			align = block(Direction.Left, { pc = 50 }),
+		}))
+	end
+	local controls = ui_element({
+		align = block(Direction.Right, { pc = 100 }),
+	})
+
+	local dropdown_area = ui_element({
+		align = block(Direction.Right, { px = dropdown_width }),
+	})
+	dropdown_area:push_child(ui_element({
+		align = block(Direction.Up, { px = 8 }),
+	}))
+	dropdown_area:push_child(ui_element({
+		widgets = { drop_down(widget_key, idle, selected) },
+		align = block(Direction.Up, { px = dropdown_height }),
+	}))
+	controls:push_child(dropdown_area)
+	controls:push_child(ui_element({
+		align = block(Direction.Right, { px = 8 }),
+	}))
+	if dropdown_option_value(value) ~= dropdown_option_value(default_value) then
+		controls:push_child(
+			settings_reset_button(action_name .. "_reset", default_value, block(Direction.Right, { px = 36 }))
+		)
+	end
+
+	content:push_child(controls)
+	row:push_child(content)
+	return row
 end
 
 local function top_table_row(values, columns, display, text_display, height)
@@ -385,7 +534,7 @@ local function add_beatmap_rows(ctx, list, song_h_full, song_h)
 		})
 		local title = ui_element({
 			display = "main_list_title",
-			widgets = { name = text(name) },
+			widgets = { text(name) },
 			align = absolute({
 				pivot = { x = 50, y = 50 },
 				parent_pivot = { x = 50, y = 42 },
@@ -401,7 +550,13 @@ local function add_beatmap_rows(ctx, list, song_h_full, song_h)
 				size = Size({ pc_hor = 80, px_vert = 24 }),
 			}),
 		})
-		local content = ui_element({})
+		local content = ui_element({
+			align = absolute({
+				pivot = { x = 0, y = 0 },
+				parent_pivot = { x = 0, y = 0 },
+				size = Size({ pc_hor = 100, pc_vert = 100 }),
+			}),
+		})
 		content:push_child(title)
 		content:push_child(artist)
 		if ctx.beatmaps:is_selected(index) then
@@ -486,8 +641,8 @@ local function add_beatmap_rows(ctx, list, song_h_full, song_h)
 end
 
 return function(ctx)
-	local res = ctx.res
-	local ratio = ctx.res.w / ctx.res.h
+	local res = ctx.state.res
+	local ratio = ctx.state.res.w / ctx.state.res.h
 
 	local header_h = 44
 	local right_width = 638
@@ -522,30 +677,158 @@ return function(ctx)
 			},
 			align = block(Direction.Down, { pc = 100 }),
 		})
+		if ctx.state.active_window == "Settings" and ctx.state.settings_tab == "Gameplay" then
+			local gameplay = ctx.game.configModel.configs.settings.gameplay
+			local speed_model = ctx.game.speedModel
+			local speed_range = speed_model.range[gameplay.speedType]
+			local action_types = { "average", "primary", "minimum", "maximum" }
+			local action_on_fail = { "none", "pause", "quit" }
+			local gameplay_rows = ui_element({
+				align = block(Direction.Left, { pc = 50 }),
+			})
+			gameplay_rows:push_child(settings_slider("Play speed", {
+				min = speed_range[1],
+				max = speed_range[2],
+				current = speed_model:get(),
+			}, "set_play_speed", speed_model:get()))
+			gameplay_rows:push_child(
+				dropdown_row(
+					"set_speed_type",
+					gameplay.speedType,
+					speed_model.types,
+					"settings_speed_type",
+					gameplay.speedType,
+					"Speed type"
+				)
+			)
+			gameplay_rows:push_child(
+				dropdown_row(
+					"set_action_type",
+					gameplay.tempoFactor,
+					action_types,
+					"settings_action_type",
+					gameplay.tempoFactor,
+					"Tempo factor"
+				)
+			)
+			gameplay_rows:push_child(
+				dropdown_row(
+					"set_action_on_fail",
+					gameplay.actionOnFail,
+					action_on_fail,
+					"settings_action_on_fail",
+					gameplay.actionOnFail,
+					"Action on fail"
+				)
+			)
+			gameplay_rows:push_child(
+				settings_checkbox(
+					"Scale scroll speed with rate",
+					"set_scale_scroll_speed",
+					gameplay.scaleSpeed,
+					gameplay.scaleSpeed
+				)
+			)
+			gameplay_rows:push_child(settings_slider("Visual LN shortening", {
+				min = -0.3,
+				max = 0,
+				current = gameplay.longNoteShortening,
+			}, "set_long_note_shortening", 0))
+			gameplay_rows:push_child(
+				settings_checkbox("Auto key sound", "set_auto_key_sound", gameplay.autoKeySound, false)
+			)
+			gameplay_rows:push_child(
+				settings_checkbox(
+					"Event based renderer (experimental)",
+					"set_event_based_render",
+					gameplay.eventBasedRender,
+					false
+				)
+			)
+			w_main:push_child(gameplay_rows)
+
+			local gameplay_separator = ui_element({
+				display = "settings_separator",
+				widgets = { box() },
+				align = absolute({
+					pivot = { x = 0, y = 50 },
+					parent_pivot = { x = 0, y = 50 },
+					size = Size({ px_hor = 1, pc_vert = 98 }),
+				}),
+			})
+			w_main:push_child(gameplay_separator)
+
+			local gameplay_timing_rows = ui_element({
+				align = block(Direction.Right, { pc = 100 }),
+			})
+			local gameplay_time = gameplay.time
+			gameplay_timing_rows:push_child(ui_element({
+				display = "settings_section_text",
+				widgets = { text("Time to") },
+				align = block(Direction.Up, { px = 56 }),
+			}))
+			gameplay_timing_rows:push_child(settings_slider("Prepare", {
+				min = 0.5,
+				max = 3,
+				current = gameplay_time.prepare,
+			}, "set_prepare_time", 2))
+			gameplay_timing_rows:push_child(settings_slider("Play-pause", {
+				min = 0,
+				max = 2,
+				current = gameplay_time.playPause,
+			}, "set_play_pause_time", 0))
+			gameplay_timing_rows:push_child(settings_slider("Pause-play", {
+				min = 0,
+				max = 2,
+				current = gameplay_time.pausePlay,
+			}, "set_pause_play_time", 0.5))
+			gameplay_timing_rows:push_child(settings_slider("Play-retry", {
+				min = 0,
+				max = 2,
+				current = gameplay_time.playRetry,
+			}, "set_play_retry_time", 0.5))
+			gameplay_timing_rows:push_child(settings_slider("Pause-retry", {
+				min = 0,
+				max = 2,
+				current = gameplay_time.pauseRetry,
+			}, "set_pause_retry_time", 0.5))
+			w_main:push_child(gameplay_timing_rows)
+		end
 		if ctx.state.active_window == "Settings" and ctx.state.settings_tab == "Menu" then
 			local menu_rows = ui_element({
 				align = block(Direction.Left, { pc = 50 }),
 			})
-			menu_rows:push_child(settings_checkbox("Blur", "set_blur", ctx.state.ui_settings.blur, true))
+			menu_rows:push_child(settings_checkbox("Blur", "set_blur", ctx.settings.ui_settings.blur, true))
 			menu_rows:push_child(
-				settings_checkbox("Background", "set_background", ctx.state.ui_settings.background, true)
+				settings_checkbox("Background", "set_background", ctx.settings.ui_settings.background, true)
 			)
 			menu_rows:push_child(
-				settings_checkbox("Animations", "set_animations", ctx.state.ui_settings.animations, true)
+				dropdown_row(
+					"set_animations",
+					ctx.settings.ui_settings.animations,
+					ctx.settings.ui_settings.animations_all,
+					"settings_animations",
+					ctx.settings.default_settings.ui_settings.animations,
+					"Animations"
+				)
+			)
+			menu_rows:push_child(
+				dropdown_row("set_theme", "radical UI", ctx.game_api:getThemes(), "settings_theme", nil, "Theme")
 			)
 			menu_rows:push_child(settings_slider("UI Scale", {
 				min = 0.25,
 				max = 2,
-				current = ctx.ui.custom_scale,
+				current = ctx.settings.ui_settings.custom_scale,
 			}, "ui_scale_custom", 1))
+			menu_rows:push_child(settings_value_row("Dummy value", ctx.settings.ui_settings.dummy_value, "set_dummy_value"))
 			w_main:push_child(menu_rows)
 
 			local menu_separator = ui_element({
 				display = "settings_separator",
 				widgets = { box() },
 				align = absolute({
-					pivot = { x = 50, y = 50 },
-					parent_pivot = { x = 50, y = 50 },
+					pivot = { x = 0, y = 50 },
+					parent_pivot = { x = 0, y = 50 },
 					size = Size({ px_hor = 1, pc_vert = 98 }),
 				}),
 			})
@@ -740,7 +1023,7 @@ return function(ctx)
 	end
 	local header_input = ui_element({
 		display = "header_input",
-		widgets = { text_input("Search...", nil, { registry_key = "header_search" }) },
+		widgets = { text_input("Search...", nil, "header_search") },
 		-- polyline = {
 		-- 	{ -header_h + header_corner_y, header_top },
 		-- 	{ right_width, header_top },
@@ -1293,15 +1576,15 @@ return function(ctx)
 	end
 	-- utils.print(root)
 
-	ctx.ui.root_elements = {}
+	ctx.state.root_elements = {}
 	if root then
-		ctx.ui.root_elements[#ctx.ui.root_elements + 1] = root
+		ctx.state.root_elements[#ctx.state.root_elements + 1] = root
 	end
 	if root_window then
-		ctx.ui.root_elements[#ctx.ui.root_elements + 1] = root_window
+		ctx.state.root_elements[#ctx.state.root_elements + 1] = root_window
 	end
 	if header then
-		ctx.ui.root_elements[#ctx.ui.root_elements + 1] = header
+		ctx.state.root_elements[#ctx.state.root_elements + 1] = header
 	end
 
 	profiler.checkpoint("main_view", "setup main layout and finalization")

@@ -117,6 +117,20 @@ available window; the next child works on what remains. This is why layouts
 such as `root -> padding -> left_p/right_p` build a sequence of nested
 regions.
 
+### Widget-owned subtrees
+
+A widget may own a `ui_element` subtree without adding that subtree to the
+owner element's `children` list. Pass the subtree to the widget constructor,
+such as `button(child, ...)`, when the widget must control the child's layout,
+draw order, pointer behavior, or visual state. The widget is responsible for
+aligning the subtree against the owner element's rectangle, drawing it, and
+delegating collision handling when appropriate. Widget-owned subtrees are not
+independent siblings: do not promote them to `root_elements` just to change
+their draw order, because that would realign them against the screen instead
+of their widget owner. In contrast, elements added with `push_child(child)`
+are ordinary structural children and participate in the parent's normal
+recursive alignment, drawing, and collision traversal.
+
 `display = "name"` selects an entry from `style_dispaly.lua`.
 `widgets = { ... }` decides what is drawn in that rectangle.
 `polyline = { { x, y }, ... }` changes the visible/hit-test shape from a
@@ -205,7 +219,8 @@ Buttons also support the same optional `gradient` field as `box`.
 - `color`: stroke color.
 - `center = true`: center stroke on the rectangle edge; otherwise it is inset.
 - `radius`: rounded-corner radius in pixels. `999` means “as rounded as the
-  rectangle allows”.
+  rectangle allows”. It may also be a table with independent
+  `top_left`, `top_right`, `bottom_left`, and `bottom_right` radii.
 
 ### `text`
 

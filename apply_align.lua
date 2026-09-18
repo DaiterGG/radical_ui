@@ -1,5 +1,6 @@
 local class = require("class")
 local utils = require("utils")
+local animation_settings = require("animation_settings")
 
 local Direction = {
 	Left = "left",
@@ -197,7 +198,10 @@ end
 
 function Align:apply_animation(rect, ctx)
 	local data = self.animation_data
-	if not data or not ctx or not ctx.anim_reg or not ctx.state.ui_settings.animations then
+	if not data or not ctx or not ctx.anim_reg then
+		return rect
+	end
+	if animation_settings.is_disabled(ctx) then
 		return rect
 	end
 
@@ -236,15 +240,15 @@ function Align:apply_animation(rect, ctx)
 
 	local target = direction == "from" and 1 or 0
 	local distance = math.abs(target - registry.transition_progress)
-	local animation_length = length * distance
+	local animation_length = animation_settings.duration(ctx, length) * distance
 	local elapsed = animation_length > 0 and clamp((now - registry.transition_stamp) / animation_length, 0, 1) or 1
 	registry.progress = registry.transition_progress
 		+ (target - registry.transition_progress) * ease(elapsed, animation_ease(data, direction))
 
-	if elapsed < 1 then
-		ctx.ui.need_to_realign = true
+	if elapsed < 1 and not animation_settings.is_instant(ctx) then
+		ctx.state.need_to_realign = true
 	end
-	apply_delta(rect, data.delta_pos, data.delta_size, registry.progress, ctx.ui_scale)
+	apply_delta(rect, data.delta_pos, data.delta_size, registry.progress, ctx.state.ui_scale)
 
 	return rect
 end

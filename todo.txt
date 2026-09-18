@@ -14,4 +14,11 @@ mods screen in escali
 
 do love switch font back to fonts.init at the end of draw call
 
+opitons:
+  dispaly more data on main list
+
+
+draw reset icon
+
+
 

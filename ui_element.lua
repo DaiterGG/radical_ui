@@ -76,13 +76,13 @@ function ui_element:draw(ctx)
 	end
 end
 
--- recursive variants (moved from ui_manager): a whole subtree can be aligned /
--- drawn / hit-tested by calling these on the root element, e.g. root:align_rec()
-
 -- set this element's rect from its align + window, hand each child a fresh
 -- window clipped to this rect, and recurse
 function ui_element:align_rec(window, ctx)
-	local rect = self.align:apply(window, ctx.ui_scale, ctx)
+	if not self.align then
+		return
+	end
+	local rect = self.align:apply(window, ctx.state.ui_scale, ctx)
 	self.rect = rect
 	window = { x = rect.x, y = rect.y, w = rect.w, h = rect.h }
 
@@ -109,8 +109,9 @@ end
 
 -- recursive hit-test: this element's hit is passed down as parent_hit, so
 -- children only react when an ancestor is hit
-function ui_element:pointer_collision_rec(ctx, parent_hit)
-	local hit = self:pointer_collision(ctx, parent_hit)
+function ui_element:pointer_collision_rec(ctx, root_hit)
+	local hit = self:pointer_collision(ctx, root_hit)
+	hit = root_hit and hit
 	local any_hits = false
 	for _, child in ipairs(self.children) do
 		local child_hit = child:pointer_collision_rec(ctx, hit)
@@ -120,9 +121,9 @@ function ui_element:pointer_collision_rec(ctx, parent_hit)
 	return hit
 end
 
-function ui_element:pointer_collision(ctx, parent_hit)
+function ui_element:pointer_collision(ctx, root_hit)
 	local rect = self.rect
-	local hit = rect ~= nil
+	local hit = rect ~= nil and root_hit
 	if hit then
 		if self.polyline then
 			hit = polyline_collision.contains(
@@ -131,15 +132,13 @@ function ui_element:pointer_collision(ctx, parent_hit)
 				rect.y,
 				ctx.input_state.pos.x,
 				ctx.input_state.pos.y,
-				ctx.ui_scale or 1
+				ctx.state.ui_scale or 1
 			)
-		elseif parent_hit then
+		else
 			hit = ctx.input_state.pos.x >= rect.x
 				and ctx.input_state.pos.x < rect.x + rect.w
 				and ctx.input_state.pos.y >= rect.y
 				and ctx.input_state.pos.y < rect.y + rect.h
-		else
-			hit = false
 		end
 	end
 

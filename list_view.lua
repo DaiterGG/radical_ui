@@ -154,7 +154,7 @@ function list_view:update_scrollbar(elem, ctx)
 		return
 	end
 
-	local scale = ctx.ui_scale or 1
+	local scale = ctx.state.ui_scale or 1
 	local pad = padding * scale
 	local bar_w = width * scale
 	local available_w = r.w - pad * 2
@@ -280,7 +280,7 @@ function list_view:update_scroll(elem, ctx)
 	local in_rect = mx >= r.x and mx < r.x + r.w and my >= r.y and my < r.y + r.h
 
 	local old_scroll = data.scroll_y
-	local dt = math.min(ctx.dt or 0, MAX_DT)
+	local dt = math.min(ctx.state.last_delta or 0, MAX_DT)
 	local user_scrolled = false
 
 	local middle_held = input.middle == "held" or input.middle == "pressed"
@@ -460,7 +460,7 @@ function list_view:draw(elem, ctx, widget_display_data, display_data)
 		love.graphics.setStencilTest("greater", 0)
 
 		for _, child in ipairs(self.children) do
-			if not child.rect or child.rect.y > ctx.res.h then
+			if not child.rect or child.rect.y > ctx.state.res.h then
 				break
 			end
 			if child.rect.y + child.rect.h > 0 then

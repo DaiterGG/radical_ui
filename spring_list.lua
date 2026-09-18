@@ -305,7 +305,7 @@ function spring_list:update_scroll(elem, ctx)
 	local old_horizontal_offset = data.horizontal_offset
 	local old_drag_cursor_x = data.drag_cursor_x
 	local old_drag_cursor_y = data.drag_cursor_y
-	local dt = math.min(ctx.dt or 0, MAX_DT)
+	local dt = math.min(ctx.state.last_delta or 0, MAX_DT)
 	local user_scrolled = false
 
 	if data.interaction_state == INTERACTION_DRAG_PENDING or data.interaction_state == INTERACTION_DRAGGING then
@@ -477,7 +477,7 @@ function spring_list:update_virtual_range(elem, ctx)
 	if range_start ~= data.range_start or range_end ~= data.range_end then
 		data.range_start = range_start
 		data.range_end = range_end
-		ctx.ui.need_to_rebuild = true
+		ctx.state.need_to_rebuild = true
 	end
 end
 
@@ -508,9 +508,9 @@ function spring_list:pointer_collision(elem, ctx, hit)
 		if
 			child_rect
 			and child_rect.y + child_rect.h >= 0
-			and child_rect.y <= ctx.res.h
+			and child_rect.y <= ctx.state.res.h
 			and child_rect.x + child_rect.w >= 0
-			and child_rect.x <= ctx.res.w
+			and child_rect.x <= ctx.state.res.w
 		then
 			child:pointer_collision_rec(ctx, hit)
 		end
@@ -531,9 +531,9 @@ function spring_list:draw(elem, ctx, widget_display_data, display_data)
 		if
 			child_rect
 			and child_rect.y + child_rect.h >= 0
-			and child_rect.y <= ctx.res.h
+			and child_rect.y <= ctx.state.res.h
 			and child_rect.x + child_rect.w >= 0
-			and child_rect.x <= ctx.res.w
+			and child_rect.x <= ctx.state.res.w
 		then
 			local influence = horizontal_influence(rect, child_rect.y, child_rect.h)
 			local direction = index % 2 == 1 and 1 or -1

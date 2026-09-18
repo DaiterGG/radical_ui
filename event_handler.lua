@@ -103,9 +103,9 @@ function event_handler.process(ctx)
 		-- TODO: window mouse focus (event[1] = focused)
 		elseif event.name == "resize" then
 			local w, h = event[1], event[2]
-			ctx.res.w, ctx.res.h = w, h
-			ctx.ui_scale = h / 1080
-			ctx.ui.need_to_realign = true
+			ctx.state.res.w, ctx.state.res.h = w, h
+			ctx.state.ui_scale = ctx.settings.ui_settings.custom_scale * h / 1080
+			ctx.state.need_to_realign = true
 		elseif event.name == "filedropped" then
 		-- TODO: dropped file (event[1] = path)
 		elseif event.name == "directorydropped" then
