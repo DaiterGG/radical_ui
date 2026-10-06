@@ -38,12 +38,16 @@ function beatmaps:unload()
 end
 
 function beatmaps:update(dt)
+	profiler.checkpoint("beatmaps", "update started")
 	self:ensure_loaded()
+	profiler.checkpoint("beatmaps", "ensure loaded")
 	if self.selected_index == nil then
 		self.selected_index = self.select_model.chartview_set_index or 1
 		self.spring_list_data = { scroll_to = self.selected_index }
 	end
+	profiler.checkpoint("beatmaps", "init scroll")
 	self.select_controller:update()
+	profiler.checkpoint("beatmaps", "controller updated")
 
 	if self.preview_timer ~= nil then
 		self.preview_timer = self.preview_timer - dt
@@ -52,6 +56,7 @@ function beatmaps:update(dt)
 			self.game.previewModel:loadPreview()
 		end
 	end
+	profiler.checkpoint("beatmaps", "preview loaded")
 end
 
 ---@param first integer

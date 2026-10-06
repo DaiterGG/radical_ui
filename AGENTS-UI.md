@@ -1,7 +1,7 @@
 # UI quick reference
 
 This documents only the UI options used by `view/main_view.lua` and
-`style_dispaly.lua`.
+`view/style_display.lua`.
 
 ## Alignment (`apply_align`)
 
@@ -131,7 +131,7 @@ of their widget owner. In contrast, elements added with `push_child(child)`
 are ordinary structural children and participate in the parent's normal
 recursive alignment, drawing, and collision traversal.
 
-`display = "name"` selects an entry from `style_dispaly.lua`.
+`display = "name"` selects an entry from `view/style_display.lua`.
 `widgets = { ... }` decides what is drawn in that rectangle.
 `polyline = { { x, y }, ... }` changes the visible/hit-test shape from a
 rectangle; points are local to the element.
@@ -169,7 +169,7 @@ checkbox(registry_key, display_key, on_press, child)
 text_input(placeholder, action, { registry_key = registry_key, ... })
 ```
 
-## Display styles (`style_dispaly.lua`)
+## Display styles (`view/style_display.lua`)
 
 ### Display entry
 

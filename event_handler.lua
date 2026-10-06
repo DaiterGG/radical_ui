@@ -75,11 +75,14 @@ function event_handler.process(ctx)
 		elseif event.name == "inputchanged" then
 			-- game's normalized input: [1]=device, [2]=id, [3]=key, [4]=state (true=press)
 			local key = event[3]
+			print(key)
 			if event[4] then
-				local capture = ctx.state.keybind_capture
-				if capture then
-					ctx.keybindings:rebind(capture.action, capture.pos, key)
-					ctx.state.keybind_capture = nil
+				local capture = ctx.input_state.keybind_capture
+				if capture and not set_modifier(input.modifiers, key, true) then
+					print(capture.action, capture.pos)
+					ctx.keybindings:rebind(ctx, capture.action, capture.pos, key)
+					ctx.input_state.keybind_capture = nil
+					ctx.state.need_to_rebuild = true
 				end
 			else
 				set_modifier(input.modifiers, key, false)
@@ -94,8 +97,7 @@ function event_handler.process(ctx)
 		elseif event.name == "textinput" then
 			ctx.action_queue:register({
 				action = "keyinput",
-				key = event[1] or "",
-				event = "keyinput",
+				keypress = event[1] or "",
 			})
 		elseif event.name == "focus" then
 		-- TODO: window focus gained/lost (event[1] = focused)

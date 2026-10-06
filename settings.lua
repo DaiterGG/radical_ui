@@ -23,6 +23,7 @@ function settings:new()
 			dummy_value = 100,
 			blur = true,
 			background = true,
+			hot_reload = true,
 		},
 	}
 end

@@ -23,10 +23,10 @@ local icons = {
 	["online1"] = 0x0051,
 	["online2"] = 0x0061,
 
-	["back_1"] = 0x0061,
-	["back_10"] = 0x0061,
-	["forward_10"] = 0x0061,
-	["forward_1"] = 0x0061,
+	["back_10"] = 0x0046,
+	["back_1"] = 0x0047,
+	["forward_10"] = 0x0048,
+	["forward_1"] = 0x0049,
 
 	["collections1"] = 0x0043,
 	["sort1"] = 0x004E,

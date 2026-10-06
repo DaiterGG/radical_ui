@@ -10,6 +10,8 @@ local default_bindings = {
 	{ key = "ctrl+up", action = "main_list_first" },
 	{ key = "ctrl+down", action = "main_list_last" },
 	{ key = "ctrl+return", action = "start_gameplay" },
+	{ key = "f5", action = "debug_rebuild" },
+	{ key = "ctrl+f5", action = "reload_ui" },
 	{ key = "left", action = "input_left" },
 	{ key = "right", action = "input_right" },
 	{ key = "backspace", action = "input_backspace" },

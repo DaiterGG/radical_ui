@@ -1,4 +1,5 @@
 local class = require("class")
+local profiler = require("profiler")
 local polyline_collision = require("polyline_collision")
 local utils = require("utils")
 local apply_align = require("apply_align")
@@ -25,14 +26,15 @@ function ui_element:new(opts)
 	self.polyline = opts.polyline
 	self.display_animation = opts.display_animation
 	self.children = {}
+	self.previous_parent_rect = nil
 	self.rect = nil
 	self.states = {
 		idle = true,
+		selected = false,
 		hovered = false,
 		pressed = false,
 		held = false,
 		released = false,
-		selected = false,
 	}
 end
 
@@ -42,6 +44,7 @@ end
 
 local draw_order = {
 	"idle",
+	"selected",
 	"hovered",
 	"held",
 	"pressed",
@@ -82,16 +85,30 @@ function ui_element:align_rec(window, ctx)
 	if not self.align then
 		return
 	end
-	local rect = self.align:apply(window, ctx.state.ui_scale, ctx)
-	self.rect = rect
+	local p = self.previous_parent_rect
+	local w = window
+	if
+		self.previous_parent_rect
+		and p.x == w.x
+		and p.y == w.y
+		and p.h == w.h
+		and p.w == w.w
+		and not self.align.animation_data
+		and (#self.widget == 0 or (#self.widget == 1 and self.widget[1].type == "box"))
+	then
+		--
+	else
+		self.rect = self.align:apply(window, ctx.state.ui_scale, ctx)
+		self.previous_parent_rect = window
+	end
+
+	local rect = self.rect
+	self.previous_parent_rect = window
 	window = { x = rect.x, y = rect.y, w = rect.w, h = rect.h }
 
-	for _, w in ipairs(self.widget) do
-		if w == true or w == false then
-			utils.print(self)
-		end
-		if w.align then
-			w:align(self, ctx)
+	for _, win in ipairs(self.widget) do
+		if win.align then
+			win:align(self, ctx)
 		end
 	end
 	for _, child in ipairs(self.children) do

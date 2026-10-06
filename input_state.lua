@@ -32,11 +32,11 @@ function input_state:new()
 	self.interacting_with = nil -- ui_element.hash_num
 	-- self.interacting_with = {} -- [hash_num] = element being interacted with; per-element managed
 
+	self.keybind_capture = nil
 	self.input_key = nil
 end
 
 function input_state:reset()
-	print(self.input_key)
 	-- drive button state machines from the raw down-state (set by event_handler from events)
 	self.left = advance(self.left)
 	self.right = advance(self.right)

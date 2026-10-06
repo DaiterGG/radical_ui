@@ -187,29 +187,46 @@ local function clamp_radius(radius, w, h)
 	}
 end
 
-local function draw_rounded_shape(x, y, w, h, radius)
+local function append_rounded_corner(vertices, center_x, center_y, radius, start_angle, end_angle)
+	local segments = math.max(8, math.ceil(radius / 2))
+	for segment = 0, segments do
+		local angle = start_angle + (end_angle - start_angle) * segment / segments
+		vertices[#vertices + 1] = center_x + math.cos(angle) * radius
+		vertices[#vertices + 1] = center_y + math.sin(angle) * radius
+	end
+end
+
+local function get_rounded_shape_vertices(x, y, w, h, radius)
 	local clamped_radius = clamp_radius(radius, w, h)
-	local top_left = clamped_radius.top_left
-	local top_right = clamped_radius.top_right
-	local bottom_right = clamped_radius.bottom_right
-	local bottom_left = clamped_radius.bottom_left
+	local top_left
+	local top_right
+	local bottom_right
+	local bottom_left
+	if type(clamped_radius) == "table" then
+		top_left = clamped_radius.top_left
+		top_right = clamped_radius.top_right
+		bottom_right = clamped_radius.bottom_right
+		bottom_left = clamped_radius.bottom_left
+	else
+		top_left = clamped_radius
+		top_right = clamped_radius
+		bottom_right = clamped_radius
+		bottom_left = clamped_radius
+	end
 	local right = x + w
 	local bottom = y + h
+	local vertices = {}
 
-	love.graphics.rectangle("fill", x + top_left, y, w - top_left - top_right, h)
-	love.graphics.rectangle("fill", x, y + top_left, w, h - top_left - bottom_left)
-	if top_left > 0 then
-		love.graphics.arc("fill", "pie", x + top_left, y + top_left, top_left, math.pi, math.pi * 1.5)
-	end
-	if top_right > 0 then
-		love.graphics.arc("fill", "pie", right - top_right, y + top_right, top_right, math.pi * 1.5, math.pi * 2)
-	end
-	if bottom_right > 0 then
-		love.graphics.arc("fill", "pie", right - bottom_right, bottom - bottom_right, bottom_right, 0, math.pi * 0.5)
-	end
-	if bottom_left > 0 then
-		love.graphics.arc("fill", "pie", x + bottom_left, bottom - bottom_left, bottom_left, math.pi * 0.5, math.pi)
-	end
+	append_rounded_corner(vertices, x + top_left, y + top_left, top_left, math.pi, math.pi * 1.5)
+	append_rounded_corner(vertices, right - top_right, y + top_right, top_right, math.pi * 1.5, math.pi * 2)
+	append_rounded_corner(vertices, right - bottom_right, bottom - bottom_right, bottom_right, 0, math.pi * 0.5)
+	append_rounded_corner(vertices, x + bottom_left, bottom - bottom_left, bottom_left, math.pi * 0.5, math.pi)
+
+	return vertices
+end
+
+local function draw_rounded_shape(x, y, w, h, radius)
+	love.graphics.polygon("fill", get_rounded_shape_vertices(x, y, w, h, radius))
 end
 
 local function draw_rounded_shape_stencil()
@@ -289,23 +306,11 @@ local function draw_gradient_shape(rect, bg, gradient, polyline, scale, radius)
 		love.graphics.pop()
 		return true
 	end
-	gradient_stencil = {
-		kind = "rectangle",
-		x = rect.x,
-		y = rect.y,
-		w = rect.w,
-		h = rect.h,
-		radius = clamp_radius(radius, rect.w, rect.h),
-	}
-	love.graphics.stencil(draw_gradient_stencil, "replace", 1)
-	love.graphics.setStencilTest("greater", 0)
 	love.graphics.setShader(shader)
 	love.graphics.setColor(1, 1, 1, 1)
-	love.graphics.rectangle("fill", rect.x, rect.y, rect.w, rect.h)
+	love.graphics.polygon("fill", get_rounded_shape_vertices(rect.x, rect.y, rect.w, rect.h, radius))
 	love.graphics.setShader()
-	love.graphics.setStencilTest()
 	love.graphics.pop()
-	gradient_stencil = nil
 	return true
 end
 
@@ -419,13 +424,8 @@ function apply_display.corner_radius(x, y, w, h, radius, c)
 		return
 	end
 	if type(radius) == "table" then
-		rounded_shape_stencil = { x = x, y = y, w = w, h = h, radius = radius }
-		love.graphics.stencil(draw_rounded_shape_stencil, "replace", 1)
-		love.graphics.setStencilTest("greater", 0)
 		love.graphics.setColor(c)
-		love.graphics.rectangle("fill", x, y, w, h)
-		love.graphics.setStencilTest()
-		rounded_shape_stencil = nil
+		draw_rounded_shape(x, y, w, h, radius)
 		return
 	end
 	radius = clamp_radius(radius, w, h)

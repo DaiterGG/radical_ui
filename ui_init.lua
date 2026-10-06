@@ -8,12 +8,14 @@ local view = require("view.view")
 local ui_manager = require("ui_manager")
 local event_handler = require("event_handler")
 local profiler = require("profiler")
+local hot_reload = require("ui_hot_reload")
 
 local UserInterface = class()
 
 function UserInterface:new(game, mount_path)
 	print("new")
 	self.ctx = ctx(game, mount_path)
+	self.view_hot_reload = hot_reload.new(mount_path)
 	local font = love.graphics.getFont()
 	love.graphics.setFont(font)
 end
@@ -59,6 +61,12 @@ end
 function UserInterface:update(dt)
 	profiler.start()
 	self.ctx:update(dt)
+	if self.ctx.settings.ui_settings.hot_reload then
+		local reloaded_view = hot_reload.update(self.view_hot_reload, self.ctx)
+		if reloaded_view then
+			view = reloaded_view
+		end
+	end
 	self:activate_cursor()
 	profiler.checkpoint("update", "after ctx_update")
 
@@ -85,8 +93,10 @@ function UserInterface:update(dt)
 	-- 2) reset stored per-frame deltas and drive the button state machines
 	self.ctx.input_state:reset()
 	profiler.checkpoint("update", "after input reset")
-	profiler.finish(1, {
-		-- "update" ,
+	profiler.finish(10, {
+		-- "update",
+		-- "align_rec",
+		-- "beatmaps",
 		-- "main_view",
 		-- "actions",
 	})

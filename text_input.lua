@@ -7,40 +7,61 @@ local fonts = require("fonts")
 local text_input = class()
 text_input.type = "text_input"
 
-local function register_action(ctx, action, data, event)
-	if not action then
+function text_input:select(widget, elem, input)
+	widget.focused = true
+	elem.states.selected = true
+	elem.states.idle = false
+	input.input_key = widget.registry_key
+end
+
+function text_input:deselect(elem, ctx, data)
+	local input = ctx.input_state
+	self.focused = false
+	elem.states.selected = false
+	elem.states.idle = true
+
+	data.caret = #data.input_field + 1
+	data.selection[1] = data.caret
+	data.selection[2] = data.caret
+
+	if input.input_key == self.registry_key then
+		input.input_key = nil
+	end
+end
+
+local function register_action(ctx, action_str, data)
+	local action = { action = action_str }
+	for key, value in pairs(data) do
+		action[key] = value
+	end
+	ctx.action_queue:register(action)
+end
+
+function text_input:trigger_input(ctx, self_or_key, data)
+	if not self_or_key or not data then
 		return
 	end
-	if type(action) == "string" then
-		action = { action = action }
+	local self_data = text_input:get_self(ctx, self_or_key)
+	if self_data.on_input then
+		register_action(ctx, self_data.on_input, data)
+	else
+		register_action(ctx, "default_keypress", data)
 	end
-	local queued = {}
-	for key, value in pairs(action) do
-		queued[key] = value
-	end
-	queued.event = event
-	queued.text = data.input_field
-	queued.value = data.input_field
-	queued.input_data = data
-	ctx.action_queue:register(queued)
+	self_data.input_delay = self_data.input_delay_duration
 end
 
-function text_input:trigger_input(ctx, data)
-	register_action(ctx, data.on_input, data, "input")
-	data.input_delay = data.input_delay_duration
-end
-
-function text_input:process_delay(ctx, data, dt)
-	if not data.input_delay or data.input_delay <= 0 then
+function text_input:process_delay(ctx, widget, dt)
+	if not widget.input_delay or widget.input_delay <= 0 then
 		return
 	end
-	data.input_delay = data.input_delay - dt
-	if data.input_delay <= 0 then
-		register_action(ctx, data.on_input_with_delay, data, "input_with_delay")
+	widget.input_delay = widget.input_delay - dt
+	if widget.input_delay <= 0 and widget.on_input_with_delay then
+		register_action(ctx, widget.on_input_with_delay, widget)
 	end
 end
 
-function text_input:move_caret(data, direction, modifiers)
+function text_input:move_caret(ctx, widget_key, direction, modifiers)
+	local data = ctx.widget_reg:get(widget_key)
 	local text = data.input_field
 	local caret = data.caret
 	local extend = modifiers and modifiers.shift
@@ -79,13 +100,18 @@ function text_input:move_caret(data, direction, modifiers)
 	end
 end
 
-function text_input:select_all(data)
+function text_input:get_self(ctx, self_or_key)
+	return type(self_or_key) == "table" and self_or_key or ctx.widget_reg:get(self_or_key)
+end
+function text_input:select_all(ctx, self_or_key)
+	local data = text_input:get_self(ctx, self_or_key)
 	data.selection[1] = 1
 	data.selection[2] = #data.input_field + 1
 	data.caret = data.selection[2]
 end
 
-function text_input:selected_text(data)
+function text_input:selected_text(ctx, self_or_key)
+	local data = text_input:get_self(ctx, self_or_key)
 	local start_pos = math.min(data.selection[1], data.selection[2])
 	local end_pos = math.max(data.selection[1], data.selection[2])
 	if start_pos == end_pos then
@@ -94,11 +120,28 @@ function text_input:selected_text(data)
 	return string.sub(data.input_field, start_pos, end_pos - 1)
 end
 
-function text_input:insert_text(data, text)
+function text_input:insert_text(ctx, widget_key, text)
+	local data = ctx.widget_reg:get(widget_key)
+	if text == nil then
+		return data.input_field
+	end
 	local start_pos = math.min(data.selection[1], data.selection[2])
 	local end_pos = math.max(data.selection[1], data.selection[2])
-	data.input_field = string.sub(data.input_field, 1, start_pos - 1) .. text .. string.sub(data.input_field, end_pos)
+	local after = string.sub(data.input_field, 1, start_pos - 1) .. text .. string.sub(data.input_field, end_pos)
+	data.input_field = after
 	data.caret = start_pos + #text
+	data.selection[1] = data.caret
+	data.selection[2] = data.caret
+	return after
+end
+
+function text_input:set_text(ctx, widget_key, text)
+	if text == nil then
+		return
+	end
+	local data = ctx.widget_reg:get(widget_key)
+	data.input_field = text
+	data.caret = #text + 1
 	data.selection[1] = data.caret
 	data.selection[2] = data.caret
 end
@@ -131,7 +174,9 @@ function text_input:set_mouse_selection(data, caret)
 	data.selection[2] = caret
 end
 
-function text_input:erase(data, backward, ctrl)
+function text_input:erase(ctx, widget_key, backward, ctrl)
+	local data = ctx.widget_reg:get(widget_key)
+	local before = data.input_field
 	local start_pos = math.min(data.selection[1], data.selection[2])
 	local end_pos = math.max(data.selection[1], data.selection[2])
 	if start_pos == end_pos then
@@ -162,10 +207,12 @@ function text_input:erase(data, backward, ctrl)
 	end
 	start_pos = math.max(1, start_pos)
 	end_pos = math.min(#data.input_field + 1, end_pos)
-	data.input_field = string.sub(data.input_field, 1, start_pos - 1) .. string.sub(data.input_field, end_pos)
+	local after = string.sub(data.input_field, 1, start_pos - 1) .. string.sub(data.input_field, end_pos)
+	data.input_field = after
 	data.caret = start_pos
 	data.selection[1] = start_pos
 	data.selection[2] = start_pos
+	self:trigger_input(ctx, widget_key, { before = before, after = after })
 end
 
 function text_input:draw_markers(data, widget_data, font, x, y, height)
@@ -179,7 +226,7 @@ function text_input:draw_markers(data, widget_data, font, x, y, height)
 			y,
 			font:getWidth(selected),
 			height,
-			widget_data.selection_color or "#5555AA"
+			widget_data.selection_color or "#FF0000"
 		)
 	end
 
@@ -195,41 +242,46 @@ function text_input:draw_markers(data, widget_data, font, x, y, height)
 	end
 end
 
-local function get_widget_data(elem, ctx, widget)
-	if not widget.registry_key then
-		error("text_input requires a widget registry key")
-	end
-	local widget_data_key = widget.registry_key
-	local data = ctx.widget_reg:get(widget_data_key)
+function text_input:get_widget_data(ctx)
+	local data = ctx.widget_reg:get(self.registry_key)
+	-- local widget_data_key = widget.registry_key
+	-- local data = ctx.widget_reg:get(widget_data_key)
+
 	if not data then
 		data = {}
-		data.input_field = widget.starting_value or ""
+		data.input_field = self.starting_value or ""
 		data.is_selected = false
 		local text = data.input_field
 		local caret = #text + 1
 		data.selection = { caret, caret }
 		data.caret = caret
-		data.on_input = widget.on_input
-		data.on_finish_select = widget.on_finish_select
-		data.on_input_with_delay = widget.on_input_with_delay
-		data.input_delay_duration = widget.input_delay or 0.5
+		data.on_input = self.on_input
+		data.on_finish_select = self.on_finish_select
+		data.on_input_with_delay = self.on_input_with_delay
+		data.input_delay_duration = self.input_delay or 0.5
 		data.input_delay = 0
-		ctx.widget_reg:set(widget_data_key, data)
+		ctx.widget_reg:set(self.registry_key, data)
 	end
-	return widget_data_key, data
+	if self.starting_value and self.starting_value ~= data.input_field then
+		data.input_field = self.starting_value
+		self.starting_value = nil
+		data.caret = (#data.input_field + 1)
+		data.selection[1] = data.caret
+		data.selection[2] = data.caret
+	end
+	return data
 end
 
 -- constructor: text_input(placeholder_str, action, registry_key, options)
 --   placeholder_str: hint text when empty and unfocused
 --   action: called via action_queue when focus changes
 --   options: { starting_value, auto_select, on_input, on_finish_select, on_input_with_delay, input_delay }
-function text_input:new(placeholder_str, action, registry_key, options)
+function text_input:new(placeholder_str, registry_key, options)
 	if not registry_key then
 		error("text_input requires a widget registry key")
 	end
 	options = options or {}
 	self.placeholder = placeholder_str or ""
-	self.action = action
 	self.registry_key = registry_key
 	self.starting_value = options.starting_value
 	self.auto_select = options.auto_select == true
@@ -240,21 +292,32 @@ function text_input:new(placeholder_str, action, registry_key, options)
 	self.focused = false
 end
 
+function text_input:align(elem, ctx)
+	local input = ctx.input_state
+	if not self.focused and input.input_key == self.registry_key then
+		-- print("was focused before rebuild -> Select")
+		self.focused = true
+		elem.states.selected = true
+		elem.states.idle = false
+	end
+end
+
 function text_input:pointer_collision(elem, ctx, hit)
 	local input = ctx.input_state
-	local widget_data_key, data = get_widget_data(elem, ctx, self)
-	if self.focused and input.input_key == widget_data_key and input.left == "pressed" and not hit then
-		input.input_key = nil
+	local data = self:get_widget_data(ctx)
+	local input_linked = input.input_key == self.registry_key
+	if self.focused and input_linked and input.left == "pressed" and not hit then
+		-- print("pressed out of focus -> deselect")
+		self:deselect(elem, ctx, data)
 	end
-	if self.focused and input.input_key == nil then
-		self.focused = false
-		elem.states.selected = false
-		data.caret = #data.input_field + 1
-		data.selection[1] = data.caret
-		data.selection[2] = data.caret
+	if self.focused and not input_linked then
+		-- print("not focused -> deselect")
+		self:deselect(elem, ctx, data)
 	end
 	self:process_delay(ctx, data, ctx.state.last_delta or 0)
 	local widget_data = ctx.display_list[elem.display_key] and ctx.display_list[elem.display_key][self.type]
+	widget_data = widget_data and widget_data.idle and widget_data[self.focused and "selected" or "idle"] or widget_data
+
 	if not widget_data or not widget_data.font then
 		return
 	end
@@ -264,11 +327,10 @@ function text_input:pointer_collision(elem, ctx, hit)
 	end
 
 	if hit and input.left == "pressed" then
-		self.focused = true
-		input.input_key = widget_data_key
-		elem.states.selected = true
+		-- print("pressed -> select")
+		self:select(self, elem, input)
 		if self.auto_select then
-			self:select_all(data)
+			self:select_all(ctx, data)
 		else
 			data.mouse_selection_anchor =
 				self:caret_from_x(data, font, self:text_origin(elem, data, widget_data, font), input.pos.x)
@@ -276,24 +338,16 @@ function text_input:pointer_collision(elem, ctx, hit)
 			data.selection[1] = data.caret
 			data.selection[2] = data.caret
 		end
-		if self.action then
-			ctx.action_queue:register({
-				action = self.action,
-				event = "focus",
-				text = data.input_field,
-				value = data.input_field,
-			})
-		end
 		return
 	end
 
-	if hit and input.input_key == widget_data_key and input.left == "held" and not self.auto_select then
+	if hit and input.input_key == self.registry_key and input.left == "held" and not self.auto_select then
 		local caret = self:caret_from_x(data, font, self:text_origin(elem, data, widget_data, font), input.pos.x)
 		self:set_mouse_selection(data, caret)
 	end
 
-	if input.input_key == widget_data_key and input.left == "released" and data.selection[1] ~= data.selection[2] then
-		register_action(ctx, data.on_finish_select, data, "finish_select")
+	if input.input_key == self.registry_key and input.left == "released" and data.selection[1] ~= data.selection[2] then
+		register_action(ctx, data.on_finish_select, data)
 	end
 end
 
@@ -302,7 +356,7 @@ function text_input:draw(elem, ctx, widget_display_data, display_data)
 	if not widget_display_data or not r then
 		return
 	end
-	local _, data = get_widget_data(elem, ctx, self)
+	local data = self:get_widget_data(ctx)
 
 	local ui_scale = ctx and ctx.state.ui_scale
 	local font = widget_display_data.font
@@ -318,14 +372,6 @@ function text_input:draw(elem, ctx, widget_display_data, display_data)
 	-- background / border
 	local bg = widget_display_data.bg
 	local border = widget_display_data.border or {}
-
-	if elem.states.selected then
-		bg = widget_display_data.selected_bg or bg
-		border = widget_display_data.selected_border or border
-	elseif self.focused then
-		bg = widget_display_data.bg_focused or bg
-		border = widget_display_data.border_focused or border
-	end
 
 	apply_display.draw_background({ bg = bg, border = border }, ctx, r, elem.polyline, elem)
 

@@ -1,7 +1,8 @@
 local actions = require("actions")
 local unils = require("utils")
-local style = require("style_dispaly")
+local style = require("view.style_display")
 local input_state = require("input_state")
+local input_model = require("input_model")
 local keybinding = require("keybinding")
 local fonts = require("fonts")
 local class = require("class")
@@ -27,6 +28,7 @@ function ctx:new(game, mount_path)
 	self.theme = style.theme()
 	self.display_list = style.display_data(self.theme)
 	self.input_state = input_state()
+	self.input_model = input_model(game)
 	self.keybindings = keybinding()
 	self.fonts = fonts.load(love.graphics.getFont(), mount_path)
 	self.anim_reg = animation_registry.new()
@@ -49,7 +51,6 @@ function ctx:on_load()
 		-- active_window = nil,
 		res = res,
 		settings_tab = "Menu",
-		keybind_capture = nil,
 		dif_selected = 1,
 		last_delta = 0.1,
 		ui_scale = ui_scale,

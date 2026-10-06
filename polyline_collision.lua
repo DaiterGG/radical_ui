@@ -31,6 +31,22 @@ local function point_on_segment(px, py, ax, ay, bx, by)
 	return dot <= length_squared + EPSILON
 end
 
+local function point_segment_distance_squared(px, py, ax, ay, bx, by)
+	local ab_x, ab_y = bx - ax, by - ay
+	local length_squared = ab_x * ab_x + ab_y * ab_y
+	if length_squared <= EPSILON then
+		local dx, dy = px - ax, py - ay
+		return dx * dx + dy * dy
+	end
+
+	local projection = ((px - ax) * ab_x + (py - ay) * ab_y) / length_squared
+	projection = math.max(0, math.min(1, projection))
+	local closest_x = ax + projection * ab_x
+	local closest_y = ay + projection * ab_y
+	local dx, dy = px - closest_x, py - closest_y
+	return dx * dx + dy * dy
+end
+
 local function line_hit(px, py, points)
 	for i = 1, #points - 1 do
 		local a, b = points[i], points[i + 1]
@@ -41,12 +57,24 @@ local function line_hit(px, py, points)
 	return false
 end
 
-function polyline_collision.contains(polyline, origin_x, origin_y, pointer_x, pointer_y, scale)
+local function expanded_line_hit(px, py, points, expansion)
+	local expansion_squared = expansion * expansion
+	for i = 1, #points - 1 do
+		local a, b = points[i], points[i + 1]
+		if point_segment_distance_squared(px, py, a[1], a[2], b[1], b[2]) <= expansion_squared then
+			return true
+		end
+	end
+	return false
+end
+
+function polyline_collision.contains(polyline, origin_x, origin_y, pointer_x, pointer_y, scale, expansion)
 	if not polyline or #polyline < 2 then
 		return false
 	end
 
 	scale = scale or 1
+	expansion = expansion or 0
 	local points = {}
 	for i, point in ipairs(polyline) do
 		local x, y = point_coordinates(point, scale)
@@ -55,12 +83,18 @@ function polyline_collision.contains(polyline, origin_x, origin_y, pointer_x, po
 
 	local px, py = pointer_x - origin_x, pointer_y - origin_y
 	if #points == 2 then
-		return line_hit(px, py, points)
+		return line_hit(px, py, points) or expanded_line_hit(px, py, points, expansion)
 	end
 
 	local inside = false
 	local previous = points[#points]
 	for _, current in ipairs(points) do
+		if expansion > 0
+			and point_segment_distance_squared(px, py, previous[1], previous[2], current[1], current[2])
+				<= expansion * expansion
+		then
+			return true
+		end
 		if point_on_segment(px, py, previous[1], previous[2], current[1], current[2]) then
 			return true
 		end

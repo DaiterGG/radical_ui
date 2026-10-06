@@ -17,9 +17,15 @@ local SPRING_DAMPING = 14
 local SPRING_EPSILON = 0.1
 local MIDDLE_DEAD_ZONE = 4
 local MIDDLE_SCROLL_SPEED = 5
-local PIXEL_ROUNDING_OFFSET = 0.5
-local RECTANGLE_EDGE_OFFSET = 1
-local STENCIL_VALUE = 1
+local VIEWPORT_STENCIL_VALUE = 1
+
+local viewport_mask_x = 0
+local viewport_mask_y = 0
+local viewport_mask_points = nil
+
+local function draw_viewport_mask()
+	apply_display.draw_polygon(viewport_mask_x, viewport_mask_y, viewport_mask_points, { 1, 1, 1, 1 })
+end
 
 local list_view = class()
 list_view.type = "list_view"
@@ -32,7 +38,7 @@ end
 -- the owning ui_element's rect is the viewport; children are stacked top to
 -- bottom inside it and each child's rect is set with its align function.
 -- children rects are slid up by scroll_y (screen space), so draw + collision
--- need no extra transform; the draw stencil clips anything sticking out of
+-- need no extra transform; the draw scissor clips anything sticking out of
 -- the viewport (the rect itself is never clipped).
 --
 -- two scroll modes (wheel is always on):
@@ -40,10 +46,14 @@ end
 --   2) drag the scroll bar thumb
 -- enabled drag modes come from the list display data:
 --   drag_mode = "both" | "only_bar" | "only_drag"  (default "both")
-function list_view:new(registry_key, scroll_bar, bar_only)
+function list_view:new(registry_key, scroll_bar, bar_only, options)
 	self.registry_key = registry_key
 	self.scrollbar_elem = scroll_bar
 	self.drag_mode = bar_only or false
+	self.width = options and options.width
+	self.padding = options and options.padding
+	self.offset = options and options.offset
+	self.fixed_height = options and options.fixed_height
 
 	self.children = {}
 end
@@ -144,34 +154,56 @@ function list_view:update_scrollbar(elem, ctx)
 	local display_data = ctx.display_list[elem.display_key]
 	local widget_data = display_data and display_data.list_view
 	local sb = widget_data and widget_data.scroll_bar
-	if not sb then
+	if not sb and not self.scrollbar_elem then
 		return
 	end
+	sb = sb or {}
 
-	local width = tonumber(sb.width) or DEFAULT_SCROLLBAR_WIDTH
-	local padding = tonumber(sb.padding) or DEFAULT_SCROLLBAR_PADDING
+	local width = tonumber(self.width) or tonumber(sb.width) or DEFAULT_SCROLLBAR_WIDTH
+	local configured_padding = self.padding
+	local style_padding = sb.padding
+	local padding_x = DEFAULT_SCROLLBAR_PADDING
+	local padding_y = DEFAULT_SCROLLBAR_PADDING
+	if type(style_padding) == "number" then
+		padding_x = style_padding
+		padding_y = style_padding
+	elseif type(style_padding) == "table" then
+		padding_x = tonumber(style_padding.x) or padding_x
+		padding_y = tonumber(style_padding.y) or padding_y
+	end
+	if type(configured_padding) == "number" then
+		padding_x = configured_padding
+		padding_y = configured_padding
+	elseif type(configured_padding) == "table" then
+		padding_x = tonumber(configured_padding.x) or padding_x
+		padding_y = tonumber(configured_padding.y) or padding_y
+	end
+	local offset = tonumber(self.offset)
 	if width <= 0 then
 		return
 	end
 
 	local scale = ctx.state.ui_scale or 1
-	local pad = padding * scale
+	local pad_x = padding_x * scale
+	local pad_y = padding_y * scale
 	local bar_w = width * scale
-	local available_w = r.w - pad * 2
+	local available_w = r.w - pad_x * 2
 	if available_w <= 0 then
 		return
 	end
 	bar_w = math.min(bar_w, available_w)
 
 	-- the scroll bar track is the viewport inset by top/bottom padding
-	local track_h = r.h - pad * 2
+	local track_h = r.h - pad_y * 2
 	if track_h <= 0 then
 		return
 	end
 
 	-- thumb height: full track when content fits, shrinking as content grows
 	local thumb_h = track_h
-	if data.content_height and data.content_height > r.h then
+	if self.fixed_height ~= nil then
+		thumb_h = tonumber(self.fixed_height) * scale
+	elseif data.content_height and data.content_height > r.h then
 		thumb_h = track_h * (r.h / data.content_height)
 	end
 	local min_h = math.min(MIN_THUMB_HEIGHT * scale, track_h)
@@ -181,26 +213,27 @@ function list_view:update_scrollbar(elem, ctx)
 	-- bar geometry (screen px), used by the bar drag mode + hit detection
 	data.bar_travel = track_h - thumb_h
 	data.bar_thumb_h = thumb_h
-	data.bar_track_top = r.y + pad
+	data.bar_track_top = r.y + pad_y
 	-- Keep the hit column and thumb completely inside the viewport.
+	local bar_x = offset and (r.x + r.w * offset / 100 - bar_w / 2) or (r.x + r.w - pad_x - bar_w)
 	data.bar_hit = {
-		x = r.x + r.w - pad - bar_w,
-		y = r.y + pad,
+		x = bar_x,
+		y = r.y + pad_y,
 		w = bar_w,
 		h = track_h,
 	}
 
 	-- thumb position along the track
-	local y_off = pad
+	local y_off = pad_y
 	if data.max_scroll_y and data.max_scroll_y > 0 then
 		local settled_scroll = list_view.clamp(data.scroll_y, 0, data.max_scroll_y)
 		y_off = y_off + (settled_scroll / data.max_scroll_y) * data.bar_travel
 	end
 
 	-- absolute align values (parent_pivot/pivot are 0..100 percentages).
-	local parent_pivot = { x = PERCENT, y = 0 }
+	local parent_pivot = { x = offset or PERCENT, y = 0 }
 	local pivot = {
-		x = PERCENT,
+		x = offset and 50 or PERCENT,
 		y = -PERCENT * y_off / thumb_h,
 	}
 	local size = apply_align.Size({
@@ -222,6 +255,7 @@ function list_view:update_scrollbar(elem, ctx)
 		data.scrollbar_align.size = size
 	end
 	self.scrollbar_elem.align = data.scrollbar_align
+	self.scrollbar_elem.previous_parent_rect = nil
 
 	-- generate the bar rect (and its children) from the scroll view rect
 	self.scrollbar_elem:align_rec({ x = r.x, y = r.y, w = r.w, h = r.h }, ctx)
@@ -262,6 +296,12 @@ end
 
 function list_view:set_drag_scroll(data, value)
 	data.scroll_y = value
+end
+
+function list_view:set_bar_scroll(data, value)
+	data.scroll_y = list_view.clamp(value, 0, data.max_scroll_y)
+	data.springing = false
+	data.spring_velocity = 0
 end
 
 function list_view:update_scroll(elem, ctx)
@@ -342,7 +382,7 @@ function list_view:update_scroll(elem, ctx)
 	if data.bar_dragging then
 		if held then
 			if data.bar_travel > 0 then
-				self:set_drag_scroll(
+				self:set_bar_scroll(
 					data,
 					data.bar_drag_scroll_start + (my - data.bar_drag_start_y) * (data.max_scroll_y / data.bar_travel)
 				)
@@ -363,7 +403,7 @@ function list_view:update_scroll(elem, ctx)
 
 		-- place the thumb so the grabbed point stays under the pointer
 		if data.bar_travel > 0 then
-			self:set_drag_scroll(data, ((my - grab - data.bar_track_top) / data.bar_travel) * data.max_scroll_y)
+			self:set_bar_scroll(data, ((my - grab - data.bar_track_top) / data.bar_travel) * data.max_scroll_y)
 		end
 		data.bar_drag_start_y = my
 		data.bar_drag_scroll_start = data.scroll_y
@@ -444,38 +484,57 @@ function list_view:draw(elem, ctx, widget_display_data, display_data)
 	)
 
 	if #self.children > 0 then
-		-- stencil clip to the viewport: children are already slid by scroll_y,
-		-- so draw just renders them at their rects and the clip hides overflow
-		love.graphics.push("all")
-
-		love.graphics.stencil(function()
-			love.graphics.rectangle(
-				"fill",
-				math.floor(r.x + PIXEL_ROUNDING_OFFSET),
-				math.floor(r.y + PIXEL_ROUNDING_OFFSET),
-				r.w + RECTANGLE_EDGE_OFFSET,
-				r.h
-			)
-		end, "replace", STENCIL_VALUE)
-		love.graphics.setStencilTest("greater", 0)
-
-		for _, child in ipairs(self.children) do
-			if not child.rect or child.rect.y > ctx.state.res.h then
-				break
-			end
-			if child.rect.y + child.rect.h > 0 then
-				child:draw_rec(ctx)
-			end
+		if elem.polyline then
+			self:draw_polyline_content(elem, ctx)
+		else
+			self:draw_rectangular_content(ctx, r)
 		end
-
-		love.graphics.setStencilTest()
-		love.graphics.pop()
 	end
 
 	-- scroll bar is drawn on top, unclipped
 	if self.scrollbar_elem then
 		self.scrollbar_elem:draw_rec(ctx)
 	end
+end
+
+function list_view:draw_rectangular_content(ctx, r)
+		-- Use scissor for the rectangular viewport. Descendant backgrounds may
+		-- use stencil operations of their own, which must not replace the list
+		-- viewport's clipping state.
+	love.graphics.push("all")
+	love.graphics.setScissor(r.x, r.y, r.w, r.h)
+
+	for _, child in ipairs(self.children) do
+		if not child.rect or child.rect.y > ctx.state.res.h then
+			break
+		end
+		if child.rect.y + child.rect.h > 0 then
+			child:draw_rec(ctx)
+		end
+	end
+
+	love.graphics.pop()
+end
+
+function list_view:draw_polyline_content(elem, ctx)
+	love.graphics.push("all")
+	viewport_mask_x = elem.rect.x
+	viewport_mask_y = elem.rect.y
+	viewport_mask_points = apply_display.scale_points(elem.polyline, ctx.state.ui_scale or 1)
+	love.graphics.stencil(draw_viewport_mask, "replace", VIEWPORT_STENCIL_VALUE)
+	love.graphics.setStencilTest("greater", 0)
+
+	for _, child in ipairs(self.children) do
+		if not child.rect or child.rect.y > ctx.state.res.h then
+			break
+		end
+		if child.rect.y + child.rect.h > 0 then
+			child:draw_rec(ctx)
+		end
+	end
+
+	love.graphics.setStencilTest()
+	love.graphics.pop()
 end
 
 return list_view

@@ -2,97 +2,83 @@ local profiler = require("profiler")
 local utils = require("utils")
 local text_input = require("text_input")
 local execute
-execute = {
-	keyinput = function(ctx, action)
-		local input = ctx.input_state
-		local data = input.input_key and ctx.widget_reg:get(input.input_key)
-		if not data then
-			return
-		end
 
-		text_input:insert_text(data, action.key or "")
-		text_input:trigger_input(ctx, data)
+local function reset_input_list_scroll(ctx)
+	local data = ctx.widget_reg:get("input_menu") or {}
+	data.y_scroll = -1
+	ctx.widget_reg:set("input_menu", data)
+end
+
+execute = {
+	default_input = function(ctx, data)
+		local key = ctx.input_state.input_key
+		local new_input = data.new_input
+		local after = data.after
+
+		if new_input then
+			text_input:insert_text(ctx, key, new_input)
+		else
+			text_input:set_text(ctx, key, after)
+		end
+	end,
+	keyinput = function(ctx, data)
+		local input_key = ctx.input_state.input_key
+		text_input:trigger_input(ctx, input_key, { new_input = data.keypress })
+	end,
+	keybind_capture = function(ctx, data)
+		ctx.input_state.keybind_capture = data.rebind
+		ctx.state.need_to_rebuild = true
+	end,
+	debug_rebuild = function(ctx, _)
+		ctx.state.need_to_rebuild = true
 	end,
 	input_left = function(ctx, action)
-		local data = ctx.input_state.input_key and ctx.widget_reg:get(ctx.input_state.input_key)
-		if not data then
-			return
-		end
-		text_input:move_caret(data, -1, action.modifiers)
+		local input_key = ctx.input_state.input_key
+		text_input:move_caret(ctx, input_key, -1, action.modifiers)
 	end,
 	input_right = function(ctx, action)
-		local data = ctx.input_state.input_key and ctx.widget_reg:get(ctx.input_state.input_key)
-		if not data then
-			return
-		end
-		text_input:move_caret(data, 1, action.modifiers)
+		local input_key = ctx.input_state.input_key
+		text_input:move_caret(ctx, input_key, 1, action.modifiers)
 	end,
 	input_home = function(ctx)
-		local data = ctx.input_state.input_key and ctx.widget_reg:get(ctx.input_state.input_key)
-		if not data then
-			return
-		end
-		data.caret = 1
-		data.selection[1] = data.caret
-		data.selection[2] = data.caret
+		local input_key = ctx.input_state.input_key
+		text_input:move_caret(ctx, input_key, 1 - ctx.widget_reg:get(input_key).caret)
 	end,
 	input_end = function(ctx)
-		local data = ctx.input_state.input_key and ctx.widget_reg:get(ctx.input_state.input_key)
-		if not data then
-			return
-		end
-		data.caret = #data.input_field + 1
-		data.selection[1] = data.caret
-		data.selection[2] = data.caret
+		local input_key = ctx.input_state.input_key
+		local data = ctx.widget_reg:get(input_key)
+		text_input:move_caret(ctx, input_key, #data.input_field + 1 - data.caret)
 	end,
 	input_backspace = function(ctx, action)
-		local data = ctx.input_state.input_key and ctx.widget_reg:get(ctx.input_state.input_key)
-		if not data then
-			return
-		end
-		text_input:erase(data, true, action.modifiers and action.modifiers.ctrl)
-		text_input:trigger_input(ctx, data)
+		local input_key = ctx.input_state.input_key
+		text_input:erase(ctx, input_key, true, action.modifiers and action.modifiers.ctrl)
 	end,
 	input_delete = function(ctx, action)
-		local data = ctx.input_state.input_key and ctx.widget_reg:get(ctx.input_state.input_key)
-		if not data then
-			return
-		end
-		text_input:erase(data, false, action.modifiers and action.modifiers.ctrl)
-		text_input:trigger_input(ctx, data)
+		local input_key = ctx.input_state.input_key
+		text_input:erase(ctx, input_key, false, action.modifiers and action.modifiers.ctrl)
 	end,
 	input_select_all = function(ctx)
-		local data = ctx.input_state.input_key and ctx.widget_reg:get(ctx.input_state.input_key)
-		if data then
-			text_input:select_all(data)
-		end
+		local input_key = ctx.input_state.input_key
+		text_input:select_all(ctx, input_key)
 	end,
 	input_deselect = function(ctx)
 		ctx.input_state.input_key = nil
 	end,
 	input_copy = function(ctx)
-		local data = ctx.input_state.input_key and ctx.widget_reg:get(ctx.input_state.input_key)
-		if data then
-			love.system.setClipboardText(text_input:selected_text(data))
-		end
+		local input_key = ctx.input_state.input_key
+		love.system.setClipboardText(text_input:selected_text(ctx, input_key))
 	end,
 	input_cut = function(ctx)
-		local data = ctx.input_state.input_key and ctx.widget_reg:get(ctx.input_state.input_key)
-		if data then
-			local selected = text_input:selected_text(data)
-			if selected ~= "" then
-				love.system.setClipboardText(selected)
-				text_input:erase(data, false, false)
-				text_input:trigger_input(ctx, data)
-			end
+		local input_key = ctx.input_state.input_key
+		local selected = text_input:selected_text(ctx, input_key)
+		if selected ~= "" then
+			love.system.setClipboardText(selected)
+			text_input:erase(ctx, input_key, false, false)
 		end
 	end,
 	input_paste = function(ctx)
-		local data = ctx.input_state.input_key and ctx.widget_reg:get(ctx.input_state.input_key)
-		if data then
-			text_input:insert_text(data, love.system.getClipboardText() or "")
-			text_input:trigger_input(ctx, data)
-		end
+		local input_key = ctx.input_state.input_key
+		text_input:insert_text(ctx, input_key, love.system.getClipboardText() or "")
 	end,
 	quit = function(ctx)
 		if ctx.state.scene == "gameplay" then
@@ -145,7 +131,6 @@ execute = {
 		ctx.gameplay_api:start()
 		ctx.state.scene = "gameplay"
 		ctx.state.need_to_rebuild = true
-		ctx.state.need_to_realign = true
 	end,
 	stop_gameplay = function(ctx)
 		if ctx.state.scene ~= "gameplay" then
@@ -170,6 +155,11 @@ execute = {
 		ctx.state.ui_scale = ctx.settings.ui_settings.custom_scale * ctx.state.res.h / 1080
 	end,
 	main_list_up = function(ctx)
+		if ctx.state.active_window == "Input" then
+			ctx.input_model.input_pos = math.max(1, ctx.input_model.input_pos - 1)
+			ctx.state.need_to_rebuild = true
+			return
+		end
 		if ctx.state.active_window then
 			return
 		end
@@ -185,6 +175,11 @@ execute = {
 		execute.select_beatmap(ctx, { index = next_index })
 	end,
 	main_list_down = function(ctx)
+		if ctx.state.active_window == "Input" then
+			ctx.input_model.input_pos = math.min(#ctx.input_model.all_standard, ctx.input_model.input_pos + 1)
+			ctx.state.need_to_rebuild = true
+			return
+		end
 		if ctx.state.active_window then
 			return
 		end
@@ -256,6 +251,14 @@ execute = {
 	end,
 	settings_tab = function(ctx, data)
 		ctx.state.settings_tab = data.tab
+		ctx.state.need_to_rebuild = true
+	end,
+	input_pos_up = function(ctx)
+		ctx.input_model.input_pos = math.max(1, ctx.input_model.input_pos - 1)
+		ctx.state.need_to_rebuild = true
+	end,
+	input_pos_down = function(ctx)
+		ctx.input_model.input_pos = math.min(#ctx.input_model.all_standard, ctx.input_model.input_pos + 1)
 		ctx.state.need_to_rebuild = true
 	end,
 	set_play_speed = function(ctx, data)
@@ -357,6 +360,14 @@ execute = {
 		ctx.settings.ui_settings.background = data.value
 		ctx.state.need_to_rebuild = true
 	end,
+	set_hot_reload = function(ctx, data)
+		ctx.settings.ui_settings.hot_reload = data.value
+		ctx.state.need_to_rebuild = true
+	end,
+	set_hot_reload_reset = function(ctx, data)
+		ctx.settings.ui_settings.hot_reload = data.value
+		ctx.state.need_to_rebuild = true
+	end,
 	set_animations = function(ctx, data)
 		ctx.settings.ui_settings.animations = data.value
 		ctx.state.need_to_rebuild = true
@@ -369,15 +380,37 @@ execute = {
 		ctx.game_api:setTheme(data.value)
 		ctx.state.need_to_rebuild = true
 	end,
+	reload_ui = function(ctx)
+		local theme_id = "radical_ui"
+		local themes = ctx.game_api:getThemes()
+		for _, theme in ipairs(themes) do
+			if theme.id == theme_id and theme.name == "Radical UI" then
+				ctx.game_api:setTheme(theme_id)
+				ctx.state.need_to_rebuild = true
+				return
+			end
+		end
+		error("Unknown UI theme: Radical UI")
+	end,
 	set_dummy_value = function(ctx, data)
-		local value = tonumber(data.value) or 0
-		ctx.settings.ui_settings.dummy_value = value
-		local input_data = ctx.widget_reg:get("settings_value_set_dummy_value")
-		if input_data then
-			input_data.input_field = tostring(value)
-			input_data.caret = #input_data.input_field + 1
-			input_data.selection[1] = input_data.caret
-			input_data.selection[2] = input_data.caret
+		local key = ctx.input_state.input_key
+		if data.button_value then
+			ctx.state.need_to_rebuild = true
+			ctx.settings.ui_settings.dummy_value = ctx.settings.ui_settings.dummy_value + data.button_value
+			return
+		end
+		local new_input = data.new_input
+		local after = data.after
+
+		if new_input then
+			if not tonumber(new_input) then
+				return
+			end
+			local new_value = text_input:insert_text(ctx, key, new_input)
+			ctx.settings.ui_settings.dummy_value = tonumber(new_value)
+		else
+			text_input:set_text(ctx, key, after)
+			ctx.settings.ui_settings.dummy_value = tonumber(after)
 		end
 	end,
 	trigger_animation = function(ctx, data)
@@ -386,18 +419,12 @@ execute = {
 		end
 		ctx.anim_reg:update(data.key, data.direction, data.forced)
 	end,
-	begin_keybind_capture = function(ctx, data)
-		if not data or not data.target_action then
-			return
-		end
-		ctx.state.keybind_capture = {
-			action = data.target_action,
-			pos = data.pos or 1,
-		}
-	end,
 	sub_window_toggle = function(ctx, data)
 		if data.window ~= ctx.state.active_window then
 			ctx.state.active_window = data.window
+			if data.window == "Input" then
+				reset_input_list_scroll(ctx)
+			end
 			ctx.anim_reg:update("test_animation", "from")
 		else
 			ctx.state.active_window = nil
@@ -408,6 +435,9 @@ execute = {
 	sub_window_open = function(ctx, data)
 		if data.window then
 			ctx.state.active_window = data.window
+			if data.window == "Input" then
+				reset_input_list_scroll(ctx)
+			end
 			ctx.anim_reg:update("test_animation", "from")
 		else
 			ctx.state.active_window = nil

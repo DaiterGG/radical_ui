@@ -1,5 +1,6 @@
 local apply_display = require("apply_display")
 local class = require("class")
+local polyline_collision = require("polyline_collision")
 local ui_element = require("ui_element")
 local utils = require("utils")
 local widget = require("widget")
@@ -13,6 +14,25 @@ local widget = require("widget")
 
 local button = class()
 button.type = "button"
+
+local COLLISION_EXPANSION = 3
+
+local function button_hit(elem, ctx, hit)
+	if hit or not elem.polyline then
+		return hit
+	end
+
+	local rect = elem.rect
+	return rect ~= nil and polyline_collision.contains(
+		elem.polyline,
+		rect.x,
+		rect.y,
+		ctx.input_state.pos.x,
+		ctx.input_state.pos.y,
+		ctx.state.ui_scale or 1,
+		COLLISION_EXPANSION
+	)
+end
 
 function button:new(child, opts)
 	if opts then
@@ -33,6 +53,8 @@ end
 function button:pointer_collision(elem, ctx, hit)
 	local input = ctx.input_state
 	local hash = elem.hash_num
+	hit = button_hit(elem, ctx, hit)
+	self.collision_hit = hit
 	if self.child then
 		widget.set_child_states(self.child, elem.states)
 	end
@@ -45,6 +67,7 @@ end
 -- called after all children had a chance to set interacting_with
 function button:pointer_collision_after(elem, ctx, hit, children_hit)
 	local input = ctx.input_state
+	hit = self.collision_hit or button_hit(elem, ctx, hit)
 	local interacting = input.interacting_with == elem.hash_num
 	local true_hit = hit and not children_hit
 	local pressed_and_hit = input.left == "pressed" and true_hit

@@ -2,7 +2,7 @@ local class = require("class")
 
 -- keybinding: simple key-combo -> action map.
 --   kb.keys["ctrl+p"] = "open_settings"    -- direct binding
---   kb:rebind("open_settings", 1, "p")     -- change key #1 of an action
+--   kb:rebind(ctx, "open_settings", 1, "p") -- change key #1 of an action
 --   local action = kb:trigger("p", mods)   -- resolve a key press (mods optional)
 --   kb:list()                              -- buffered { {action=.., keys={..}}, .. }
 -- trigger flow (event -> keybinding):
@@ -47,8 +47,10 @@ end
 
 -- replace the key at `pos` of an action's bindings (or append if the slot is
 -- new). a key combo can only belong to one action.
-function keybinding:rebind(action, pos, new_key)
-	pos = pos or 1
+function keybinding:rebind(ctx, action, pos, new_key)
+	pos = tonumber(pos or 1)
+	assert(pos, "keybinding rebind position must be numeric")
+	new_key = self:comb(ctx.input_state.modifiers, string.lower(new_key))
 	local a = self._actions[action]
 	local old = a and a[pos] or nil
 
